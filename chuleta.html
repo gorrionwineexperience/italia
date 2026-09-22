@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chuleta Cata – Italia · Sicilia y Puglia</title>
+  <style>
+    :root{
+      --bg:#f6f1e7;
+      --paper:#fffaf2;
+      --ink:#2d241f;
+      --muted:#6b5a50;
+      --accent:#6f1d1b;
+      --accent-2:#a43d2f;
+      --line:#e4d7c7;
+      --quote:#f1e6d7;
+      --chip:#efe3d5;
+      --shadow:0 12px 35px rgba(61,35,20,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(164,61,47,.08), transparent 26%),
+        linear-gradient(180deg, #f8f3ec 0%, var(--bg) 100%);
+      line-height:1.72;
+    }
+    .wrap{max-width:980px;margin:0 auto;padding:28px 18px 90px}
+    .hero{
+      background:linear-gradient(135deg, rgba(111,29,27,.95), rgba(164,61,47,.88));
+      color:#fff;
+      padding:34px 28px;
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+      margin-bottom:20px;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -60px auto;
+      width:220px;height:220px;border-radius:50%;
+      background:rgba(255,255,255,.08);
+      filter:blur(2px);
+    }
+    h1,h2,h3,h4{font-family: Georgia, "Times New Roman", serif; line-height:1.2; margin:0 0 .6rem}
+    h1{font-size:2.2rem; margin-bottom:.4rem}
+    h2{font-size:1.7rem; color:var(--accent); margin-top:0}
+    h3{font-size:1.2rem; color:#4a352c; margin-top:1rem}
+    h4{font-size:1rem; color:#4a352c; margin-top:.9rem}
+    .subtitle{max-width:760px;color:rgba(255,255,255,.92);margin:0 0 1rem}
+    .topbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:10px}
+    .btn{
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:600;
+      cursor:pointer;
+      backdrop-filter: blur(4px);
+    }
+    .toc{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+      gap:10px;
+      margin:22px 0 26px;
+    }
+    .toc a{
+      display:block;
+      text-decoration:none;
+      color:var(--ink);
+      background:var(--paper);
+      border:1px solid var(--line);
+      padding:12px 14px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      font-weight:600;
+    }
+    .section{
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:24px 22px;
+      box-shadow:var(--shadow);
+      margin:18px 0;
+    }
+    .lead{color:var(--muted); margin-top:-4px}
+    blockquote{
+      margin:14px 0;
+      padding:14px 16px;
+      background:var(--quote);
+      border-left:5px solid var(--accent-2);
+      border-radius:12px;
+      color:#3c2f28;
+    }
+    .wine{
+      border-top:1px dashed var(--line);
+      padding-top:18px;
+      margin-top:18px;
+    }
+    .wine:first-of-type{border-top:none;padding-top:0;margin-top:0}
+    .tagline{
+      display:inline-block;
+      background:var(--chip);
+      color:#5a463d;
+      border:1px solid var(--line);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.92rem;
+      margin:.2rem 0 .9rem;
+    }
+    ul{margin:.3rem 0 1rem 1.2rem;padding:0}
+    li{margin:.25rem 0}
+    .muted{color:var(--muted)}
+    .footer-note{font-size:.95rem;color:var(--muted);margin-top:26px}
+    .sticky-actions{position:fixed;right:14px;bottom:14px;display:flex;gap:10px;z-index:50;}
+    .mini-btn{border:none;background:var(--accent);color:#fff;padding:11px 14px;border-radius:999px;cursor:pointer;box-shadow:0 10px 25px rgba(111,29,27,.25);font-weight:700;}
+    .quote-inline{font-style:italic;color:#4b3a31}
+    @media print{
+      body{background:#fff}
+      .hero,.section,.toc a{box-shadow:none}
+      .sticky-actions,.btn{display:none!important}
+      .wrap{max-width:none;padding:0}
+      .section,.hero{border:1px solid #ddd; break-inside:avoid}
+      a{text-decoration:none;color:inherit}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+    <header class="hero">
+      <h1>Chuleta completa para cata de vinos italianos</h1>
+      <p class="subtitle">Guion de apoyo para una cata de cuatro vinos del sur de Italia: Sicilia y Puglia, con contexto, variedades, bodegas, elaboración, maridajes y frases listas para usar.</p>
+      <div class="topbar">
+        <span class="tagline" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22);color:#fff">Sicilia · Puglia · Grillo · Negroamaro · Primitivo</span>
+        <button class="btn" onclick="toggleFullscreen()">⛶ Pantalla completa</button>
+      </div>
+    </header>
+
+    <nav class="toc">
+      <a href="#geo">0) Geografía</a>
+      <a href="#uvas">1) Las uvas</a>
+      <a href="#bodegas">2) Bodegas</a>
+      <a href="#vinos">3) Los 4 vinos</a>
+      <a href="#glosario">4) Glosario</a>
+      <a href="#frases">5) Frases de apoyo</a>
+      <a href="#cierre">6) Cierre</a>
+      <a href="#fuentes">Fuentes</a>
+    </nav>
+
+    <section class="section" id="geo">
+      <h2>0) Geografía: de Sicilia a Puglia</h2>
+      <blockquote>“Hoy la cata recorre dos grandes territorios del sur de Italia: Sicilia y Puglia. Empezamos en una isla mediterránea con un blanco de Grillo y cruzamos después al tacón de la bota para probar tres expresiones tintas de Tagaro.”</blockquote>
+      <p><strong>Sicilia</strong> combina sol, viento, influencia marina y una enorme diversidad de suelos. Saverio Faro sitúa sus viñedos en la parte occidental de la isla, sobre suelos calcáreo-arenosos y en un clima mediterráneo de veranos cálidos y ventosos. Esa combinación ayuda a explicar el lado aromático, fresco y sabroso del Grillo.</p>
+      <p><strong>Puglia</strong> forma el tacón de la península italiana. Tagaro nace en la <strong>Valle d’Itria</strong>, cerca de Fasano y de la zona de los trulli de Alberobello. La bodega trabaja variedades locales como Primitivo y Negroamaro y describe un paisaje de suelos ricos en caliza, mucho sol y brisas procedentes del mar.</p>
+      <blockquote>“El hilo conductor es el Mediterráneo, pero el recorrido cambia mucho: del blanco fresco de Sicilia a tintos puglieses cada vez más maduros y profundos.”</blockquote>
+    </section>
+
+    <section class="section" id="uvas">
+      <h2>1) Las uvas protagonistas</h2>
+      <h3>Grillo</h3>
+      <p>Variedad blanca muy ligada a Sicilia. El Consorzio DOC Sicilia señala que procede del cruce entre <strong>Catarratto y Zibibbo</strong> y que su cultivo está documentado en la isla desde finales del siglo XIX. Suele dar blancos con buena carga aromática, notas cítricas, florales y herbáceas, acidez y un carácter sabroso o mineral.</p>
+      <h3>Negroamaro</h3>
+      <p>Una de las grandes tintas del sur de Puglia y especialmente del Salento. Puede aportar color, fruta roja y negra, especias, una nota mediterránea y estructura. En Passo del Sud aparece mezclada con Primitivo para unir frescura, fruta y redondez.</p>
+      <h3>Primitivo</h3>
+      <p>La Regione Puglia sitúa su historia moderna a finales del siglo XVIII, cuando don Filippo Indelicati seleccionó en Gioia del Colle una variedad que maduraba muy pronto. De ahí el nombre <strong>Primitivo</strong>: hace referencia a su precocidad. Da tintos de fruta madura, volumen y calidez, aunque el estilo cambia bastante según viñedo y elaboración.</p>
+    </section>
+
+    <section class="section" id="bodegas">
+      <h2>2) Las bodegas</h2>
+      <h3>Saverio Faro</h3>
+      <p>Proyecto siciliano con bodegas modernas situadas en la costa occidental de Sicilia. Trabaja variedades tradicionales como Grillo y Nero d’Avola, junto con Syrah, y pone énfasis en el respeto por el entorno y en la influencia del clima mediterráneo y las brisas marinas.</p>
+      <h3>Tagaro</h3>
+      <p>Bodega familiar de la Valle d’Itria, con una tradición transmitida durante <strong>tres generaciones</strong>. La casa combina variedades autóctonas de Puglia —Primitivo, Negroamaro, Verdeca o Fiano Minutolo— con una visión moderna de la vinificación. Sus viñedos se reparten entre diferentes zonas de Puglia y la identidad de la bodega está muy ligada al paisaje calcáreo y a la cultura de los trulli.</p>
+    </section>
+
+    <section class="section" id="vinos">
+      <h2>3) Los cuatro vinos de la cata</h2>
+
+      <article class="wine">
+        <h3>1. Grillo — Saverio Faro</h3>
+        <blockquote>“Abrimos con Sicilia y con una uva que mezcla sol mediterráneo con frescura.”</blockquote>
+        <p><strong>Origen y uva:</strong> Sicilia DOC, 100% Grillo.</p>
+        <p><strong>Perfil:</strong> amarillo pajizo con reflejos verdosos; aromas de fruta blanca, matices herbáceos y minerales; boca fresca, sabrosa y equilibrada.</p>
+        <p><strong>Servicio:</strong> 8–10 ºC. La ficha consultada indica 12,5% vol.</p>
+        <p><strong>Maridaje de la cata:</strong> <em>arancini</em>, bolas o conos de arroz sicilianos rellenos normalmente de ragú, guisantes y queso, o de jamón y mozzarella.</p>
+        <p><strong>Idea para contar:</strong> “El Grillo es perfecto para empezar porque tiene aroma y personalidad, pero mantiene una boca fresca que prepara para lo que viene.”</p>
+      </article>
+
+      <article class="wine">
+        <h3>2. Passo Del Sud Negroamaro Primitivo — Tagaro</h3>
+        <blockquote>“Ahora cruzamos a Puglia y mezclamos dos de sus variedades tintas más reconocibles.”</blockquote>
+        <p><strong>Origen y uvas:</strong> Puglia IGP, Negroamaro y Primitivo.</p>
+        <p><strong>Viñedo:</strong> la ficha técnica habla de cepas de 10–15 años en suelos arcillosos y calcáreos, formadas en espaldera con poda Guyot.</p>
+        <p><strong>Elaboración:</strong> despalillado, criomaceración a 4–5 ºC durante 24 horas, fermentación controlada a 24–26 ºC, prensado suave y fermentación maloláctica. Después se afina unos cinco meses y otros tres en botella.</p>
+        <p><strong>Perfil:</strong> rojo intenso; fruta roja y especias; en boca aparecen mora y arándano con tanino suave y equilibrado.</p>
+        <p><strong>Maridaje de la cata:</strong> burrata con hojas verdes, nueces, tomates secos, AOVE y miel de caña.</p>
+      </article>
+
+      <article class="wine">
+        <h3>3. Pinataro Primitivo — Tagaro</h3>
+        <blockquote>“En el tercer vino quitamos el Negroamaro y dejamos al Primitivo hablar solo.”</blockquote>
+        <p><strong>Origen y uva:</strong> Puglia IGT, 100% Primitivo.</p>
+        <p><strong>Perfil:</strong> color cereza intenso; nariz de fresa, violeta y especias; boca suave y fresca, con final largo e intenso. La referencia actual consultada sitúa el alcohol en 13% vol.</p>
+        <p><strong>Maridaje de la cata:</strong> panzerotto de masa tipo pizza, relleno de mozzarella, tomate y aceitunas negras.</p>
+        <p><strong>Idea para comparar:</strong> “Con Pinataro podemos fijarnos en el lado más inmediato y frutal del Primitivo antes de pasar al Cinquenoci, que tiene más profundidad y crianza.”</p>
+      </article>
+
+      <article class="wine">
+        <h3>4. Cinquenoci Primitivo — Tagaro</h3>
+        <blockquote>“Cerramos manteniendo la misma uva, pero subiendo concentración, edad de viñedo y presencia de madera.”</blockquote>
+        <p><strong>Origen y uva:</strong> Puglia IGP, 100% Primitivo.</p>
+        <p><strong>Viñedo:</strong> cepas de unos 30 años, sobre suelo calcáreo mezclado con tierra roja.</p>
+        <p><strong>Elaboración y crianza:</strong> maceración inicial en frío, fermentación con maceración, prensado suave y maloláctica; después, aproximadamente 7–8 meses con madera y 3 meses en botella.</p>
+        <p><strong>Perfil:</strong> rojo profundo con reflejos violáceos; ciruela madura y grosella negra; boca intensa, persistente, armoniosa y envolvente.</p>
+        <p><strong>Maridaje de la cata:</strong> orecchiette con salsa de ricota, queso, manteca y limón.</p>
+      </article>
+    </section>
+
+    <section class="section" id="glosario">
+      <h2>4) Glosario rápido</h2>
+      <h3>Criomaceración</h3><p>Contacto de mosto y pieles a baja temperatura antes de fermentar. Ayuda a extraer color y aromas controlando la extracción.</p>
+      <h3>Fermentación maloláctica</h3><p>Transforma un ácido más punzante en otro más suave y puede hacer que el vino se sienta más redondo.</p>
+      <h3>IGP / IGT</h3><p>Indicación geográfica protegida; en Italia puede aparecer la mención tradicional IGT. Sitúa el vino en un territorio con reglas de producción determinadas, aunque normalmente con más flexibilidad que una DOC o DOCG.</p>
+      <h3>DOC</h3><p>Denominazione di Origine Controllata. En el primer vino, Sicilia DOC certifica el vínculo del vino con el territorio y sus normas de producción.</p>
+      <h3>Tanino</h3><p>Sensación de sequedad o agarre en boca, procedente principalmente de pieles, pepitas y, cuando se utiliza, madera.</p>
+    </section>
+
+    <section class="section" id="frases">
+      <h2>5) Frases de apoyo</h2>
+      <p><strong>Para abrir:</strong><br>“Hoy no vamos a intentar resumir Italia entera: vamos a hacer un pequeño viaje por el sur, desde Sicilia hasta Puglia.”</p>
+      <p><strong>Antes del Grillo:</strong><br>“Empezamos con una blanca siciliana para poner en la copa el Mediterráneo, el viento y la frescura.”</p>
+      <p><strong>Antes de Passo del Sud:</strong><br>“Cruzamos a Puglia y cambiamos completamente de registro: ahora aparecen fruta tinta, especias y tanino.”</p>
+      <p><strong>Antes de Pinataro:</strong><br>“Ahora probamos el Primitivo sin compañía para entender mejor la personalidad de la uva.”</p>
+      <p><strong>Antes de Cinquenoci:</strong><br>“Terminamos con la misma variedad, pero en una versión más profunda, con viñas maduras y más afinamiento.”</p>
+    </section>
+
+    <section class="section" id="cierre">
+      <h2>6) Cierre</h2>
+      <blockquote>“El viaje de hoy ha ido de la frescura del Grillo siciliano a tres tintos de Puglia que nos permiten ver cómo cambian Negroamaro y, sobre todo, Primitivo según el ensamblaje y la elaboración.”</blockquote>
+      <p>Una buena pregunta final para el grupo es: <strong>¿qué os ha enseñado más sobre la diferencia entre variedad y elaboración: comparar Passo del Sud con Pinataro, o comparar Pinataro con Cinquenoci?</strong></p>
+    </section>
+
+    <section class="section" id="fuentes">
+      <h2>Fuentes de referencia</h2>
+      <p class="muted">Contenido preparado a partir de fichas de productor y fuentes vitivinícolas consultadas. La graduación alcohólica puede variar ligeramente según la añada de la botella.</p>
+      <ul>
+        <li>Saverio Faro / Progetti Agricoli: ficha de Grillo Sicilia DOC y descripción de la bodega.</li>
+        <li>Consorzio di Tutela Vini DOC Sicilia: información sobre Grillo y Sicilia DOC.</li>
+        <li>Tagaro: historia de la bodega, viñedos y ficha de Cinquenoci.</li>
+        <li>Ficha técnica de Passo del Sud Negroamaro Primitivo.</li>
+        <li>Ficha comercial actual de Pinataro Primitivo, contrastada con información general de Tagaro.</li>
+        <li>Regione Puglia: referencias históricas sobre Primitivo y denominaciones regionales.</li>
+      </ul>
+    </section>
+
+  </div>
+
+  <div class="sticky-actions">
+    <button class="mini-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Arriba</button>
+  </div>
+
+  <script>
+    function toggleFullscreen(){
+      if(!document.fullscreenElement){
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+  </script>
+</body>
+</html>

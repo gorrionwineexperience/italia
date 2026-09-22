@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Pantalla info · Cata Vinos Italianos - Don Aviador</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Playfair Display para mantener el mismo estilo de títulos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0f0f12; --bg2:#15151a;
+      --card:#17181d; --soft:#20222a; --text:#f5f5f7; --muted:#b7bbc7;
+      --accent:#ffb347; --accent2:#ff6f61;
+      --radius:18px; --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --header-h: 90px;
+    }
+
+    *{box-sizing:border-box;}
+
+    html, body{
+      margin:0;
+      padding:0;
+      width:100%;
+      height:100%;
+    }
+
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 10% -10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 60%),
+        radial-gradient(800px 500px at 110% 110%, color-mix(in oklab, var(--accent2) 18%, transparent), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      overflow:hidden; /* sin scroll en la TV */
+    }
+
+    header{
+      position:sticky;
+      top:0; left:0; right:0;
+      z-index:10;
+      background: rgba(15,15,18,.85);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid #242633;
+    }
+
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      padding:10px 16px;
+    }
+
+    .headerRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      width:100%;
+    }
+
+    .headerLeft{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .logo{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      overflow:hidden;
+      background:#0f0f12;
+      flex:0 0 auto;
+      box-shadow: var(--shadow);
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .headerTitle{min-width:0;}
+    h1{
+      font-size:1.15rem;
+      margin:0;
+      font-family:"Playfair Display", serif;
+      font-weight:800;
+    }
+    .sub{
+      color:var(--muted);
+      font-size:.9rem;
+      margin-top:2px;
+    }
+
+    .headerControls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      color:var(--text);
+      background: var(--soft);
+      border:1px solid #2a2d3a;
+      padding:8px 10px;
+      border-radius:10px;
+      font-weight:800;
+      letter-spacing:.2px;
+      transition:.15s transform, .15s border, .15s background;
+      font-size:.9rem;
+    }
+    button:hover{
+      transform:translateY(-1px);
+      border-color:#3a3f52;
+    }
+    button.primary{
+      background: linear-gradient(145deg, #2b2f3d, #1f212b);
+      border-color:#3a3f52;
+    }
+
+    /* CONTENEDOR DE ESCENA: ocupa todo el alto menos el header */
+    main{
+      padding:0 0 12px;
+    }
+
+    #sceneWrapper{
+      position:relative;
+      width:100%;
+      height:calc(100vh - var(--header-h) - 12px);
+      max-width:1200px;
+      margin:0 auto;
+      padding:12px 16px 16px;
+      box-sizing:border-box;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    #sceneInner{
+      position:relative;
+      width:100%;
+      height:100%;
+      background: radial-gradient(800px 500px at 50% 120%, rgba(0,0,0,.45), transparent 60%),
+                  #050509;
+      border-radius:24px;
+      border:1px solid #262838;
+      box-shadow:0 18px 40px rgba(0,0,0,.75);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    #sceneImage{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      display:none;
+      background:#050509;
+    }
+
+    /* Overlays de texto dentro de la escena */
+    #topBar{
+      position:absolute;
+      top:14px;
+      left:18px;
+      right:18px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      pointer-events:none;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      border-radius:999px;
+      background:rgba(12,12,18,0.85);
+      border:1px solid rgba(76,81,117,0.9);
+      font-size:1.1vw;
+      color:#e5e7eb;
+      pointer-events:auto;
+    }
+
+    #bottomBar{
+      position:absolute;
+      left:18px;
+      right:18px;
+      bottom:16px;
+      text-align:center;
+      text-shadow:0 4px 16px rgba(0,0,0,.85);
+      pointer-events:none;
+    }
+
+    #sceneTitle{
+      font-family:"Playfair Display", serif;
+      font-size:2.4vw;
+      font-weight:900;
+      margin:0 0 4px;
+    }
+
+    #sceneSub{
+      font-size:1.3vw;
+      color:#d1d5db;
+      margin:0;
+    }
+
+    /* Estado vacío (sin imagen seleccionada) */
+    #emptyStateWrap{
+      position:absolute;
+      inset:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:0 24px;
+    }
+    .emptyState{
+      font-size:2.4vw;
+      font-weight:800;
+      text-shadow:0 6px 24px rgba(0,0,0,.85);
+    }
+    .emptySub{
+      margin-top:8px;
+      font-size:1.3vw;
+      color:#d1d5db;
+      max-width:640px;
+    }
+
+    /* Ajuste para pantallas pequeñas (por si lo abres en portátil) */
+    @media (max-width: 900px){
+      .pill{ font-size:0.8rem; }
+      #sceneTitle{ font-size:1.4rem; }
+      #sceneSub{ font-size:0.9rem; }
+      .emptyState{ font-size:1.4rem; }
+      .emptySub{ font-size:0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap headerRow">
+    <div class="headerLeft">
+      <div class="logo">
+        <img src="img/logoredondo.png" alt="Gorrión Wine Experience">
+      </div>
+      <div class="headerTitle">
+        <h1>Cata Vinos Italianos - Don Aviador</h1>
+        <div class="sub">Pantalla 2 · Imágenes de apoyo</div>
+      </div>
+    </div>
+
+    <div class="headerControls">
+      <button id="fsBtn" class="primary">⛶ Fullscreen</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="sceneWrapper">
+    <div id="sceneInner">
+      <!-- Overlay superior dentro de la escena -->
+      <div id="topBar">
+        <div class="pill" id="sceneLabel">Pantalla 2 · Info</div>
+      </div>
+
+      <!-- Imagen principal -->
+      <img id="sceneImage" src="" alt="" />
+
+      <!-- Estado vacío -->
+      <div id="emptyStateWrap">
+        <div class="emptyState">Esperando orden del host…</div>
+        <div class="emptySub">
+          Cuando el host pulse un botón en la sección "Pantalla 2 (Story / Mapas)",
+          aquí aparecerán las imágenes a pantalla casi completa.
+        </div>
+      </div>
+
+      <!-- Overlay inferior dentro de la escena -->
+      <div id="bottomBar">
+        <div id="sceneTitle">Cata Vinos Italianos - Don Aviador</div>
+        <p id="sceneSub">Pantalla de apoyo visual · Imágenes a toda pantalla</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDwlXwWlmgLhwgjONXQmWE7O5H54aZd6dk",
+    authDomain: "catas-9d780.firebaseapp.com",
+    databaseURL: "https://catas-9d780-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "catas-9d780",
+    storageBucket: "catas-9d780.firebasestorage.app",
+    messagingSenderId: "554356727364",
+    appId: "1:554356727364:web:2e8a754067872751efa611",
+    measurementId: "G-F2YRVJ9B00"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const sceneImage   = document.getElementById("sceneImage");
+  const sceneLabel   = document.getElementById("sceneLabel");
+  const sceneTitle   = document.getElementById("sceneTitle");
+  const sceneSub     = document.getElementById("sceneSub");
+  const emptyWrap    = document.getElementById("emptyStateWrap");
+  const fsBtn        = document.getElementById("fsBtn");
+  const topBar       = document.getElementById("topBar");
+  const bottomBar    = document.getElementById("bottomBar");
+
+  // 🔍 Escenas disponibles (4 escenas + ocultar desde host)
+  const scenes = {
+    "scene1": {
+      img: "img/info-scene-1.jpg"
+    },
+    "scene2": {
+      img: "img/info-scene-2.jpg"
+    },
+    "scene3": {
+      img: "img/info-scene-3.jpg"
+    },
+    "scene4": {
+      img: "img/info-scene-4.jpg"
+    }
+  };
+
+  function renderInfo(screenId){
+    const scene = scenes[screenId];
+
+    // 🔹 SIN ESCENA: mostrar textos de espera
+    if(!scene){
+      if(emptyWrap) emptyWrap.style.display = "flex";
+      sceneImage.style.display = "none";
+      sceneImage.src = "";
+
+      if(topBar)    topBar.style.display = "flex";
+      if(bottomBar) bottomBar.style.display = "block";
+
+      sceneLabel.textContent = "Pantalla 2 · Info";
+      sceneTitle.textContent = "Esperando orden del host…";
+      sceneSub.textContent   = "Cuando el host pulse un botón aparecerán las imágenes aquí.";
+      return;
+    }
+
+    // 🔹 CON ESCENA: solo imagen a pantalla completa, sin textos
+    if(emptyWrap) emptyWrap.style.display = "none";
+
+    if(topBar)    topBar.style.display = "none";
+    if(bottomBar) bottomBar.style.display = "none";
+
+    sceneImage.src = scene.img;
+    sceneImage.alt = "";
+    sceneImage.style.display = "block";
+  }
+
+  // 🧷 Ajustar var(--header-h) según altura real del header
+  function syncHeaderHeight(){
+    const headerEl = document.querySelector("header");
+    const h = headerEl ? headerEl.offsetHeight : 90;
+    document.documentElement.style.setProperty("--header-h", h + "px");
+  }
+  window.addEventListener("load", syncHeaderHeight);
+  window.addEventListener("resize", syncHeaderHeight);
+  setTimeout(syncHeaderHeight, 250);
+
+  // ⛶ Fullscreen
+  function setupFullscreenBtn(){
+    if(!fsBtn) return;
+    const docEl = document.documentElement;
+
+    function isFs(){
+      return document.fullscreenElement ||
+             document.webkitFullscreenElement ||
+             document.mozFullScreenElement ||
+             document.msFullscreenElement;
+    }
+
+    async function enterFs(){
+      try{
+        if(docEl.requestFullscreen) await docEl.requestFullscreen();
+        else if(docEl.webkitRequestFullscreen) await docEl.webkitRequestFullscreen();
+        else if(docEl.mozRequestFullScreen) await docEl.mozRequestFullScreen();
+        else if(docEl.msRequestFullscreen) await docEl.msRequestFullscreen();
+      }catch(e){}
+    }
+
+    async function exitFs(){
+      try{
+        if(document.exitFullscreen) await document.exitFullscreen();
+        else if(document.webkitExitFullscreen) await document.webkitExitFullscreen();
+        else if(document.mozCancelFullScreen) await document.mozCancelFullScreen();
+        else if(document.msExitFullscreen) await document.msRequestFullscreen();
+      }catch(e){}
+    }
+
+    fsBtn.onclick = async () => {
+      if(isFs()) await exitFs();
+      else await enterFs();
+    };
+
+    function updateLabel(){
+      fsBtn.textContent = isFs() ? "⛶ Salir" : "⛶ Fullscreen";
+    }
+
+    document.addEventListener("fullscreenchange", updateLabel);
+    document.addEventListener("webkitfullscreenchange", updateLabel);
+    updateLabel();
+  }
+  setupFullscreenBtn();
+
+  // 🔄 Escucha infoScreen en Firebase
+  onValue(ref(db, "/"), (snap)=>{
+    const data = snap.val() || {};
+    const screenId = data.infoScreen || "none";
+    renderInfo(screenId);
+  });
+</script>
+
+</body>
+</html>
+
+

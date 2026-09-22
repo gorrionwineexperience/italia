@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Flappy Wine · Cata Vinos Italianos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <style>
+    :root{
+      --bg:#050711;
+      --bg2:#0b0e19;
+      --card:#121625;
+      --accent:#d6a5ff;
+      --accent2:#ff6f91;
+      --wine:#9b2349;
+      --ok:#9be7a1;
+      --danger:#ff8b94;
+      --text:#f5f5f7;
+      --muted:#b7bbc7;
+      --radius:18px;
+      --shadow:0 14px 40px rgba(0,0,0,.5);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{overscroll-behavior:none}
+    body{
+      min-height:100vh;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(850px 520px at 8% -8%, color-mix(in oklab,var(--accent) 22%,transparent), transparent 60%),
+        radial-gradient(800px 500px at 110% 0%, color-mix(in oklab,var(--accent2) 18%,transparent), transparent 60%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
+      padding:14px;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+    }
+    .shell{width:100%;max-width:430px;margin:0 auto}
+    .card{
+      background:rgba(15,18,32,.96);
+      border:1px solid #2a3048;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+    .header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .title{font-weight:900;font-size:1.18rem;letter-spacing:.06em;text-transform:uppercase}
+    .subtitle{font-size:.84rem;color:var(--muted);margin-top:3px;line-height:1.35}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid #3d4563;background:#0b0f20;color:var(--muted);font-size:.76rem;white-space:nowrap}
+    .pill b{color:var(--text)}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:9px}
+    .stat{background:#090d1b;border:1px solid #2b3149;border-radius:12px;padding:7px 8px;text-align:center}
+    .stat-label{font-size:.69rem;color:var(--muted)}
+    .stat-value{font-weight:900;font-size:1rem;margin-top:1px}
+    .game-wrap{position:relative;border-radius:16px;overflow:hidden;border:1px solid #343b57;background:#090d19;box-shadow:inset 0 0 30px rgba(0,0,0,.45)}
+    canvas{display:block;width:100%;aspect-ratio:390/620;max-height:68vh;touch-action:none;user-select:none}
+    .game-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(4,7,16,.66);backdrop-filter:blur(3px);transition:.18s opacity}
+    .game-overlay.hidden{opacity:0;pointer-events:none}
+    .overlay-card{text-align:center;max-width:300px}
+    .overlay-big{font-weight:950;font-size:1.55rem;line-height:1.05}
+    .overlay-text{color:var(--muted);font-size:.86rem;line-height:1.4;margin-top:8px}
+    .buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    button{border:1px solid #414967;border-radius:12px;background:#171c2e;color:var(--text);padding:9px 12px;font:inherit;font-weight:750;cursor:pointer;flex:1}
+    button.primary{background:linear-gradient(135deg,#7a3ea0,#a8426d);border-color:#c488e8}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    .status{margin-top:9px;padding:8px 10px;border-radius:12px;border:1px solid #2b3149;background:#090d1b;color:var(--muted);font-size:.81rem;line-height:1.35}
+    .status strong{color:var(--text)}
+    .attempt-list{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+    .attempt{border:1px solid #303750;background:#0a0e1c;border-radius:10px;padding:6px;text-align:center;font-size:.73rem;color:var(--muted)}
+    .attempt strong{display:block;color:var(--text);font-size:.9rem}
+    .hint{text-align:center;color:var(--muted);font-size:.76rem;margin-top:8px}
+    @media (max-height:700px){canvas{max-height:58vh}.card{padding:10px}.header{margin-bottom:7px}.status{margin-top:7px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="card">
+      <div class="header">
+        <div>
+          <div class="title">🍷 Flappy Wine</div>
+          <div class="subtitle">Mantén la copa en vuelo y atraviesa las puertas de la bodega.</div>
+        </div>
+        <div class="pill">Intentos <b id="attemptsPill">0/3</b></div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-label">PUERTAS</div><div class="stat-value" id="scoreEl">0</div></div>
+        <div class="stat"><div class="stat-label">MEJOR</div><div class="stat-value" id="bestEl">0</div></div>
+        <div class="stat"><div class="stat-label">TIEMPO</div><div class="stat-value" id="timeEl">0.0s</div></div>
+      </div>
+
+      <div class="game-wrap">
+        <canvas id="game" width="390" height="620" aria-label="Juego Flappy Wine"></canvas>
+        <div class="game-overlay" id="startOverlay">
+          <div class="overlay-card">
+            <div class="overlay-big" id="overlayTitle">Flappy Wine</div>
+            <div class="overlay-text" id="overlayText">Toca la pantalla para impulsar la copa. Evita las barricas y atraviesa el hueco. Tienes 3 intentos; cuenta tu mejor carrera.</div>
+            <div class="buttons"><button class="primary" id="startBtn">▶ Empezar intento</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="status" id="statusEl"><strong>Controles:</strong> toca el juego o pulsa espacio para subir. El recorrido es idéntico para todos.</div>
+      <div class="attempt-list" id="attemptList"></div>
+      <div class="hint">Ranking: mejor número de puertas · desempate por distancia exacta · después suma total de los 3 intentos.</div>
+    </section>
+  </main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDwlXwWlmgLhwgjONXQmWE7O5H54aZd6dk",
+    authDomain: "catas-9d780.firebaseapp.com",
+    databaseURL: "https://catas-9d780-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "catas-9d780",
+    storageBucket: "catas-9d780.firebasestorage.app",
+    messagingSenderId: "554356727364",
+    appId: "1:554356727364:web:2e8a754067872751efa611",
+    measurementId: "G-F2YRVJ9B00"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  function getDeviceId(){
+    let id = localStorage.getItem("gw_device");
+    if(!id){
+      if(window.crypto && crypto.randomUUID) id = crypto.randomUUID();
+      else id = "dev_" + Math.random().toString(36).slice(2) + Date.now();
+      localStorage.setItem("gw_device", id);
+    }
+    return id;
+  }
+
+  const deviceId = getDeviceId();
+  const storedName = (localStorage.getItem("gw_name") || "").trim().toUpperCase().slice(0,8);
+  const playerName = storedName;
+  const savedMiniSessionVersion = localStorage.getItem("gw_session_version");
+  const miniSessionVersion = savedMiniSessionVersion || "legacy";
+  const PROGRESS_KEY = `gw_flappy_progress_${miniSessionVersion}`;
+  const MAX_ATTEMPTS = 3;
+
+  const qs = new URLSearchParams(location.search);
+  const isHost = qs.get("host") === "1";
+  const isDashboard = qs.get("dashboard") === "1";
+
+  let miniIdentityValid = false;
+  async function validateMiniIdentity(){
+    try{
+      if(!storedName || !savedMiniSessionVersion){
+        window.location.replace("index.html");
+        return false;
+      }
+      const snap = await get(ref(db, "sessionVersion"));
+      const firebaseSessionVersion = snap.exists() ? snap.val() : "legacy";
+      if(String(firebaseSessionVersion) !== String(savedMiniSessionVersion)){
+        window.location.replace("index.html");
+        return false;
+      }
+      miniIdentityValid = true;
+      return true;
+    }catch(e){
+      console.error("No se pudo validar la sesión de Flappy Wine", e);
+      window.location.replace("index.html");
+      return false;
+    }
+  }
+  const miniIdentityReady = validateMiniIdentity();
+
+  if(!isHost && !isDashboard){
+    const screenRef = ref(db,"miniGames/currentScreen");
+    onValue(screenRef, async snap => {
+      if(!(await miniIdentityReady)) return;
+      const screen = snap.val() || "cata";
+      const current = (location.pathname.split("/").pop() || "").toLowerCase();
+      if(screen === "cata"){
+        if(current !== "index.html") window.location.href = "index.html";
+      }else if(screen === "bubbles"){
+        if(!current.includes("burbujas")) window.location.href = "burbujas.html";
+      }else if(screen === "linea"){
+        if(!current.includes("linea")) window.location.href = "linea.html";
+      }else if(screen === "flappy"){
+        // Nos quedamos aquí.
+      }else if(screen === "summary"){
+        if(current !== "index.html") window.location.href = "index.html";
+      }
+    });
+  }
+
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const scoreEl = document.getElementById("scoreEl");
+  const bestEl = document.getElementById("bestEl");
+  const timeEl = document.getElementById("timeEl");
+  const attemptsPill = document.getElementById("attemptsPill");
+  const attemptList = document.getElementById("attemptList");
+  const startOverlay = document.getElementById("startOverlay");
+  const overlayTitle = document.getElementById("overlayTitle");
+  const overlayText = document.getElementById("overlayText");
+  const startBtn = document.getElementById("startBtn");
+  const statusEl = document.getElementById("statusEl");
+
+  // Mismo recorrido para todos: secuencia fija de centros de hueco.
+  const GAP_SEQUENCE = [
+    .45,.59,.38,.66,.50,.33,.57,.71,.43,.62,.36,.54,.69,.41,.58,.31,
+    .64,.47,.73,.39,.55,.34,.67,.49,.60,.37,.70,.44,.56,.32,.63,.48
+  ];
+  const GRAVITY = 1030;
+  const FLAP_V = -350;
+  const PIPE_SPEED = 168;
+  const PIPE_W = 68;
+  const GAP_H = 174;
+  const SPAWN_EVERY = 1.55;
+  const PLAYER_X = 92;
+  const PLAYER_R = 18;
+  const MAX_GAME_SEC = 45;
+
+  let progress = loadProgress();
+  let running = false;
+  let raf = 0;
+  let lastFrame = 0;
+  let startedAt = 0;
+  let elapsed = 0;
+  let playerY = H * .48;
+  let playerV = 0;
+  let obstacles = [];
+  let spawnIndex = 0;
+  let nextSpawnAt = .8;
+  let score = 0;
+  let worldDistance = 0;
+  let ending = false;
+
+  function loadProgress(){
+    let p = {attempts:[]};
+    try{
+      const raw = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "null");
+      if(raw && Array.isArray(raw.attempts)) p = raw;
+    }catch(_e){}
+    p.attempts = p.attempts.slice(0,MAX_ATTEMPTS).map((a,i)=>({
+      index:i+1,
+      score:Number(a?.score || 0),
+      distance:Number(a?.distance || 0),
+      duration:Number(a?.duration || 0),
+      status:a?.status === "running" ? "interrupted" : (a?.status || "done")
+    }));
+    localStorage.setItem(PROGRESS_KEY,JSON.stringify(p));
+    return p;
+  }
+
+  function saveProgress(){
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  }
+
+  function calcSummary(){
+    const attempts = progress.attempts || [];
+    const bestScore = attempts.reduce((m,a)=>Math.max(m,Number(a.score||0)),0);
+    const bestDistance = attempts
+      .filter(a=>Number(a.score||0)===bestScore)
+      .reduce((m,a)=>Math.max(m,Number(a.distance||0)),0);
+    const totalScore = attempts.reduce((s,a)=>s+Number(a.score||0),0);
+    return {attempts,bestScore,bestDistance,totalScore};
+  }
+
+  async function publishResult(){
+    if(!(await miniIdentityReady)) return false;
+    const sum = calcSummary();
+    const payload = {
+      deviceId,
+      sessionId: deviceId,
+      name: playerName,
+      ts: Date.now(),
+      attemptsPlayed: sum.attempts.length,
+      attemptsCompleted: sum.attempts.filter(a => a.status !== "running").length,
+      attempts: sum.attempts.map(a=>({index:a.index,score:a.score,distance:Math.round(a.distance),duration:Number(a.duration.toFixed ? a.duration.toFixed(2) : a.duration),status:a.status})),
+      bestScore: sum.bestScore,
+      bestDistance: Math.round(sum.bestDistance),
+      totalScore: sum.totalScore
+    };
+    try{
+      await set(ref(db,`miniGames/flappy/results/${deviceId}`),payload);
+      return true;
+    }catch(e){
+      console.error("Error sincronizando resultados de Flappy Wine", e);
+      return false;
+    }
+  }
+
+  function renderProgress(){
+    const sum=calcSummary();
+    attemptsPill.textContent=`${sum.attempts.length}/${MAX_ATTEMPTS}`;
+    bestEl.textContent=String(sum.bestScore);
+    attemptList.innerHTML=Array.from({length:MAX_ATTEMPTS},(_,i)=>{
+      const a=sum.attempts[i];
+      if(!a) return `<div class="attempt">Intento ${i+1}<strong>—</strong>pendiente</div>`;
+      const label=a.status === "interrupted" ? "interrumpido" : `${Math.round(a.distance)} dist.`;
+      return `<div class="attempt">Intento ${i+1}<strong>${a.score} puertas</strong>${label}</div>`;
+    }).join("");
+
+    if(sum.attempts.length >= MAX_ATTEMPTS && !running){
+      overlayTitle.textContent="Partida completada";
+      overlayText.textContent=`Mejor carrera: ${sum.bestScore} puertas. Ya has usado tus 3 intentos en esta sesión.`;
+      startBtn.disabled=true;
+      startBtn.textContent="✓ 3/3 intentos usados";
+      startOverlay.classList.remove("hidden");
+      statusEl.innerHTML=`<strong>Resultado enviado.</strong> Mejor: ${sum.bestScore} puertas · total: ${sum.totalScore}.`;
+    }else if(!running){
+      startBtn.disabled=false;
+      startBtn.textContent=`▶ Empezar intento ${sum.attempts.length+1}`;
+    }
+  }
+
+  function roundedRect(x,y,w,h,r){
+    const rr=Math.min(r,w/2,h/2);
+    ctx.beginPath();
+    ctx.roundRect(x,y,w,h,rr);
+  }
+
+  function drawBackground(){
+    const grad=ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,"#17132a"); grad.addColorStop(.55,"#0d1322"); grad.addColorStop(1,"#080b13");
+    ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha=.16;
+    for(let i=0;i<9;i++){
+      const x=(i*83 + (worldDistance*.08)%83)-40;
+      ctx.fillStyle=i%2?"#b88b55":"#6f344c";
+      ctx.fillRect(x,0,2,H);
+    }
+    ctx.globalAlpha=1;
+    ctx.fillStyle="rgba(255,255,255,.06)";
+    ctx.font="700 15px system-ui";
+    ctx.fillText("BODEGA · FLAPPY WINE",18,28);
+  }
+
+  function drawBarrelColumn(x,y,h,isTop){
+    if(h<=0) return;
+    ctx.fillStyle="#5a2d25";
+    roundedRect(x,y,PIPE_W,h,12); ctx.fill();
+    ctx.strokeStyle="#b98555"; ctx.lineWidth=4;
+    ctx.stroke();
+    ctx.strokeStyle="rgba(255,210,145,.35)"; ctx.lineWidth=2;
+    for(let yy=y+24; yy<y+h; yy+=42){
+      ctx.beginPath();ctx.moveTo(x+5,yy);ctx.lineTo(x+PIPE_W-5,yy);ctx.stroke();
+    }
+    ctx.fillStyle="#281815";
+    const lipY=isTop ? y+h-10 : y;
+    ctx.fillRect(x-4,lipY,PIPE_W+8,10);
+  }
+
+  function drawPlayer(){
+    ctx.save();
+    ctx.translate(PLAYER_X,playerY);
+    const angle=Math.max(-.35,Math.min(.55,playerV/750));
+    ctx.rotate(angle);
+    ctx.strokeStyle="#f2dbe5";ctx.lineWidth=3;ctx.lineCap="round";
+    ctx.beginPath();
+    ctx.moveTo(-14,-14);ctx.quadraticCurveTo(-13,12,0,15);ctx.quadraticCurveTo(13,12,14,-14);ctx.stroke();
+    ctx.fillStyle="#92254a";ctx.beginPath();ctx.moveTo(-11,-2);ctx.quadraticCurveTo(-8,12,0,12);ctx.quadraticCurveTo(8,12,11,-2);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(0,15);ctx.lineTo(0,31);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-9,32);ctx.lineTo(9,32);ctx.stroke();
+    ctx.restore();
+  }
+
+  function draw(){
+    drawBackground();
+    obstacles.forEach(o=>{
+      drawBarrelColumn(o.x,0,o.gapTop,true);
+      drawBarrelColumn(o.x,o.gapBottom,H-o.gapBottom,false);
+    });
+    drawPlayer();
+  }
+
+  function flap(){
+    if(!running) return;
+    playerV=FLAP_V;
+  }
+
+  function spawnObstacle(){
+    const ratio=GAP_SEQUENCE[spawnIndex % GAP_SEQUENCE.length];
+    const margin=80;
+    const center=margin + ratio*(H-margin*2);
+    const gapTop=center-GAP_H/2;
+    const gapBottom=center+GAP_H/2;
+    obstacles.push({x:W+20,gapTop,gapBottom,scored:false});
+    spawnIndex++;
+  }
+
+  function circleRectCollision(cx,cy,r,rx,ry,rw,rh){
+    const nx=Math.max(rx,Math.min(cx,rx+rw));
+    const ny=Math.max(ry,Math.min(cy,ry+rh));
+    const dx=cx-nx,dy=cy-ny;
+    return dx*dx+dy*dy < r*r;
+  }
+
+  function checkCollision(){
+    if(playerY-PLAYER_R<0 || playerY+34>H) return true;
+    for(const o of obstacles){
+      if(circleRectCollision(PLAYER_X,playerY,PLAYER_R,o.x,0,PIPE_W,o.gapTop)) return true;
+      if(circleRectCollision(PLAYER_X,playerY,PLAYER_R,o.x,o.gapBottom,PIPE_W,H-o.gapBottom)) return true;
+    }
+    return false;
+  }
+
+  async function startAttempt(){
+    if(!(await miniIdentityReady)) return;
+    if(running || progress.attempts.length>=MAX_ATTEMPTS) return;
+    // El intento se consume al iniciar: recargar no permite repetirlo gratis.
+    progress.attempts.push({index:progress.attempts.length+1,score:0,distance:0,duration:0,status:"running"});
+    saveProgress();
+    publishResult();
+
+    running=true; ending=false; score=0; elapsed=0; worldDistance=0;
+    playerY=H*.48; playerV=0; obstacles=[]; spawnIndex=0; nextSpawnAt=.8;
+    scoreEl.textContent="0";timeEl.textContent="0.0s";
+    startOverlay.classList.add("hidden");
+    statusEl.innerHTML="<strong>¡En vuelo!</strong> Toca para mantener la copa dentro de las puertas.";
+    renderProgress();
+    startedAt=performance.now(); lastFrame=startedAt;
+    cancelAnimationFrame(raf); raf=requestAnimationFrame(loop);
+  }
+
+  async function endAttempt(reason){
+    if(!running || ending) return;
+    ending=true; running=false; cancelAnimationFrame(raf);
+    const current=progress.attempts[progress.attempts.length-1];
+    current.score=score;
+    current.distance=Math.max(0,worldDistance);
+    current.duration=Math.min(MAX_GAME_SEC,elapsed);
+    current.status="done";
+    saveProgress();
+    await publishResult();
+    renderProgress();
+
+    const done=progress.attempts.length>=MAX_ATTEMPTS;
+    overlayTitle.textContent = done ? "3 intentos completados" : (reason==="finish" ? "¡Bodega completada!" : "¡Cuidado con las barricas!");
+    overlayText.textContent = `Intento ${current.index}: ${current.score} puertas · recorrido ${Math.round(current.distance)}. ${done ? `Mejor carrera: ${calcSummary().bestScore} puertas.` : "Puedes probar otra vez."}`;
+    startOverlay.classList.remove("hidden");
+    if(!done){startBtn.disabled=false;startBtn.textContent=`▶ Intento ${progress.attempts.length+1}`;}
+    statusEl.innerHTML=`<strong>Intento guardado.</strong> ${current.score} puertas superadas.`;
+  }
+
+  function loop(now){
+    if(!running) return;
+    let dt=(now-lastFrame)/1000;
+    lastFrame=now;
+    // Evita saltos grandes si el navegador se pausa.
+    dt=Math.min(dt,.05);
+    elapsed=Math.min(MAX_GAME_SEC,(now-startedAt)/1000);
+
+    playerV += GRAVITY*dt;
+    playerY += playerV*dt;
+    worldDistance += PIPE_SPEED*dt;
+
+    if(elapsed>=nextSpawnAt){spawnObstacle();nextSpawnAt+=SPAWN_EVERY;}
+    obstacles.forEach(o=>{
+      o.x -= PIPE_SPEED*dt;
+      if(!o.scored && o.x+PIPE_W < PLAYER_X){o.scored=true;score++;scoreEl.textContent=String(score);}
+    });
+    obstacles=obstacles.filter(o=>o.x+PIPE_W>-20);
+    timeEl.textContent=`${elapsed.toFixed(1)}s`;
+
+    if(checkCollision()){
+      draw(); endAttempt("collision"); return;
+    }
+    if(elapsed>=MAX_GAME_SEC){
+      draw(); endAttempt("finish"); return;
+    }
+    draw();
+    raf=requestAnimationFrame(loop);
+  }
+
+  canvas.addEventListener("pointerdown",e=>{e.preventDefault();flap();},{passive:false});
+  window.addEventListener("keydown",e=>{
+    if(e.code==="Space"){
+      e.preventDefault();
+      if(running) flap();
+      else if(progress.attempts.length<MAX_ATTEMPTS) startAttempt();
+    }
+  });
+  startBtn.addEventListener("click",startAttempt);
+
+  // Reintento automático de sincronización: cualquier progreso local existente
+  // se vuelve a publicar al abrir el juego, incluida una carrera interrumpida.
+  miniIdentityReady.then(valid => {
+    if(valid && progress.attempts.length) publishResult();
+  });
+  renderProgress();
+  draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,2595 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cata Vinos Italianos · Gorrión Wine Experience</title>
+
+  <!-- Playfair Display para títulos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0f0f12; --bg2:#15151a;
+      --card:#17181d; --soft:#20222a; --text:#f5f5f7; --muted:#b7bbc7;
+      --accent:#ffb347; --accent2:#ff6f61; --ok:#9be7a1;
+      --radius:18px; --shadow: 0 10px 30px rgba(0,0,0,.35);
+
+      /* escala TV dashboard (override con ?tvscale=0.75) */
+      --tv-scale: .85;
+
+      /* altura header dinámica */
+      --header-h: 120px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 10% -10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 60%),
+        radial-gradient(800px 500px at 110% 0%, color-mix(in oklab, var(--accent2) 18%, transparent), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      min-height:100vh;
+      transition: background .6s ease;
+    }
+    body::after{
+      content:""; position:fixed; inset:-10%;
+      background:
+        radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,.05), transparent 60%),
+        radial-gradient(2px 2px at 70% 80%, rgba(255,255,255,.04), transparent 60%),
+        radial-gradient(1.5px 1.5px at 30% 70%, rgba(255,255,255,.04), transparent 60%);
+      pointer-events:none; opacity:.6;
+    }
+
+    header{
+      position:sticky; top:0; z-index:10;
+      background: rgba(15,15,18,.75); backdrop-filter: blur(8px);
+      border-bottom:1px solid #242633;
+    }
+    .wrap{max-width:980px; margin:0 auto; padding:14px 16px;}
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      flex:0 0 auto;
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      background:#0f0f12;
+      display:block;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    h1{font-size:1.15rem; margin:0}
+    .sub{color:var(--muted); font-size:.9rem; margin-top:2px}
+
+    /* Header layout base */
+    .headerRow{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      width:100%;
+    }
+    .headerLeft{
+      display:flex; align-items:center; gap:12px; min-width:0;
+    }
+    .headerTitle{min-width:0;}
+    .headerWineInfo{
+      display:none; /* se activa solo en dashboard */
+      font-weight:900;
+      white-space:nowrap;
+      color:var(--text);
+      background:#111218;
+      border:1px dashed #2b2f3d;
+      padding:6px 10px;
+      border-radius:999px;
+    }
+    .headerControls{
+      display:none; /* solo dashboard */
+      gap:8px; align-items:center;
+    }
+
+    /* Barra de progreso en el header (solo dashboard) */
+    .headerProgress{
+      display:none; /* solo dashboard */
+      height:8px;
+      margin:8px 16px 10px;
+      border-radius:999px;
+      background:#222634;
+      overflow:hidden;
+      border:1px solid #2d3142;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+    .headerProgress > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .6s ease;
+    }
+
+    main{padding:18px 0 28px}
+    .grid{display:grid; grid-template-columns: 1.15fr .85fr; gap:16px;}
+    @media (max-width: 860px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      background: color-mix(in oklab, var(--card) 92%, black);
+      border:1px solid #242633; border-radius: var(--radius);
+      padding:18px; box-shadow: var(--shadow);
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px; background: var(--soft);
+      padding:6px 10px; border-radius:999px; color:var(--muted); font-size:.85rem;
+      border:1px solid #2a2d3a;
+    }
+    .title{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-top:10px;}
+    .title h2{
+      margin:.2rem 0 0; font-size:1.75rem; line-height:1.15;
+      font-family: "Playfair Display", serif; font-weight:900;
+      letter-spacing:.2px;
+    }
+    .meta{color:var(--muted); font-size:.98rem}
+    .badge{
+      background: rgba(155,231,161,.12); color: var(--ok);
+      border:1px solid rgba(155,231,161,.25);
+      padding:6px 10px; border-radius: 999px; font-size:.8rem; white-space:nowrap;
+    }
+
+    .heroImg{
+      width:100%; height:220px; margin-top:12px; border-radius:16px; overflow:hidden;
+      border:1px solid #2a2d3a; background:#111218;
+      display:block; object-fit:contain;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+
+    .story{
+      margin-top:10px; padding:10px 12px; border-radius:12px;
+      background: #12131a; border:1px dashed #2e3242;
+      font-style: italic; color: var(--text);
+    }
+
+    /* Logo bienvenida */
+    .welcomeLogoWrap{
+      margin-top:16px;
+      display:flex;
+      justify-content:center;
+    }
+    .welcomeLogo{
+      width:120px;
+      max-width:45vw;
+      border-radius:999px;
+      border:2px solid #2a2d3a;
+      padding:8px;
+      background:#0f0f12;
+      box-shadow: 0 10px 30px rgba(0,0,0,.45);
+      object-fit:contain;
+    }
+
+    .section{margin-top:14px; padding-top:12px; border-top:1px dashed #2b2f3d;}
+    .section h3{margin:0 0 6px; font-size:1.02rem}
+    ul{margin:8px 0 0 18px;}
+    li{margin:6px 0}
+    .note{color:var(--muted); font-size:.98rem; line-height:1.55}
+
+    .pairing{
+      background:
+        linear-gradient(180deg, color-mix(in oklab, var(--accent) 12%, transparent), transparent 70%),
+        var(--soft);
+      border:1px solid #2a2d3a; border-radius:14px; padding:14px; margin-top:8px;
+    }
+    .pairing strong{font-size:1.05rem}
+
+    .progress{
+      margin-top:12px; height:10px; border-radius:999px;
+      background:#222634; overflow:hidden; border:1px solid #2d3142;
+    }
+    .progress > div{
+      height:100%; width:0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition:width .6s ease;
+    }
+
+    .nav{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+    button{
+      appearance:none; border:none; cursor:pointer; color:var(--text);
+      background: var(--soft); border:1px solid #2a2d3a; padding:10px 12px;
+      border-radius:12px; font-weight:800; letter-spacing:.2px;
+      transition:.15s transform, .15s border, .15s background;
+    }
+    button:hover{transform:translateY(-1px); border-color:#3a3f52}
+    button.primary{
+      background: linear-gradient(145deg, #2b2f3d, #1f212b);
+      border-color:#3a3f52;
+    }
+    button.warn{
+      background: linear-gradient(145deg, #2a1f1f, #1a1414);
+      border-color:#4a3030;
+    }
+    button.danger{
+      background: linear-gradient(145deg, #3a1212, #240b0b);
+      border:1px solid #6a1f1f;
+      color:#ffd7d7;
+      font-weight:900;
+    }
+    button.danger:hover{
+      border-color:#8a2a2a;
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    .hostBox{
+      margin-top:12px; padding:12px; border-radius:14px;
+      background: #12131a; border:1px dashed #2e3242;
+    }
+    .hostTitle{font-weight:900; margin-bottom:8px}
+    .input{
+      width:100%; background:#0e0f14; color:var(--text);
+      border:1px solid #2a2d3a; border-radius:10px; padding:10px 12px;
+      font-size:1rem; outline:none;
+    }
+
+    #nameInput{
+      text-transform: uppercase;
+    }
+
+    .row{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;}
+
+    .toggle{
+      display:flex; align-items:center; gap:8px; margin-top:8px;
+      font-size:.95rem; color:var(--muted);
+    }
+    .small{font-size:.85rem; color:var(--muted)}
+
+    /* ⭐ Rating dorado (invitado) */
+    .star-btn{
+      background: transparent !important;
+      border: none !important;
+      padding: 2px 4px !important;
+      font-size: 1.9rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #3b3f52;
+      text-shadow: 0 2px 8px rgba(0,0,0,.35);
+      transform: translateY(1px);
+    }
+    .star-btn:hover{ transform: translateY(0px) scale(1.05); }
+    .star-btn.filled{
+      color: #f6c453;
+      text-shadow:
+        0 0 8px rgba(246,196,83,.55),
+        0 2px 10px rgba(0,0,0,.55);
+    }
+
+    /* OVERLAY show (usado por overlay vino + name gate) */
+    .overlay{
+      position:fixed; inset:0; z-index:999;
+      display:none; place-items:center; text-align:center;
+      background:
+        radial-gradient(900px 500px at 50% -10%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 60%),
+        radial-gradient(800px 500px at 50% 110%, color-mix(in oklab, var(--accent2) 25%, transparent), transparent 60%),
+        rgba(10,10,12,.92);
+      backdrop-filter: blur(6px);
+    }
+    .overlay.show{display:grid; animation:ov .45s ease;}
+    @keyframes ov{from{opacity:0; transform:scale(.98)} to{opacity:1; transform:scale(1)}}
+    .ovCard{
+      padding:26px 20px; border-radius:22px; border:1px solid #2a2d3a;
+      background: #12131a; width:min(560px, 92vw); box-shadow: var(--shadow);
+    }
+    .ovBig{
+      font-size:2.2rem; font-weight:900; margin:.2rem 0 .4rem;
+      font-family: "Playfair Display", serif;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .ovWine{font-size:1.12rem; color:var(--text); font-weight:800}
+    .ovSub{color:var(--muted); margin-top:6px}
+
+    .fade-in{animation:fade .25s ease;}
+    @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+
+    footer{color:var(--muted); font-size:.9rem; text-align:center; padding:18px}
+
+    /* Pantalla intermedio */
+    .pauseBox{
+      text-align:center; padding:30px 16px;
+      background:
+        linear-gradient(180deg, color-mix(in oklab, var(--accent) 7%, transparent), transparent 65%),
+        var(--soft);
+      border:1px solid #2a2d3a; border-radius:18px;
+    }
+    .pauseTitle{
+      font-family:"Playfair Display", serif; font-weight:900; font-size:2rem;
+      margin:0 0 6px;
+    }
+    .pauseSub{ color:var(--muted); font-size:1.05rem; }
+
+    /* =======================
+       LISTA USUARIOS (base)
+       ======================= */
+    .userGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:6px;
+    }
+    .userCol{
+      background:#111218;
+      border:1px dashed #2b2f3d;
+      border-radius:12px;
+      padding:8px 10px;
+    }
+    .userRow{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:6px 0;
+      border-bottom:1px dashed #2b2f3d;
+    }
+    .userRow:last-child{ border-bottom:none; }
+    .userName{ font-weight:900; }
+    .userRight{ white-space:nowrap; font-weight:800; }
+
+    /* =======================
+       TV LAYOUT (dashboard)
+       ======================= */
+    body.tv header{
+      position: fixed; top:0; left:0; right:0;
+      z-index: 50;
+    }
+    body.tv .wrap{max-width:none;}
+    body.tv .headerRow{
+      padding: 10px 14px;
+      gap:10px;
+    }
+
+    body.tv .headerWineInfo{
+      display:inline-flex;
+      font-size: clamp(1.0rem, 2.0vw, 1.9rem);
+      padding: 8px 14px;
+      font-weight: 900;
+      letter-spacing: .3px;
+      border-width: 2px;
+    }
+    body.tv .headerControls{ display:flex; }
+    body.tv .headerProgress{
+      display:block;
+      margin: 6px 14px 10px;
+      height: 8px;
+    }
+
+    body.tv #dashboard.tvDash{
+      position: fixed;
+      top: var(--header-h);
+      left: 0; right: 0; bottom: 0;
+      padding: 10px 14px 12px;
+      max-width: none; margin: 0;
+      display: none;
+    }
+
+    body.tv #dashScale{
+      transform: scale(var(--tv-scale));
+      transform-origin: top left;
+      width: calc(100% / var(--tv-scale));
+      height: calc(100% / var(--tv-scale));
+    }
+
+    body.tv #dashGrid{
+      display: grid;
+      grid-template-columns: 1fr !important;
+      gap: 0 !important;
+      height: 100%;
+    }
+    body.tv #dashGrid .card{
+      height: 100%;
+      display: flex; flex-direction: column;
+      padding: 18px 20px; border-radius: 18px;
+    }
+
+    .tvLayout{
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      flex: 1; min-height: 0;
+      margin-top: 6px;
+    }
+    .tvCol{
+      display: flex; flex-direction: column;
+      gap: 12px; min-height: 0;
+    }
+    .tvBlock{
+      background:#111218;
+      border:1px dashed #2b2f3d;
+      border-radius:14px;
+      padding:12px 14px;
+    }
+
+    body.tv .tvBlock h3{
+      line-height: 1.25 !important;
+      margin: 0 0 10px !important;
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+
+    body.tv .participantsBlock{
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: visible;
+    }
+    body.tv .participantsBlock .participantsList{
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    body.tv .noseMouthRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:16px; align-items:start;
+    }
+
+    #dashboard .dashStar{
+      color:#3b3f52; letter-spacing:2px;
+      text-shadow:0 2px 6px rgba(0,0,0,.45);
+      font-size: clamp(1.2rem, 1.8vw, 1.9rem);
+    }
+    #dashboard .dashStar.filled{
+      color:#f6c453;
+      text-shadow:
+        0 0 8px rgba(246,196,83,.6),
+        0 2px 10px rgba(0,0,0,.6);
+    }
+    #dashboard .dashStarsWrap{
+      display:inline-flex; gap:2px;
+      transform: translateY(2px);
+    }
+
+    body.tv{
+      font-size: clamp(14px, 1.6vw, 22px);
+      --p-name: clamp(1.0rem, 1.6vw, 1.7rem);
+      --p-right: clamp(.9rem, 1.3vw, 1.4rem);
+      --p-pad: clamp(4px, .6vw, 8px);
+    }
+    body.tv h3{
+      font-size: clamp(1.0rem, 1.5vw, 1.6rem) !important;
+      letter-spacing: .2px;
+    }
+    body.tv .note{
+      font-size: clamp(.95rem, 1.2vw, 1.35rem);
+      line-height: 1.5;
+    }
+    body.tv .pill{
+      font-size: clamp(.8rem, 1.0vw, 1.05rem);
+      padding: 5px 8px;
+    }
+
+    body.tv .participantsBlock .userRow{ padding: var(--p-pad) 0 !important; }
+    body.tv .participantsBlock .userName{ font-size: var(--p-name) !important; font-weight: 900; }
+    body.tv .participantsBlock .userRight{ font-size: var(--p-right) !important; font-weight: 900; white-space: nowrap; }
+
+    body.tv .tvBlock div[style*="height:8px"]{
+      height: clamp(8px, .9vw, 12px) !important;
+      border-radius: 999px;
+    }
+    body.tv .tvBlock .small{ font-size: clamp(.75rem, .9vw, 1.0rem); }
+    body.tv .card .meta{ font-size: clamp(.95rem, 1.1vw, 1.25rem) !important; }
+
+    @media (max-width:520px){
+      .headerWineInfo{display:none !important;}
+    }
+
+    /* =======================
+       MODO INVITADO "PREMIUM" MÓVIL
+       ======================= */
+    body.guest main{
+      padding-bottom:80px;
+    }
+    @media (max-width: 860px){
+      body.guest .grid{
+        grid-template-columns:1fr;
+      }
+      body.guest aside.card{
+        display:none;
+      }
+      body.guest #wineCard{
+        border-radius:22px;
+        padding-bottom:90px;
+      }
+      body.guest .heroImg{
+        width:100%;
+        height:auto;
+        max-height:60vh;
+        border-radius:20px;
+        object-fit:contain;
+        background:#111218;
+      }
+    }
+
+    .mobileBar{
+      position:fixed; left:0; right:0; bottom:0;
+      z-index:40;
+      padding:10px 16px;
+      background:rgba(10,10,14,.94);
+      backdrop-filter:blur(14px);
+      border-top:1px solid #262838;
+      display:none;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    body.guest .mobileBar{ display:flex; }
+    @media (min-width:860px){
+      .mobileBar{ display:none !important; }
+    }
+
+    .mobileBarMain{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+    .mobileBarTitle{
+      font-size:.95rem;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .mobileBarSub{
+      font-size:.8rem;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .mobileBarProgressWrap{
+      flex:0 0 120px;
+      height:6px;
+      border-radius:999px;
+      background:#222634;
+      border:1px solid #2d3142;
+      overflow:hidden;
+    }
+    .mobileBarProgress{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      transition:width .4s ease;
+    }
+
+    /* =======================
+       MODO ESCENA INVITADO (imagen fullscreen sin scroll)
+       ======================= */
+    body.guestScene main{
+      padding-bottom:0;
+    }
+    body.guestScene footer{
+      display:none;
+    }
+    body.guestScene #wineCard{
+      padding:0;
+      border:none;
+      box-shadow:none;
+      background:transparent;
+      border-radius:0;
+    }
+    body.guestScene .mobileBar{
+      display:none !important;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap headerRow">
+    <div class="headerLeft">
+      <div class="logo">
+        <img src="img/logoredondo.png" alt="Gorrión Wine Experience" />
+      </div>
+      <div class="headerTitle">
+        <h1>CATA DE VINOS ITALIANOS - DON AVIADOR</h1>
+        <div class="sub">Vino activo sincronizado en tiempo real</div>
+      </div>
+    </div>
+
+    <div id="headerWineInfo" class="headerWineInfo"></div>
+
+    <div class="headerControls">
+      <button id="fsBtn" class="primary" style="padding:8px 10px; border-radius:10px;">⛶ Fullscreen</button>
+    </div>
+  </div>
+
+  <div id="headerProgress" class="headerProgress">
+    <div id="headerProgressBar"></div>
+  </div>
+</header>
+
+<section id="dashboard" class="wrap tvDash">
+  <div id="dashScale">
+    <div id="dashGrid"></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="grid">
+    <section id="wineCard" class="card fade-in"></section>
+
+    <aside class="card">
+      <div id="statusWrap">
+        <div class="pill">Estado</div>
+        <div id="status" class="note" style="margin-top:8px">Conectando…</div>
+
+        <div class="toggle">
+          <input id="soundToggle" type="checkbox" />
+          <label for="soundToggle">Sonido al cambiar vino</label>
+        </div>
+      </div>
+
+      <div id="hostPanel" class="hostBox" style="display:none">
+        <div class="hostTitle">Modo Host</div>
+
+        <div class="section" style="margin-top:10px; padding-top:10px;">
+          <h3 style="margin:0 0 6px; font-size:1rem;">👥 Participantes esperados</h3>
+          <div class="row" style="align-items:center;">
+            <input id="expectedInput" type="number" min="1" max="50"
+                   class="input" style="max-width:140px"
+                   placeholder="12" />
+            <button id="setExpectedBtn" class="primary">Guardar</button>
+          </div>
+          <div class="small" id="expectedHint" style="margin-top:6px; opacity:.9;">
+            El dashboard mostrará el quiz cuando hayan respondido todos.
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="welcomeBtn">🎬 Bienvenida</button>
+          <button id="prevBtn">← Anterior</button>
+          <button id="nextBtn" class="primary">Siguiente →</button>
+          <button id="pauseBtn" class="warn">⏸ Intermedio</button>
+        </div>
+        <div id="hostButtons" class="nav"></div>
+
+        <div class="row" style="margin-top:10px">
+          <button id="resetDbBtn" class="danger">🧨 Resetear DB (borrar votos)</button>
+        </div>
+        <div class="small" style="margin-top:6px; opacity:.9">
+          Esto borra ratings, quiz, nariz, boca, acciones y conectados. No borra tus vinos.
+        </div>
+
+        <div style="margin-top:10px; font-weight:800;">Nota del host (sale en todos)</div>
+        <input id="hostNoteInput" class="input" placeholder="Ej: Fijaos en la acidez y el toque salino…" />
+        <div class="row">
+          <button id="sendNote" class="primary">Publicar nota</button>
+          <button id="clearNote">Borrar nota</button>
+        </div>
+        <div class="small" style="margin-top:6px">URL host: añade <b>?host=1</b></div>
+
+        <div class="section" style="margin-top:14px; padding-top:12px;">
+          <h3>Pantalla 2 (Story / Mapas)</h3>
+
+          <div class="row">
+            <button id="infoNoneBtn">🙈 Ocultar pantalla 2</button>
+          </div>
+
+          <div class="row">
+            <button id="infoScene1Btn" class="primary">🖼️ Escena 1</button>
+            <button id="infoScene2Btn">🖼️ Escena 2</button>
+          </div>
+          <div class="row">
+            <button id="infoScene3Btn">🖼️ Escena 3</button>
+            <button id="infoScene4Btn">🖼️ Escena 4</button>
+          </div>
+
+          <div class="small" style="margin-top:6px">
+            Estos botones solo afectan a la pantalla 2 (informativa) y al modo imagen del invitado. El dashboard de valoraciones sigue igual.
+          </div>
+        </div>
+      </div>
+
+      <div class="section" style="margin-top:16px; padding-top:12px; border-top:1px dashed #343a56;">
+        <h3 style="margin:0 0 6px; font-size:1rem;">🎮 Mini-juegos</h3>
+        <div class="small" style="margin-bottom:6px; opacity:.9;">
+          Lanza mini-juegos a los invitados. Tú sigues viendo la cata normal.
+        </div>
+        <div class="row">
+          <button id="miniCataBtn">🍷 Volver a la cata</button>
+          <button id="miniBubblesBtn" class="primary">🫧 Bubble Pop de Aromas</button>
+          <button id="miniLineaBtn">📈 Test alcoholemia</button>
+          <button id="miniFlappyBtn">🍷 Flappy Wine</button>
+          <button id="miniSummaryBtn">🏁 Podio final</button>
+        </div>
+        <div class="small" style="margin-top:6px; opacity:.9;">
+          Solo los invitados (sin <code>?host=1</code> ni <code>?dashboard=1</code>) cambiarán de página automáticamente.
+        </div>
+      </div>
+
+      <div id="orderSection" class="section">
+        <h3>Orden de servicio</h3>
+        <ol class="note" id="orderList" style="margin-left:18px"></ol>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer>🍷 · Gorrión Wine Experience · Cata Vinos Italianos</footer>
+
+<div id="overlay" class="overlay">
+  <div class="ovCard">
+    <div class="pill" style="justify-content:center">Ahora servimos</div>
+    <div id="ovBig" class="ovBig">Vino 1</div>
+    <div id="ovWine" class="ovWine">Nombre del vino</div>
+    <div id="ovSub" class="ovSub">Prepárate para el maridaje…</div>
+  </div>
+</div>
+
+<div id="miniSummaryOverlay" class="overlay">
+  <div class="ovCard" style="text-align:center;">
+    <div class="pill" style="justify-content:center">Podio de mini-juegos</div>
+    <div class="ovBig">Top 3 invitados</div>
+    <div class="ovSub">Campeón general por media normalizada + podios de cada juego.</div>
+    <div id="miniSummaryContent" class="note" style="margin-top:12px; text-align:left;">
+      Esperando resultados de los mini-juegos…
+    </div>
+  </div>
+</div>
+
+<div id="nameGate" class="overlay">
+  <div class="ovCard" style="text-align:left">
+    <div class="welcomeLogoWrap" style="margin-top:0; margin-bottom:10px;">
+      <img
+        src="img/logoredondo.png"
+        alt="Gorrión Wine Experience"
+        class="welcomeLogo"
+        style="width:80px; max-width:30vw;"
+      />
+    </div>
+
+    <div class="pill">Bienvenido/a</div>
+    <div class="ovBig" style="font-size:1.8rem; margin-top:.4rem;">Gorrión/a</div>
+    <div class="note" style="margin-top:6px">
+      Escribe tu nombre o apodo para identificar tus votos.
+    </div>
+
+    <input id="nameInput" class="input" maxlength="8"
+           placeholder="TU NOMBRE / APODO" style="margin-top:10px"/>
+
+    <div class="row" style="margin-top:10px">
+      <button id="enterBtn" class="primary" disabled>Entrar a la cata</button>
+    </div>
+
+    <div class="small" style="margin-top:8px">
+      (No pedimos email ni datos personales.)
+    </div>
+  </div>
+</div>
+
+<div id="mobileBar" class="mobileBar">
+  <div class="mobileBarMain">
+    <div id="mobileBarTitle" class="mobileBarTitle">Cata Vinos Italianos</div>
+    <div id="mobileBarSub" class="mobileBarSub">Tu mando de la cata</div>
+  </div>
+  <div class="mobileBarProgressWrap">
+    <div id="mobileBarProgress" class="mobileBarProgress"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getDatabase, ref, onValue, set, update, runTransaction } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDwlXwWlmgLhwgjONXQmWE7O5H54aZd6dk",
+    authDomain: "catas-9d780.firebaseapp.com",
+    databaseURL: "https://catas-9d780-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "catas-9d780",
+    storageBucket: "catas-9d780.firebasestorage.app",
+    messagingSenderId: "554356727364",
+    appId: "1:554356727364:web:2e8a754067872751efa611",
+    measurementId: "G-F2YRVJ9B00"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const wines = [
+    {
+      id: 1,
+      name: "Grillo",
+      winery: "Saverio Faro",
+      type: "Blanco · Sicilia DOC",
+      story: "Capítulo 1: Sicilia abre la cata con un Grillo mediterráneo, fresco, aromático y con un punto mineral.",
+      notes: [
+        "Fruta blanca, cítricos, matices herbáceos y minerales.",
+        "Boca fresca y sabrosa, con buena acidez, equilibrio y final limpio."
+      ],
+      quick: [
+        "Bodega: Saverio Faro · Sicilia occidental, Italia.",
+        "Uva: Grillo · Sicilia DOC.",
+        "Curiosidad: el Grillo procede del cruce entre Catarratto y Zibibbo; hoy es una de las blancas más representativas de Sicilia."
+      ],
+      pairing: {
+        name: "Arancini sicilianos",
+        desc: "Especialidad siciliana en forma de bola o cono de arroz, normalmente rellena de ragú, guisantes y queso, o de jamón en cubitos y mozzarella. Se sirve caliente y es uno de los bocados callejeros más reconocibles de Sicilia."
+      },
+      serve: "8–10 ºC · 12,5% vol.",
+      quiz: {
+        q: "¿De qué dos variedades procede el cruce que dio origen al Grillo?",
+        options: [
+          "Catarratto y Zibibbo",
+          "Chardonnay y Moscato",
+          "Verdeca y Fiano",
+          "Trebbiano y Malvasia"
+        ],
+        correct: 0
+      }
+    },
+    {
+      id: 2,
+      name: "Passo Del Sud Negroamaro Primitivo",
+      winery: "Tagaro",
+      type: "Tinto · Puglia IGP",
+      story: "Capítulo 2: Entramos en Puglia con un coupage de Negroamaro y Primitivo: fruta madura, especias y tanino amable.",
+      notes: [
+        "Aromas intensos de fruta roja y especias, con recuerdos de mora y arándano.",
+        "Boca suave y persistente, con tanino redondo y bien equilibrado."
+      ],
+      quick: [
+        "Bodega: Tagaro · Fasano, Valle d’Itria, Puglia, Italia.",
+        "Uvas: Negroamaro y Primitivo.",
+        "Curiosidad: la ficha técnica sitúa los viñedos entre 10 y 15 años, sobre suelos arcillosos y calcáreos, con una maceración en frío previa a la fermentación."
+      ],
+      pairing: {
+        name: "Burrata de Puglia",
+        desc: "Burrata fresca acompañada de mix de hojas verdes, nueces, tomates secos, aceite de oliva virgen extra y miel de caña. La cremosidad del queso contrasta con la fruta y la estructura del vino."
+      },
+      serve: "16–18 ºC · 14% vol.",
+      quiz: {
+        q: "¿Qué dos variedades forman Passo Del Sud?",
+        options: [
+          "Primitivo y Nero d’Avola",
+          "Negroamaro y Primitivo",
+          "Sangiovese y Montepulciano",
+          "Aglianico y Merlot"
+        ],
+        correct: 1
+      }
+    },
+    {
+      id: 3,
+      name: "Pinataro Primitivo",
+      winery: "Tagaro",
+      type: "Tinto · Puglia IGT",
+      story: "Capítulo 3: Pinataro muestra una cara más directa del Primitivo: mucha fruta, suavidad y frescura dentro del carácter cálido de Puglia.",
+      notes: [
+        "Nariz de fresa y fruta roja, violetas y especias, con matices de fruta oscura.",
+        "Boca suave y fresca, frutal, con final largo e intenso."
+      ],
+      quick: [
+        "Bodega: Tagaro · Puglia, Italia.",
+        "Uva: 100% Primitivo.",
+        "Curiosidad: el nombre Primitivo alude a su maduración temprana; en Puglia la variedad está documentada históricamente desde finales del siglo XVIII."
+      ],
+      pairing: {
+        name: "Panzerotto de Tarento",
+        desc: "Masa parecida a la de pizza, típica de Puglia y asociada especialmente a Tarento, rellena en esta cata de mozzarella, tomate y aceitunas negras."
+      },
+      serve: "15–17 ºC · 13% vol.",
+      quiz: {
+        q: "¿Por qué recibió la uva Primitivo ese nombre?",
+        options: [
+          "Porque fue la primera uva tinta plantada en Italia",
+          "Porque madura de forma temprana",
+          "Porque se vendimiaba siempre de noche",
+          "Porque solo se cultivaba en viñas viejas"
+        ],
+        correct: 1
+      }
+    },
+    {
+      id: 4,
+      name: "Cinquenoci Primitivo",
+      winery: "Tagaro",
+      type: "Tinto · Puglia IGP",
+      story: "Capítulo 4: Cerramos con el Primitivo más profundo del recorrido: viñas maduras, fruta negra y un afinado paso por madera.",
+      notes: [
+        "Aromas intensos de ciruela madura y grosella negra, con matices especiados.",
+        "Boca envolvente, persistente y equilibrada, con la madera integrada en la fruta."
+      ],
+      quick: [
+        "Bodega: Tagaro · Puglia, Italia.",
+        "Uva: 100% Primitivo · viñedos de unos 30 años.",
+        "Curiosidad: la ficha de la bodega indica suelos calcáreos mezclados con tierra roja y un afinado aproximado de 7–8 meses con madera, seguido de 3 meses en botella."
+      ],
+      pairing: {
+        name: "Orecchiette con ricota y limón",
+        desc: "Pasta tradicional de Puglia con forma de pequeñas orejas, servida en esta cata con una salsa de ricota, queso, manteca y limón."
+      },
+      serve: "16–18 ºC · 15% vol.",
+      quiz: {
+        q: "¿Cuánto tiempo pasa aproximadamente Cinquenoci en contacto con madera según su ficha técnica?",
+        options: [
+          "1–2 meses",
+          "3–4 meses",
+          "7–8 meses",
+          "18–24 meses"
+        ],
+        correct: 2
+      }
+    }
+  ];
+
+  const themes = {
+    0:{accent:"#b7bbc7", accent2:"#6b7280", bg:"#0c0d10", bg2:"#14161b"},
+    1:{accent:"#ffd166", accent2:"#6ee7ff", bg:"#0d0f12", bg2:"#14202a"},
+    2:{accent:"#ff8fab", accent2:"#ffb703", bg:"#100b10", bg2:"#211716"},
+    3:{accent:"#b8f2a5", accent2:"#9bb7ff", bg:"#0d1110", bg2:"#18221e"},
+    4:{accent:"#fbbf24", accent2:"#fb7185", bg:"#0f0d10", bg2:"#231a1d"},
+  };
+
+  const sceneMap = {
+    "scene1": { img: "img/info-scene-1.jpg" },
+    "scene2": { img: "img/info-scene-2.jpg" },
+    "scene3": { img: "img/info-scene-3.jpg" },
+    "scene4": { img: "img/info-scene-4.jpg" }
+  };
+
+  const wineCard    = document.getElementById("wineCard");
+  const statusEl    = document.getElementById("status");
+  const orderList   = document.getElementById("orderList");
+  const hostPanel   = document.getElementById("hostPanel");
+  const hostButtons = document.getElementById("hostButtons");
+  const prevBtn     = document.getElementById("prevBtn");
+  const nextBtn     = document.getElementById("nextBtn");
+  const pauseBtn    = document.getElementById("pauseBtn");
+  const welcomeBtn  = document.getElementById("welcomeBtn");
+  const noteInput   = document.getElementById("hostNoteInput");
+  const sendNoteBtn = document.getElementById("sendNote");
+
+  const overlay     = document.getElementById("overlay");
+  const ovBig       = document.getElementById("ovBig");
+  const ovWine      = document.getElementById("ovWine");
+  const ovSub       = document.getElementById("ovSub");
+
+  const mobileBar          = document.getElementById("mobileBar");
+  const mobileBarTitle     = document.getElementById("mobileBarTitle");
+  const mobileBarSub       = document.getElementById("mobileBarSub");
+  const mobileBarProgress  = document.getElementById("mobileBarProgress");
+
+  const soundToggle = document.getElementById("soundToggle");
+  if(soundToggle){
+    soundToggle.checked = localStorage.getItem("gw_sound") === "1";
+    soundToggle.onchange = () => localStorage.setItem("gw_sound", soundToggle.checked ? "1":"0");
+  }
+
+  const qs = new URLSearchParams(location.search);
+  const isHost = qs.get("host") === "1";
+  const isDashboard = qs.get("dashboard") === "1";
+
+  if (isDashboard) {
+    const tvScaleParam = parseFloat(qs.get("tvscale"));
+    if (!isNaN(tvScaleParam) && tvScaleParam > 0.5 && tvScaleParam < 1.2) {
+      document.documentElement.style.setProperty("--tv-scale", String(tvScaleParam));
+    }
+  }
+
+  if(!isHost && !isDashboard){
+    document.body.classList.add("guest");
+  }
+
+  if(!isHost && !isDashboard){
+    const sw = document.getElementById("statusWrap");
+    if(sw) sw.style.display = "none";
+    const os = document.getElementById("orderSection");
+    if(os) os.style.display = "none";
+  }
+
+  const SESSION_LS_KEY = "gw_session_version";
+  let currentSessionVersion = null;
+  let guestReady = false;
+  let guestName = "";
+  let currentMiniScreen = "cata";
+
+  function hasValidGuestIdentityForCurrentSession(){
+    if(isHost || isDashboard) return true;
+    const savedName = (localStorage.getItem("gw_name") || "").trim().toUpperCase().slice(0,8);
+    const savedVersion = localStorage.getItem("gw_session_version");
+    return !!savedName && guestReady && currentSessionVersion !== null &&
+      String(savedVersion) === String(currentSessionVersion);
+  }
+
+  function routeGuestToMiniScreen(){
+    if(isHost || isDashboard) return;
+    const current = (location.pathname.split("/").pop() || "").toLowerCase();
+    const miniOv = document.getElementById("miniSummaryOverlay");
+    if(miniOv) miniOv.classList.remove("show");
+
+    if(currentMiniScreen === "cata") return;
+
+    // Un participante no puede saltarse el registro aunque el host ya haya
+    // activado un minijuego. Nombre + sessionVersion deben ser válidos.
+    if(!hasValidGuestIdentityForCurrentSession()){
+      showNameGate();
+      return;
+    }
+
+    if(currentMiniScreen === "bubbles"){
+      if(!current.includes("burbujas")) window.location.href = "burbujas.html";
+    }else if(currentMiniScreen === "linea"){
+      if(!current.includes("linea")) window.location.href = "linea.html";
+    }else if(currentMiniScreen === "flappy"){
+      if(!current.includes("flappy")) window.location.href = "flappy.html";
+    }else if(currentMiniScreen === "summary"){
+      if(miniOv) miniOv.classList.add("show");
+    }
+  }
+
+  if(!isHost && !isDashboard){
+    const miniGamesRef = ref(db, "miniGames/currentScreen");
+    onValue(miniGamesRef, (snap) => {
+      currentMiniScreen = snap.val() || "cata";
+      routeGuestToMiniScreen();
+    });
+
+    let bubblesResultsCache = {};
+    let lineaResultsCache = {};
+    let flappyResultsCache = {};
+
+    function buildTop3FromBubbles(results){
+      const arr = Object.values(results || {})
+        .filter(r => r && typeof r === "object" && Number(r?.winesPlayed || 0) >= 4);
+
+      arr.sort((a,b)=>{
+        const aPoints = Number(
+          a?.totalBubblePoints ??
+          (((a?.totalScore || 0) * 2) - ((a?.totalMistakes || 0) * 2) - (a?.totalMissed || 0))
+        );
+
+        const bPoints = Number(
+          b?.totalBubblePoints ??
+          (((b?.totalScore || 0) * 2) - ((b?.totalMistakes || 0) * 2) - (b?.totalMissed || 0))
+        );
+
+        if(bPoints !== aPoints) return bPoints - aPoints;
+
+        const aAcc = a?.avgAccuracy || 0;
+        const bAcc = b?.avgAccuracy || 0;
+        if(bAcc !== aAcc) return bAcc - aAcc;
+
+        const aScore = a?.totalScore || 0;
+        const bScore = b?.totalScore || 0;
+        if(bScore !== aScore) return bScore - aScore;
+
+        const aMistakes = a?.totalMistakes || 0;
+        const bMistakes = b?.totalMistakes || 0;
+        if(aMistakes !== bMistakes) return aMistakes - bMistakes;
+
+        const aMissed = a?.totalMissed || 0;
+        const bMissed = b?.totalMissed || 0;
+        if(aMissed !== bMissed) return aMissed - bMissed;
+
+        // Empate real: el timestamp ya no decide el podio.
+        return 0;
+      });
+
+      return arr.slice(0, 3);
+    }
+
+    function getLineaTotalInsideMs(r){
+      const direct = Number(r?.totalInsideMs);
+      if(Number.isFinite(direct)) return Math.min(45000, Math.max(0, direct));
+      if(Array.isArray(r?.attempts)){
+        return r.attempts.reduce((sum, att) => {
+          const ms = Number(att?.insideMs);
+          return sum + (Number.isFinite(ms) ? Math.min(15000, Math.max(0, ms)) : 0);
+        }, 0);
+      }
+      const avgSec = Number(r?.avgInsideSec);
+      return Number.isFinite(avgSec) ? Math.max(0, avgSec * 1000 * 3) : 0;
+    }
+
+    function buildTop3FromLinea(results){
+      const arr = Object.values(results || {}).filter(r => r && typeof r === "object");
+      arr.sort((a,b)=>{
+        const aMs = getLineaTotalInsideMs(a);
+        const bMs = getLineaTotalInsideMs(b);
+        if(bMs !== aMs) return bMs - aMs;
+        // Empate real: el timestamp ya no decide el podio.
+        return 0;
+      });
+      return arr.slice(0, 3);
+    }
+
+    function compareFlappyPlayers(a,b){
+      const aBest = Number(a?.bestScore || 0);
+      const bBest = Number(b?.bestScore || 0);
+      if(bBest !== aBest) return bBest - aBest;
+      const aDist = Number(a?.bestDistance || 0);
+      const bDist = Number(b?.bestDistance || 0);
+      if(bDist !== aDist) return bDist - aDist;
+      const aTotal = Number(a?.totalScore || 0);
+      const bTotal = Number(b?.totalScore || 0);
+      if(bTotal !== aTotal) return bTotal - aTotal;
+      return 0;
+    }
+
+    function buildTop3FromFlappy(results){
+      const arr = Object.values(results || {}).filter(r => r && typeof r === "object" && Number(r?.attemptsCompleted ?? r?.attemptsPlayed ?? 0) >= 3);
+      arr.sort(compareFlappyPlayers);
+      return arr.slice(0, 3);
+    }
+
+    function getBubblePoints(r){
+      return Number(
+        r?.totalBubblePoints ??
+        (((r?.totalScore || 0) * 2) - ((r?.totalMistakes || 0) * 2) - (r?.totalMissed || 0))
+      );
+    }
+
+    function isLineaComplete(r){
+      return !!(r && Array.isArray(r.attempts) && r.attempts.length >= 3);
+    }
+
+    function buildGlobalRanking(bubblesResults, lineaResults, flappyResults){
+      const ids = new Set([
+        ...Object.keys(bubblesResults || {}),
+        ...Object.keys(lineaResults || {}),
+        ...Object.keys(flappyResults || {})
+      ]);
+      const rows = [];
+
+      ids.forEach(id => {
+        const b = bubblesResults?.[id];
+        const l = lineaResults?.[id];
+        const f = flappyResults?.[id];
+        if(!b || Number(b?.winesPlayed || 0) < 4) return;
+        if(!l || !isLineaComplete(l)) return;
+        if(!f || Number(f?.attemptsCompleted ?? f?.attemptsPlayed ?? 0) < 3) return;
+
+        rows.push({
+          id,
+          name: (b?.name || l?.name || f?.name || id),
+          bubbleRaw: Math.max(0, getBubblePoints(b)),
+          lineaRaw: Math.max(0, getLineaTotalInsideMs(l)),
+          flappyRaw: Math.max(0, Number(f?.bestDistance || 0))
+        });
+      });
+
+      if(!rows.length) return [];
+      const maxBubble = Math.max(...rows.map(r => r.bubbleRaw), 0);
+      const maxLinea = Math.max(...rows.map(r => r.lineaRaw), 0);
+      const maxFlappy = Math.max(...rows.map(r => r.flappyRaw), 0);
+
+      rows.forEach(r => {
+        r.bubbleNorm = maxBubble > 0 ? (r.bubbleRaw / maxBubble) * 100 : 0;
+        r.lineaNorm = maxLinea > 0 ? (r.lineaRaw / maxLinea) * 100 : 0;
+        r.flappyNorm = maxFlappy > 0 ? (r.flappyRaw / maxFlappy) * 100 : 0;
+        r.globalScore = (r.bubbleNorm + r.lineaNorm + r.flappyNorm) / 3;
+      });
+
+      rows.sort((a,b) => {
+        if(Math.abs(b.globalScore - a.globalScore) > 1e-9) return b.globalScore - a.globalScore;
+        return 0;
+      });
+      return rows;
+    }
+
+    function updateMiniSummary(){
+      const box = document.getElementById("miniSummaryContent");
+      if(!box) return;
+
+      const topB = buildTop3FromBubbles(bubblesResultsCache);
+      const topL = buildTop3FromLinea(lineaResultsCache);
+      const topF = buildTop3FromFlappy(flappyResultsCache);
+      const globalRanking = buildGlobalRanking(bubblesResultsCache, lineaResultsCache, flappyResultsCache);
+      const topG = globalRanking.slice(0, 3);
+
+      if(!topB.length && !topL.length && !topF.length && !topG.length){
+        box.innerHTML = '<div class="small">Todavía no hay resultados suficientes en los mini-juegos.</div>';
+        return;
+      }
+
+      const renderList = (items, type) => {
+        if(!items.length) return '<div class="small">Sin datos aún</div>';
+
+        return items.map((p, idx) => {
+          const pos = idx + 1;
+          const medal = pos === 1 ? "🥇" : (pos === 2 ? "🥈" : "🥉");
+          const name = (p.name || p.sessionId || "Invitado").toString().toUpperCase();
+
+          let extra = "";
+          if(type === "bubbles"){
+            const bubblePoints = Number(
+              p?.totalBubblePoints ??
+              (((p?.totalScore || 0) * 2) - ((p?.totalMistakes || 0) * 2) - (p?.totalMissed || 0))
+            );
+            extra = ` · ${bubblePoints} pts`;
+          }else if(type === "linea"){
+            extra = ` · ${p?.avgPercent || 0}%`;
+          }else if(type === "flappy"){
+            extra = ` · ${Number(p?.bestScore || 0)} puertas`;
+          }
+
+          return `
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+              <span style="font-size:1.1rem; font-weight:800;">${medal}</span>
+              <span style="font-size:1.05rem; font-weight:700;">${pos}º · ${name}${extra}</span>
+            </div>
+          `;
+        }).join("");
+      };
+
+      const renderGlobal = (items) => {
+        if(!items.length){
+          return '<div class="small">Completa los 3 mini-juegos para entrar en la general.</div>';
+        }
+        return items.map((p, idx) => {
+          const pos = idx + 1;
+          const medal = pos === 1 ? "🥇" : (pos === 2 ? "🥈" : "🥉");
+          const name = (p.name || "Invitado").toString().toUpperCase();
+          return `
+            <div style="margin-bottom:5px;">
+              <div style="font-size:1.08rem; font-weight:800;">${medal} ${pos}º · ${name} · ${p.globalScore.toFixed(1)} pts</div>
+              <div class="small">Bubble ${p.bubbleNorm.toFixed(1)} · Línea ${p.lineaNorm.toFixed(1)} · Flappy ${p.flappyNorm.toFixed(1)}</div>
+            </div>
+          `;
+        }).join("");
+      };
+
+      box.innerHTML = `
+        <div style="margin-bottom:14px; padding:10px 12px; border:1px solid rgba(255,215,128,.24); border-radius:12px; background:rgba(255,215,128,.05);">
+          <div class="small" style="color:var(--muted); margin-bottom:5px;">🏆 CLASIFICACIÓN GENERAL · 33,3 % cada juego</div>
+          ${renderGlobal(topG)}
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:16px; align-items:flex-start;">
+          <div>
+            <div class="small" style="color:var(--muted); margin-bottom:4px;">Bubble Pop de Aromas</div>
+            ${renderList(topB, "bubbles")}
+          </div>
+          <div>
+            <div class="small" style="color:var(--muted); margin-bottom:4px;">Test alcoholemia</div>
+            ${renderList(topL, "linea")}
+          </div>
+          <div>
+            <div class="small" style="color:var(--muted); margin-bottom:4px;">Flappy Wine</div>
+            ${renderList(topF, "flappy")}
+          </div>
+        </div>
+      `;
+    }
+
+    const bubblesResultsRef = ref(db, "miniGames/bubbles/results");
+    const lineaResultsRef   = ref(db, "miniGames/linea/results");
+    const flappyResultsRef  = ref(db, "miniGames/flappy/results");
+
+    onValue(bubblesResultsRef, (snap)=>{
+      bubblesResultsCache = snap.val() || {};
+      updateMiniSummary();
+    });
+
+    onValue(lineaResultsRef, (snap)=>{
+      lineaResultsCache = snap.val() || {};
+      updateMiniSummary();
+    });
+
+    onValue(flappyResultsRef, (snap)=>{
+      flappyResultsCache = snap.val() || {};
+      updateMiniSummary();
+    });
+  }
+
+  function getDeviceId(){
+    let id = localStorage.getItem("gw_device");
+    if(!id){
+      if(window.crypto && crypto.randomUUID) id = crypto.randomUUID();
+      else id = "dev_" + Math.random().toString(36).slice(2) + Date.now();
+      localStorage.setItem("gw_device", id);
+    }
+    return id;
+  }
+  const deviceId = getDeviceId();
+
+  function markJoined(){
+    if(isHost || isDashboard) return;
+    const nameToUse = guestName || "INVITADO";
+    const jRef = ref(db, `joinedUsers/${deviceId}`);
+    update(jRef, { name: nameToUse, ts: Date.now() });
+  }
+
+  function clearLocalTastingState(){
+    const prefixes = [
+      "gw_rating_",
+      "gw_quiz_",
+      "gw_notes_",
+      "gw_mouth_",
+      "gw_bubbles_progress_",
+      "gw_linea_progress_",
+      "gw_flappy_progress_"
+    ];
+
+    const keysToRemove = [];
+    for(let i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      if(!key) continue;
+
+      if(prefixes.some(prefix => key.startsWith(prefix))){
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+  }
+
+  function clearGuestIdentity(){
+    localStorage.removeItem("gw_name");
+    localStorage.removeItem(SESSION_LS_KEY);
+
+    clearLocalTastingState();
+
+    guestName = "";
+    guestReady = false;
+  }
+
+  function enterGuestWithName(name){
+    guestName = name.toUpperCase().slice(0, 8);
+    localStorage.setItem("gw_name", guestName);
+
+    const sessionToSave = currentSessionVersion ?? "legacy";
+    localStorage.setItem(SESSION_LS_KEY, String(sessionToSave));
+
+    guestReady = true;
+
+    const gate = document.getElementById("nameGate");
+    if(gate) gate.classList.remove("show");
+    document.body.style.overflow = "";
+
+    markJoined();
+    routeGuestToMiniScreen();
+  }
+
+  function showNameGate(){
+    const gate = document.getElementById("nameGate");
+    const input = document.getElementById("nameInput");
+    const btn = document.getElementById("enterBtn");
+
+    if(!gate || !input || !btn) return;
+
+    gate.classList.add("show");
+    document.body.style.overflow = "hidden";
+
+    const syncBtn = () => { btn.disabled = input.value.trim().length === 0; };
+    input.oninput = syncBtn;
+    input.onkeydown = (e) => {
+      if(e.key === "Enter" && !btn.disabled){
+        btn.click();
+      }
+    };
+    btn.onclick = () => {
+      const n = input.value.trim();
+      if(!n) return;
+      enterGuestWithName(n);
+    };
+
+    syncBtn();
+    input.focus();
+  }
+
+  if(isHost || isDashboard){
+    guestName = isHost ? "HOST" : "DASHBOARD";
+    guestReady = true;
+  }
+
+  function setTheme(id){
+    const t = themes[id] || themes[1];
+    document.documentElement.style.setProperty("--accent", t.accent);
+    document.documentElement.style.setProperty("--accent2", t.accent2);
+    document.documentElement.style.setProperty("--bg", t.bg);
+    document.documentElement.style.setProperty("--bg2", t.bg2);
+  }
+
+  function renderOrder(){
+    if(!orderList) return;
+    orderList.innerHTML = wines.map(w =>
+      `<li>${w.id}. ${w.name} – ${w.type}</li>`
+    ).join("");
+  }
+
+  function progressPercent(activeId){
+    if(activeId <= 1) return 0;
+    return (activeId-1)/(wines.length-1)*100;
+  }
+
+  function imageForMaridaje(id){
+    const n = String(id).padStart(2, "0");
+    return `img/maridaje-${n}.jpg`;
+  }
+
+  const noteTags = [
+    "Cítrico 🍋","Floral 🌸","Fruta roja 🍒","Fruta negra 🍇","Herbáceo 🌿",
+    "Especias 🌶️","Madera / vainilla 🌳","Mineral / salino 🧂",
+    "Tostado / café 🍫☕","Terroso / cuero 🍄"
+  ];
+  function notesLSKey(wineId){ return `gw_notes_${wineId}`; }
+
+  const mouthTags = [
+    "Seco / nada dulce 🧊","Goloso / frutal 🍬","Acidez alta 🍋","Acidez suave 🙂",
+    "Tanino suave 🤝","Tanino intenso 😬","Cuerpo ligero 💨","Cuerpo potente 🏋️",
+    "Cremoso / untuoso 🥛","Final largo ⏳"
+  ];
+  function mouthLSKey(wineId){ return `gw_mouth_${wineId}`; }
+
+  function emojiOnly(tag){
+    if(!tag) return "";
+    const em = tag.match(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}]/gu);
+    return em ? em.join("") : tag;
+  }
+
+  function ratingLSKey(id){ return `gw_rating_${id}`; }
+
+  function computeRatingStats(ratingsForWine = {}){
+    let total = 0, sum = 0;
+    for(let s=1; s<=5; s++){
+      const c = ratingsForWine[s] || 0;
+      total += c;
+      sum += s * c;
+    }
+    const avg = total ? (sum/total) : 0;
+    return { total, avg };
+  }
+
+  function renderRatingSection(w, ratingsMap = {}){
+    const userRating = Number(localStorage.getItem(ratingLSKey(w.id)) || 0);
+    const stats = computeRatingStats(ratingsMap[w.id] || {});
+    const avgTxt = stats.avg ? stats.avg.toFixed(1) : "—";
+
+    const stars = [1,2,3,4,5].map(s=>{
+      const filled = userRating >= s;
+      return `<button data-rating="${s}" class="star-btn ${filled ? "filled" : ""}">★</button>`;
+    }).join("");
+
+    return `
+      <div class="section">
+        <h3>⭐ Valoración (estrellas)</h3>
+        <div id="starsWrap" class="nav" style="gap:6px; margin-top:8px">
+          ${stars}
+        </div>
+        <div class="note" style="margin-top:6px">
+          Media del grupo: <b>${avgTxt}</b> / 5 · votos: <b>${stats.total}</b>
+        </div>
+        <div class="small">Puedes cambiar tu valoración cuando quieras.</div>
+      </div>
+    `;
+  }
+
+  function attachRatingHandlers(w){
+    const wrap = document.getElementById("starsWrap");
+    if(!wrap) return;
+
+    wrap.querySelectorAll("button[data-rating]").forEach(btn=>{
+      btn.onclick = () => {
+        const newR = Number(btn.getAttribute("data-rating"));
+        const oldR = Number(localStorage.getItem(ratingLSKey(w.id)) || 0);
+        if(newR === oldR) return;
+
+        localStorage.setItem(ratingLSKey(w.id), String(newR));
+
+        if(oldR > 0){
+          const oldRef = ref(db, `ratings/${w.id}/${oldR}`);
+          runTransaction(oldRef, (cur)=> Math.max(0, (cur||0) - 1));
+        }
+
+        const newRef = ref(db, `ratings/${w.id}/${newR}`);
+        runTransaction(newRef, (cur)=> (cur||0) + 1);
+
+        const actionRef = ref(db, `userActions/${w.id}/${deviceId}`);
+        update(actionRef, { name: guestName, rating: newR, ts: Date.now() });
+      };
+    });
+  }
+
+  function quizKey(id){ return `gw_quiz_${id}`; }
+
+  function renderQuizSection(w, hostNote=""){
+    const answeredOption = localStorage.getItem(quizKey(w.id));
+
+    const quizButtons = w.quiz.options.map((opt, i)=>{
+      const isAnswered = answeredOption !== null;
+      const isThis = answeredOption == i;
+
+      return `
+        <button data-quiz="${i}" class="${isThis ? "primary" : ""}"
+          ${isAnswered ? "disabled style='opacity:.7; cursor:default'" : ""}>
+          ${opt}
+        </button>
+      `;
+    }).join("");
+
+    let feedbackText = "Selecciona la respuesta correcta";
+    if (answeredOption !== null) {
+      if (Number(answeredOption) === w.quiz.correct) {
+        feedbackText = "🐦 Gorrión/a, has acertado. 😄";
+      } else {
+        feedbackText = "🐦 Gorrión/a, has fallado. 😔";
+      }
+    }
+
+    return `
+      <div class="section">
+        <h3>Mini-quiz</h3>
+        <div class="pairing" style="margin-top:6px">
+          <strong>❓ ${w.quiz.q}</strong>
+          <div id="quizBtns" class="nav" style="margin-top:8px">
+            ${quizButtons}
+          </div>
+          <div class="small" style="margin-top:6px">
+            ${feedbackText}
+          </div>
+        </div>
+
+        ${hostNote ? `<div style="margin-top:10px" class="note">🗣️ Nota del host: <b>${hostNote}</b></div>` : ``}
+      </div>
+    `;
+  }
+
+  function attachQuizHandlers(w){
+    const quizBtnsWrap = document.getElementById("quizBtns");
+    if(quizBtnsWrap){
+      quizBtnsWrap.querySelectorAll("button[data-quiz]").forEach(btn=>{
+        btn.onclick = () => {
+          const opt = btn.getAttribute("data-quiz");
+          if(localStorage.getItem(quizKey(w.id)) !== null) return;
+          localStorage.setItem(quizKey(w.id), String(opt));
+
+          const qRef = ref(db, `quiz/${w.id}/${opt}`);
+          runTransaction(qRef, (cur)=> (cur || 0) + 1);
+
+          const actionRef = ref(db, `userActions/${w.id}/${deviceId}`);
+          update(actionRef, { name: guestName, quizAnswer: Number(opt), ts: Date.now() });
+        };
+      });
+    }
+  }
+
+  function renderNotesSection(w, notesMap = {}){
+    let selected = [];
+    try { selected = JSON.parse(localStorage.getItem(notesLSKey(w.id)) || "[]"); }
+    catch(e){ selected = []; }
+
+    const countsByTag = notesMap[w.id] || {};
+    const totalMarks = Object.values(countsByTag).reduce((a,b)=>a+(b||0),0) || 1;
+
+    const pills = noteTags.map((tag, idx)=>{
+      const count = countsByTag[idx] || 0;
+      const pct = Math.round((count / totalMarks) * 100);
+      const isOn = selected.includes(idx);
+
+      return `
+        <button class="${isOn ? "primary" : ""}" data-note-idx="${idx}">
+          ${tag}
+          <span class="small"> · ${pct}%</span>
+        </button>
+      `;
+    }).join("");
+
+    return `
+      <div class="section">
+        <h3>👃 Notas en nariz</h3>
+        <div id="notesPills" class="nav" style="margin-top:8px">
+          ${pills}
+        </div>
+        <div class="small" style="margin-top:6px">
+          Marca todas las que te encajen. Los porcentajes se actualizan en vivo.
+        </div>
+      </div>
+    `;
+  }
+
+  function attachNotesHandlers(w){
+    const wrap = document.getElementById("notesPills");
+    if(!wrap) return;
+
+    function getSelected(){
+      try { return JSON.parse(localStorage.getItem(notesLSKey(w.id)) || "[]"); }
+      catch(e){ return []; }
+    }
+    function setSelected(arr){
+      localStorage.setItem(notesLSKey(w.id), JSON.stringify(arr));
+    }
+
+    wrap.querySelectorAll("button[data-note-idx]").forEach(btn=>{
+      btn.onclick = () => {
+        const idx = Number(btn.getAttribute("data-note-idx"));
+        let selected = getSelected();
+
+        const isOn = selected.includes(idx);
+        if(isOn) selected = selected.filter(x=>x!==idx);
+        else selected.push(idx);
+        setSelected(selected);
+
+        const tagRef = ref(db, `notes/${w.id}/${idx}`);
+        runTransaction(tagRef, (cur)=>{
+          const val = cur || 0;
+          const nextVal = isOn ? val - 1 : val + 1;
+          return Math.max(0, nextVal);
+        });
+
+        const actionRef = ref(db, `userActions/${w.id}/${deviceId}`);
+        update(actionRef, { name: guestName, notesSelected: selected, ts: Date.now() });
+      };
+    });
+  }
+
+  function renderMouthSection(w, mouthMap = {}){
+    let selected = [];
+    try { selected = JSON.parse(localStorage.getItem(mouthLSKey(w.id)) || "[]"); }
+    catch(e){ selected = []; }
+
+    const countsByTag = mouthMap[w.id] || {};
+    const totalMarks = Object.values(countsByTag).reduce((a,b)=>a+(b||0),0) || 1;
+
+    const pills = mouthTags.map((tag, idx)=>{
+      const count = countsByTag[idx] || 0;
+      const pct = Math.round((count / totalMarks) * 100);
+      const isOn = selected.includes(idx);
+
+      return `
+        <button class="${isOn ? "primary" : ""}" data-mouth-idx="${idx}">
+          ${tag}
+          <span class="small"> · ${pct}%</span>
+        </button>
+      `;
+    }).join("");
+
+    return `
+      <div class="section">
+        <h3>👄 Sensaciones en boca</h3>
+        <div id="mouthPills" class="nav" style="margin-top:8px">
+          ${pills}
+        </div>
+        <div class="small" style="margin-top:6px">
+          Marca todas las que te encajen. Se actualiza en vivo.
+        </div>
+      </div>
+    `;
+  }
+
+  function attachMouthHandlers(w){
+    const wrap = document.getElementById("mouthPills");
+    if(!wrap) return;
+
+    function getSelected(){
+      try { return JSON.parse(localStorage.getItem(mouthLSKey(w.id)) || "[]"); }
+      catch(e){ return []; }
+    }
+    function setSelected(arr){
+      localStorage.setItem(mouthLSKey(w.id), JSON.stringify(arr));
+    }
+
+    wrap.querySelectorAll("button[data-mouth-idx]").forEach(btn=>{
+      btn.onclick = () => {
+        const idx = Number(btn.getAttribute("data-mouth-idx"));
+        let selected = getSelected();
+
+        const isOn = selected.includes(idx);
+        if(isOn) selected = selected.filter(x=>x!==idx);
+        else selected.push(idx);
+        setSelected(selected);
+
+        const tagRef = ref(db, `mouth/${w.id}/${idx}`);
+        runTransaction(tagRef, (cur)=>{
+          const val = cur || 0;
+          const nextVal = isOn ? val - 1 : val + 1;
+          return Math.max(0, nextVal);
+        });
+
+        const actionRef = ref(db, `userActions/${w.id}/${deviceId}`);
+        update(actionRef, { name: guestName, mouthSelected: selected, ts: Date.now() });
+      };
+    });
+  }
+
+  function renderWelcome(hostNote, joinedCount = 0, expectedUsers = 12){
+    const isGuest = !isHost && !isDashboard;
+
+    wineCard.innerHTML = `
+      <div class="welcomeTopRow" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        ${isGuest ? `
+          <div class="small" style="color:var(--muted);">
+            Conectados: <b>${joinedCount}/${expectedUsers}</b>
+          </div>
+        ` : `<div></div>`}
+        <div class="pill">Bienvenida</div>
+      </div>
+
+      <div class="title" style="margin-top:14px;">
+        <div>
+          <h2>Cata Vinos Italianos</h2>
+          <div class="meta">4 vinos · 4 bocados · Sicilia y Puglia en la copa</div>
+        </div>
+      </div>
+
+      <div class="welcomeLogoWrap">
+        <img
+          src="img/logoredondo.png"
+          alt="Gorrión Wine Experience"
+          class="welcomeLogo"
+        />
+      </div>
+
+      <div class="story" style="margin-top:14px">
+        🍷 Hoy viajamos por el sur de Italia copa a copa: empezamos en Sicilia y continuamos por Puglia. Este es tu mando de la cata:
+        desde aquí puntuarás cada vino, marcarás lo que percibes y jugarás
+        a un mini-quiz en tiempo real con el resto del grupo.
+      </div>
+
+      <div class="section">
+        <h3>Antes de empezar</h3>
+        <ul>
+          <li>Comprueba que tienes tu copa (o copas) a mano y algo de agua.</li>
+          <li>Ten cerca los bocados de maridaje para cuando llegue su vino.</li>
+          <li>Asegúrate de que tu móvil tiene internet y algo de batería.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>Cómo usar esta pantalla</h3>
+        <ul>
+          <li>Cuando el Gorrión Supremo active un vino, su ficha aparecerá aquí.</li>
+          <li>Marca los aromas en nariz y sensaciones en boca que notes.</li>
+          <li>Responde al mini-quiz: verás las respuestas del grupo al momento.</li>
+          <li>Dale de 1 a 5 estrellas según cuánto te guste.</li>
+        </ul>
+        <div class="note" style="margin-top:6px">
+          Tus votos se suman a los de los demás y se ven en la pantalla grande
+          del evento. Puedes ajustar tu puntuación si cambias de opinión.
+        </div>
+      </div>
+
+      ${hostNote ? `
+        <div class="section">
+          <h3>Mensaje del host</h3>
+          <div class="note">🗣️ ${hostNote}</div>
+        </div>
+      ` : ``}
+    `;
+  }
+
+  function renderPause(hostNote){
+    wineCard.innerHTML = `
+      <div class="pill">Intermedio</div>
+      <div class="pauseBox" style="margin-top:12px">
+        <h2 class="pauseTitle">Pausa Gorrionera</h2>
+        <div class="pauseSub">Agua · vino · charla · prepárate para el siguiente vino</div>
+        ${hostNote ? `<div class="story" style="margin-top:14px">🗣️ ${hostNote}</div>` : ``}
+      </div>
+      <div class="section">
+        <h3>Orden de servicio</h3>
+        <div class="note">Seguimos en breve con el siguiente vino de Italia</div>
+      </div>
+    `;
+  }
+
+  function resizeGuestScene(){
+    if(!document.body.classList.contains("guestScene")) return;
+    const cont = document.getElementById("guestSceneContainer");
+    if(!cont) return;
+
+    const headerEl = document.querySelector("header");
+    const headerH = headerEl ? headerEl.offsetHeight : 0;
+
+    let mobileH = 0;
+    if(mobileBar && getComputedStyle(mobileBar).display !== "none"){
+      mobileH = mobileBar.offsetHeight || 0;
+    }
+
+    const available = window.innerHeight - headerH - mobileH;
+    cont.style.height = (available > 0 ? available : 0) + "px";
+  }
+
+  window.addEventListener("resize", resizeGuestScene);
+  window.addEventListener("orientationchange", resizeGuestScene);
+
+  function renderGuestScene(screenId, hostNote=""){
+    const scene = sceneMap[screenId];
+    if(!scene){
+      document.body.classList.remove("guestScene");
+      renderWelcome(hostNote);
+      return;
+    }
+
+    document.body.classList.add("guestScene");
+
+    wineCard.innerHTML = `
+      <div id="guestSceneContainer" style="position:relative; width:100%; overflow:hidden;">
+        <img
+          id="guestSceneImage"
+          src="${scene.img}"
+          alt="Imagen de apoyo"
+          style="
+            width:100%;
+            height:100%;
+            object-fit:contain;
+            display:block;
+            background:#050509;
+          "
+        />
+      </div>
+    `;
+
+    setTimeout(resizeGuestScene, 0);
+  }
+
+  const headerWineInfo = document.getElementById("headerWineInfo");
+  const headerProgressBar = document.getElementById("headerProgressBar");
+
+  function updateHeaderWine(activeId, joinedCount=0, expectedUsers=12){
+    if(!isDashboard) return;
+
+    if(activeId === -1){
+      if(headerWineInfo) headerWineInfo.textContent = `🎬 Bienvenida · ${joinedCount}/${expectedUsers}`;
+      if(headerProgressBar) headerProgressBar.style.width = "0%";
+      return;
+    }
+    if(activeId === 0){
+      if(headerWineInfo) headerWineInfo.textContent = "⏸ Intermedio";
+      if(headerProgressBar) headerProgressBar.style.width = "0%";
+      return;
+    }
+
+    const w = wines.find(x=>x.id===activeId) || wines[0];
+    if(headerWineInfo) headerWineInfo.textContent = `🍷 Vino ${w.id}/${wines.length} · ${w.name}`;
+
+    const pct = progressPercent(w.id);
+    if(headerProgressBar) headerProgressBar.style.width = pct + "%";
+  }
+
+  function renderWine(activeId, hostNote, ratingsMap={}, quizMap={}, notesMap={}, mouthMap={}){
+    document.body.classList.remove("guestScene");
+
+    const w = wines.find(x=>x.id===activeId) || wines[0];
+    wineCard.classList.remove("fade-in"); void wineCard.offsetWidth; wineCard.classList.add("fade-in");
+
+    wineCard.innerHTML = `
+      <div class="pill">Vino activo ${w.id} / ${wines.length}</div>
+
+      <div class="title">
+        <div>
+          <h2>${w.name}</h2>
+          <div class="meta">${w.winery} · ${w.type}</div>
+        </div>
+        <div class="badge">${w.serve}</div>
+      </div>
+
+      <img class="heroImg" src="${imageForMaridaje(w.id)}" alt="Maridaje ${w.id}" />
+
+      ${w.story ? `<div class="story">🍇 ${w.story}</div>` : ``}
+
+      <div class="progress"><div style="width:${progressPercent(w.id)}%"></div></div>
+
+      <div class="section">
+        <h3>Datos rápidos</h3>
+        <ul>
+          ${w.quick.map(q => `<li>${q}</li>`).join("")}
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>Notas rápidas</h3>
+        <ul>${w.notes.map(n=>`<li>${n}</li>`).join("")}</ul>
+      </div>
+
+      <div class="section">
+        <h3>Maridaje</h3>
+        <div class="pairing">
+          <strong>🍽️ ${w.pairing.name}</strong>
+          <div class="note" style="margin-top:6px">${w.pairing.desc}</div>
+        </div>
+      </div>
+
+      ${renderNotesSection(w, notesMap)}
+      ${renderMouthSection(w, mouthMap)}
+      ${renderQuizSection(w, hostNote)}
+      ${renderRatingSection(w, ratingsMap)}
+    `;
+
+    attachNotesHandlers(w);
+    attachMouthHandlers(w);
+    attachQuizHandlers(w);
+    attachRatingHandlers(w);
+  }
+
+  function chime(){
+    if(localStorage.getItem("gw_sound")!=="1") return;
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type="sine"; o.frequency.value=880;
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.35);
+      o.start(); o.stop(ctx.currentTime+0.4);
+    }catch(e){}
+  }
+
+  function showOverlayFor(activeId){
+    if(activeId === -1){
+      ovBig.textContent = `Bienvenida`;
+      ovWine.textContent = `Cata Vinos Italianos`;
+      ovSub.textContent = `Prepara la copa, servimos enseguida…`;
+    }else if(activeId === 0){
+      ovBig.textContent = `Intermedio`;
+      ovWine.textContent = `Pausa Gorrionera`;
+      ovSub.textContent = `Agua · charla`;
+    }else{
+      const w = wines.find(x=>x.id===activeId) || wines[0];
+      ovBig.textContent = `Vino ${w.id}`;
+      ovWine.textContent = w.name;
+      ovSub.textContent = w.pairing.name;
+    }
+    overlay.classList.add("show");
+    setTimeout(()=>overlay.classList.remove("show"), 2200);
+  }
+
+  function setupHostUI(){
+    if(!isHost) return;
+    hostPanel.style.display = "block";
+    hostButtons.innerHTML = "";
+
+    wines.forEach(w=>{
+      const b = document.createElement("button");
+      b.textContent = `${w.id}. ${w.name.split(" ")[0]}`;
+      b.onclick = () => set(ref(db, "activeWine"), w.id);
+      hostButtons.appendChild(b);
+    });
+
+    if(welcomeBtn){
+      welcomeBtn.onclick = () => set(ref(db, "activeWine"), -1);
+    }
+
+    prevBtn.onclick = () => {
+      const cur = window.__activeWine ?? -1;
+      let next;
+      if(cur === -1)        next = 0;
+      else if(cur === 0)    next = wines.length;
+      else if(cur === 1)    next = -1;
+      else                  next = cur - 1;
+      set(ref(db,"activeWine"), next);
+    };
+    nextBtn.onclick = () => {
+      const cur = window.__activeWine ?? -1;
+      let next;
+      if(cur === -1)                next = 1;
+      else if(cur === wines.length) next = 0;
+      else if(cur === 0)            next = -1;
+      else                          next = cur + 1;
+      set(ref(db,"activeWine"), next);
+    };
+    pauseBtn.onclick = () => set(ref(db,"activeWine"), 0);
+
+    const clearNoteBtn= document.getElementById("clearNote");
+    if(sendNoteBtn){
+      sendNoteBtn.onclick = () => {
+        const v = noteInput.value.trim();
+        update(ref(db,"/"), { hostNote: v });
+      };
+    }
+    if(clearNoteBtn){
+      clearNoteBtn.onclick = () => {
+        noteInput.value="";
+        update(ref(db,"/"), { hostNote: "" });
+      };
+    }
+
+    const infoNoneBtn   = document.getElementById("infoNoneBtn");
+    const infoScene1Btn = document.getElementById("infoScene1Btn");
+    const infoScene2Btn = document.getElementById("infoScene2Btn");
+    const infoScene3Btn = document.getElementById("infoScene3Btn");
+    const infoScene4Btn = document.getElementById("infoScene4Btn");
+
+    if(infoNoneBtn){
+      infoNoneBtn.onclick = () =>
+        update(ref(db, "/"), { infoScreen: "none" });
+    }
+    if(infoScene1Btn){
+      infoScene1Btn.onclick = () =>
+        update(ref(db, "/"), { infoScreen: "scene1" });
+    }
+    if(infoScene2Btn){
+      infoScene2Btn.onclick = () =>
+        update(ref(db, "/"), { infoScreen: "scene2" });
+    }
+    if(infoScene3Btn){
+      infoScene3Btn.onclick = () =>
+        update(ref(db, "/"), { infoScreen: "scene3" });
+    }
+    if(infoScene4Btn){
+      infoScene4Btn.onclick = () =>
+        update(ref(db, "/"), { infoScreen: "scene4" });
+    }
+
+    const miniCataBtn    = document.getElementById("miniCataBtn");
+    const miniBubblesBtn = document.getElementById("miniBubblesBtn");
+    const miniLineaBtn   = document.getElementById("miniLineaBtn");
+    const miniFlappyBtn  = document.getElementById("miniFlappyBtn");
+    const miniSummaryBtn = document.getElementById("miniSummaryBtn");
+
+    const setMiniScreen = (screen) => {
+      update(ref(db, "/miniGames"), { currentScreen: screen });
+    };
+
+    if(miniCataBtn){
+      miniCataBtn.onclick = () => setMiniScreen("cata");
+    }
+    if(miniBubblesBtn){
+      miniBubblesBtn.onclick = () => setMiniScreen("bubbles");
+    }
+    if(miniLineaBtn){
+      miniLineaBtn.onclick = () => setMiniScreen("linea");
+    }
+    if(miniFlappyBtn){
+      miniFlappyBtn.onclick = () => setMiniScreen("flappy");
+    }
+    if(miniSummaryBtn){
+      miniSummaryBtn.onclick = () => setMiniScreen("summary");
+    }
+
+    const expectedInput = document.getElementById("expectedInput");
+    const setExpectedBtn = document.getElementById("setExpectedBtn");
+    const expectedHint = document.getElementById("expectedHint");
+
+    onValue(ref(db, "expectedUsers"), (s)=>{
+      const val = s.val();
+      if(expectedInput && val){
+        expectedInput.value = val;
+        if(expectedHint) expectedHint.textContent = `Ahora mismo esperas ${val} participantes.`;
+      }
+    });
+
+    if(setExpectedBtn){
+      setExpectedBtn.onclick = () => {
+        const n = Number(expectedInput.value || 0);
+        if(!n || n < 1) return;
+        update(ref(db, "/"), { expectedUsers: n });
+        if(expectedHint) expectedHint.textContent = `Guardado: esperas ${n} participantes.`;
+      };
+    }
+
+    const resetDbBtn = document.getElementById("resetDbBtn");
+    if(resetDbBtn){
+      resetDbBtn.onclick = async () => {
+        const ok = confirm(
+          "⚠️ Vas a borrar TODAS las puntuaciones, respuestas y conectados.\n\n" +
+          "Esto no se puede deshacer.\n\n" +
+          "¿Seguro que quieres resetear la base de datos?"
+        );
+        if(!ok) return;
+
+        const expectedUsers = Number(expectedInput?.value || 12);
+
+        await set(ref(db, "/"), {
+          activeWine: -1,
+          miniGames: { currentScreen: "cata" },
+          hostNote: "",
+          expectedUsers,
+          sessionVersion: Date.now(),
+          ratings: {},
+          quiz: {},
+          notes: {},
+          mouth: {},
+          userActions: {},
+          joinedUsers: {},
+          infoScreen: "none"
+        });
+
+        alert("✅ DB reseteada. Todo vuelve a 0.");
+      };
+    }
+  }
+
+  const dashGrid= document.getElementById("dashGrid");
+
+  function ratingHistogramHTML(rForWine = {}){
+    const max = Math.max(...[1,2,3,4,5].map(s => rForWine[s] || 0), 1);
+    return [5,4,3,2,1].map(s=>{
+      const c = rForWine[s] || 0;
+      const w = Math.round((c/max)*100);
+      return `
+        <div style="display:grid; grid-template-columns:28px 1fr 34px; gap:8px; align-items:center; margin:6px 0;">
+          <div style="font-weight:900">${s}★</div>
+          <div style="height:8px; background:#2a2e3e; border-radius:999px; overflow:hidden; border:1px solid #32364a;">
+            <div style="height:100%; width:${w}%; background:linear-gradient(90deg,var(--accent),var(--accent2));"></div>
+          </div>
+          <div class="small" style="text-align:right">${c}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function topNotesHTML(notesForWine = {}){
+    const pairs = Object.entries(notesForWine)
+      .map(([k,v]) => ({ idx:Number(k), count: v||0 }))
+      .sort((a,b)=>b.count-a.count)
+      .slice(0,3);
+
+    if(!pairs.length || pairs[0].count===0) return `<div class="small">Sin datos aún</div>`;
+
+    const total = Object.values(notesForWine).reduce((a,b)=>a+(b||0),0) || 1;
+
+    return pairs.map(p=>{
+      const pct = Math.round((p.count/total)*100);
+      const label = noteTags[p.idx] || "";
+      return `<div class="note">• ${label} <span class="small">(${pct}%)</span></div>`;
+    }).join("");
+  }
+
+  function topMouthHTML(mouthForWine = {}){
+    const pairs = Object.entries(mouthForWine)
+      .map(([k,v]) => ({ idx:Number(k), count: v||0 }))
+      .sort((a,b)=>b.count-a.count)
+      .slice(0,3);
+
+    if(!pairs.length || pairs[0].count===0) return `<div class="small">Sin datos aún</div>`;
+
+    const total = Object.values(mouthForWine).reduce((a,b)=>a+(b||0),0) || 1;
+
+    return pairs.map(p=>{
+      const pct = Math.round((p.count/total)*100);
+      const label = mouthTags[p.idx] || "";
+      return `<div class="note">• ${label} <span class="small">(${pct}%)</span></div>`;
+    }).join("");
+  }
+
+  function quizSummaryHTML(w, quizForWine = {}){
+    if(!w.quiz) return `<div class="small">Sin quiz</div>`;
+
+    const countsByIndex = w.quiz.options.map((_, i) => quizForWine[i] || 0);
+    const total = countsByIndex.reduce((a,b)=>a+b,0) || 1;
+
+    return w.quiz.options.map((opt, i)=>{
+      const count = countsByIndex[i];
+      const pct = Math.round((count / total) * 100);
+      const isCorrect = i === w.quiz.correct;
+
+      return `
+        <div class="note" style="${isCorrect ? 'font-weight:900;color:var(--ok)' : ''}">
+          • ${opt} <span class="small">(${pct}%)</span> ${isCorrect ? '✓' : ''}
+        </div>
+      `;
+    }).join("");
+  }
+
+  function quizCorrectStats(w, quizForWine = {}){
+    if(!w.quiz) return { correct: 0, total: 0, pct: 0 };
+
+    const countsByIndex = w.quiz.options.map((_, i) => quizForWine[i] || 0);
+    const total = countsByIndex.reduce((a,b)=>a+b,0) || 0;
+    const correct = countsByIndex[w.quiz.correct] || 0;
+    const pct = total ? Math.round((correct / total) * 100) : 0;
+
+    return { correct, total, pct };
+  }
+
+  function userListHTML(wineId, actionsForWine = {}){
+    const ww = wines.find(x=>x.id===wineId);
+
+    const entries = Object.values(actionsForWine || {})
+      .map(a => {
+        const rating = a?.rating || 0;
+        const qa = (a?.quizAnswer ?? null);
+        const isCorrect =
+          (ww && qa !== null && typeof ww.quiz?.correct === "number")
+            ? (Number(qa) === ww.quiz.correct)
+            : null;
+
+        const selNotes = Array.isArray(a?.notesSelected) ? a.notesSelected : [];
+        const top2Notes = selNotes
+          .slice(0,2)
+          .map(i => emojiOnly(noteTags[i] || ""))
+          .join(" ");
+
+        const selMouth = Array.isArray(a?.mouthSelected) ? a.mouthSelected : [];
+        const top2Mouth = selMouth
+          .slice(0,2)
+          .map(i => emojiOnly(mouthTags[i] || ""))
+          .join(" ");
+
+        return {
+          name: a?.name || "INVITADO",
+          rating,
+          isCorrect,
+          top2Notes,
+          top2Mouth,
+          ts: a?.ts || 0
+        };
+      })
+      .sort((a,b)=>b.ts-a.ts)
+      .slice(0,50);
+
+    if(!entries.length) return `<div class="small">Aún no hay participaciones.</div>`;
+
+    const rows = entries.map(e=>{
+      const stars = e.rating
+        ? `<span class="dashStarsWrap">${
+            Array.from({length:5}, (_,i)=>
+              `<span class="dashStar ${i < e.rating ? "filled" : ""}">★</span>`
+            ).join("")
+          }</span>`
+        : "—";
+
+      const quizMark =
+        e.isCorrect === null ? "—" : (e.isCorrect ? "✅" : "❌");
+
+      return `
+        <div class="userRow">
+          <div class="userName">${e.name}</div>
+          <div class="userRight">
+            ${stars} · ${quizMark}
+            ${e.top2Notes ? `· ${e.top2Notes}` : ""}
+            ${e.top2Mouth ? `· ${e.top2Mouth}` : ""}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    return `
+      <div class="userGrid">
+        <div class="userCol">
+          ${rows}
+        </div>
+      </div>
+    `;
+  }
+
+  function fitParticipants(expectedUsers){
+    if(!isDashboard) return;
+    const factor = Math.max(0.78, Math.min(1.12, 10 / expectedUsers));
+    document.body.style.setProperty("--p-name",  `clamp(${1.0*factor}rem, ${1.6*factor}vw, ${1.7*factor}rem)`);
+    document.body.style.setProperty("--p-right", `clamp(${0.9*factor}rem, ${1.3*factor}vw, ${1.4*factor}rem)`);
+    document.body.style.setProperty("--p-pad",   `clamp(${4*factor}px,  ${0.6*factor}vw, ${8*factor}px)`);
+  }
+
+  function renderDashboard(activeId, ratingsMap={}, quizMap={}, notesMap={}, mouthMap={}, userActionsMap={}, expectedCount=12, joinedCount=0){
+    if(!dashGrid) return;
+
+    if(activeId === -1){
+      dashGrid.innerHTML = `
+        <div class="card">
+          <div class="pill">Bienvenida</div>
+          <div style="margin-top:6px; font-weight:900; font-size:2.2rem; font-family:'Playfair Display', serif;">
+            Cata Vinos Italianos - Don Aviador
+          </div>
+
+          <div class="welcomeLogoWrap">
+            <img
+              src="img/logoredondo.png"
+              alt="Gorrión Wine Experience"
+              class="welcomeLogo"
+            />
+          </div>
+
+          <div class="note" style="margin-top:12px">
+            Conectados: <b>${joinedCount}/${expectedCount}</b>. El host aún no ha activado el primer vino.
+          </div>
+
+          <div class="section" style="margin-top:14px; padding-top:12px; border-top:1px dashed #2b2f3d;">
+            <h3>Orden de servicio</h3>
+            <ol class="note" style="margin-left:18px">
+              ${wines.map(w=>`<li>${w.id}. ${w.name} – ${w.type}</li>`).join("")}
+            </ol>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    if(activeId === 0){
+      dashGrid.innerHTML = `
+        <div class="card">
+          <div class="pill">Intermedio</div>
+          <div style="margin-top:6px; font-weight:900; font-size:2.2rem; font-family:'Playfair Display', serif;">
+            Pausa Gorrionera
+          </div>
+          <div class="note" style="margin-top:8px">
+            Ahora mismo no hay vino activo.
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    const w = wines.find(x=>x.id===activeId) || wines[0];
+    const rForWine = ratingsMap[w.id] || {};
+    const stats = computeRatingStats(rForWine);
+    const qsLocal = quizCorrectStats(w, quizMap[w.id] || {});
+
+    const actionsForWine = userActionsMap[w.id] || {};
+    const participants = Object.keys(actionsForWine).length;
+    const quizAnswered = Object.values(actionsForWine)
+      .filter(a => a && a.quizAnswer !== undefined && a.quizAnswer !== null).length;
+
+    const showQuiz = quizAnswered >= expectedCount;
+
+    dashGrid.innerHTML = `
+      <div class="card">
+        <div class="tvLayout">
+
+          <div class="tvCol">
+            <div class="tvBlock participantsBlock" style="flex:1;">
+              <h3>👥 Participantes (${participants}/${expectedCount})</h3>
+              <div class="participantsList">
+                ${userListHTML(w.id, actionsForWine)}
+              </div>
+            </div>
+          </div>
+
+          <div class="tvCol">
+
+            <div class="tvBlock">
+              <h3>⭐ Valoración</h3>
+              <div class="note" style="margin-bottom:8px">
+                Media: <b>${stats.avg ? stats.avg.toFixed(1) : "—"}</b> / 5 · votos: <b>${stats.total}</b>
+              </div>
+              ${ratingHistogramHTML(rForWine)}
+            </div>
+
+            <div class="tvBlock">
+              <div class="noseMouthRow">
+                <div>
+                  <h3 style="margin-bottom:6px">👃 Nariz (top 3)</h3>
+                  ${topNotesHTML(notesMap[w.id] || {})}
+                </div>
+                <div>
+                  <h3 style="margin-bottom:6px">👄 Boca (top 3)</h3>
+                  ${topMouthHTML(mouthMap[w.id] || {})}
+                </div>
+              </div>
+            </div>
+
+            <div class="tvBlock">
+              <h3>❓ Quiz</h3>
+              ${showQuiz ? `
+                <div class="note" style="margin-bottom:8px">
+                  Aciertos: <b>${qsLocal.correct}</b> / ${qsLocal.total}
+                  <span class="small">(${qsLocal.pct}%)</span>
+                </div>
+                ${quizSummaryHTML(w, quizMap[w.id] || {})}
+              ` : `
+                <div class="note">
+                  Esperando respuestas… <b>${quizAnswered}/${expectedCount}</b>
+                </div>
+                <div class="small" style="margin-top:8px">
+                  El quiz se mostrará cuando hayan respondido todos.
+                </div>
+              `}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function toggleDashboardUI(){
+    if(!isDashboard) return;
+    const mainWrap = document.querySelector("main.wrap");
+    if(mainWrap) mainWrap.style.display = "none";
+    const dashEl = document.getElementById("dashboard");
+    if(dashEl) dashEl.style.display = "block";
+    document.body.classList.add("tv");
+  }
+  toggleDashboardUI();
+
+  function syncHeaderHeight(){
+    if(!isDashboard) return;
+    const headerEl = document.querySelector("header");
+    const h = headerEl ? headerEl.offsetHeight : 120;
+    document.documentElement.style.setProperty("--header-h", h + "px");
+  }
+  window.addEventListener("load", syncHeaderHeight);
+  window.addEventListener("resize", syncHeaderHeight);
+  setTimeout(syncHeaderHeight, 250);
+
+  function setupFullscreenBtn(){
+    if(!isDashboard) return;
+    const fsBtn = document.getElementById("fsBtn");
+    if(!fsBtn) return;
+
+    const docEl = document.documentElement;
+
+    function isFs(){
+      return document.fullscreenElement ||
+             document.webkitFullscreenElement ||
+             document.mozFullScreenElement ||
+             document.msFullscreenElement;
+    }
+
+    async function enterFs(){
+      try{
+        if(docEl.requestFullscreen) await docEl.requestFullscreen();
+        else if(docEl.webkitRequestFullscreen) await docEl.webkitRequestFullscreen();
+        else if(docEl.mozRequestFullScreen) await docEl.mozRequestFullScreen();
+        else if(docEl.msRequestFullscreen) await docEl.msRequestFullscreen();
+      }catch(e){}
+    }
+
+    async function exitFs(){
+      try{
+        if(document.exitFullscreen) await document.exitFullscreen();
+        else if(document.webkitExitFullscreen) await document.webkitExitFullscreen();
+        else if(document.mozCancelFullScreen) await document.mozCancelFullScreen();
+        else if(document.msExitFullscreen) await document.msExitFullscreen();
+      }catch(e){}
+    }
+
+    fsBtn.onclick = async () => {
+      if(isFs()) await exitFs();
+      else await enterFs();
+    };
+
+    function updateLabel(){
+      fsBtn.textContent = isFs() ? "⛶ Salir" : "⛶ Fullscreen";
+    }
+
+    document.addEventListener("fullscreenchange", updateLabel);
+    document.addEventListener("webkitfullscreenchange", updateLabel);
+    updateLabel();
+  }
+  setupFullscreenBtn();
+
+  function updateMobileBar(activeId){
+    if(!mobileBar || !document.body.classList.contains("guest")) return;
+
+    if(activeId === -1){
+      mobileBarTitle.textContent = "Esperando al inicio";
+      mobileBarSub.textContent = "Se activará el primer vino en breve";
+      mobileBarProgress.style.width = "0%";
+    }else if(activeId === 0){
+      mobileBarTitle.textContent = "Intermedio activo";
+      mobileBarSub.textContent = "Agua · pan · charla";
+      mobileBarProgress.style.width = "0%";
+    }else{
+      const w = wines.find(x=>x.id===activeId) || wines[0];
+      mobileBarTitle.textContent = `Vino ${w.id} de ${wines.length}`;
+      mobileBarSub.textContent = w.name;
+      mobileBarProgress.style.width = progressPercent(w.id) + "%";
+    }
+  }
+
+  const rootRef = ref(db, "/");
+  let lastWine = null;
+
+  onValue(rootRef, (snap)=>{
+    const data = snap.val() || {};
+    const activeId      = data.activeWine ?? -1;
+    const hostNote      = data.hostNote || "";
+    const expectedUsers = data.expectedUsers ?? 12;
+    const sessionVersion = data.sessionVersion ?? "legacy";
+    currentSessionVersion = sessionVersion;
+
+    if(!isHost && !isDashboard){
+      const savedName = (localStorage.getItem("gw_name") || "")
+        .trim()
+        .toUpperCase()
+        .slice(0, 8);
+
+      const savedSessionVersion = localStorage.getItem(SESSION_LS_KEY);
+
+      const hasValidIdentity =
+        !!savedName &&
+        String(savedSessionVersion) === String(sessionVersion);
+
+      if((savedName || savedSessionVersion) && !hasValidIdentity){
+        clearGuestIdentity();
+      }
+
+      if(!guestReady && hasValidIdentity){
+        guestName = savedName;
+        guestReady = true;
+        markJoined();
+      }
+
+      if(!guestReady){
+        showNameGate();
+      }else{
+        const gate = document.getElementById("nameGate");
+        if(gate) gate.classList.remove("show");
+        document.body.style.overflow = "";
+      }
+
+      // Si el host ya está en un minijuego, el invitado entra solo después
+      // de validar su identidad y quedar registrado en esta sesión.
+      routeGuestToMiniScreen();
+    }
+
+    const ratingsMap     = data.ratings || {};
+    const quizMap        = data.quiz  || {};
+    const notesMap       = data.notes || {};
+    const mouthMap       = data.mouth || {};
+    const userActionsMap = data.userActions || {};
+    const joinedUsers    = data.joinedUsers || {};
+    const joinedCount    = Object.keys(joinedUsers).length;
+    const infoScreen     = data.infoScreen || "none";
+
+    updateHeaderWine(activeId, joinedCount, expectedUsers);
+
+    if(isDashboard){
+      syncHeaderHeight();
+      fitParticipants(expectedUsers);
+      renderDashboard(activeId, ratingsMap, quizMap, notesMap, mouthMap, userActionsMap, expectedUsers, joinedCount);
+      return;
+    }
+
+    window.__activeWine = activeId;
+
+    const themeId = activeId <= 0 ? 0 : activeId;
+    setTheme(themeId);
+
+    if(!isHost && !isDashboard && infoScreen !== "none"){
+      if(statusEl) statusEl.textContent = `Mostrando imagen de apoyo.`;
+      renderGuestScene(infoScreen, hostNote);
+    }else{
+      document.body.classList.remove("guestScene");
+
+      if(activeId === -1){
+        if(statusEl) statusEl.textContent = `Pantalla de bienvenida activa.`;
+        renderWelcome(hostNote, joinedCount, expectedUsers);
+      }else if(activeId === 0){
+        if(statusEl) statusEl.textContent = `Intermedio activo.`;
+        renderPause(hostNote);
+      }else{
+        if(statusEl) statusEl.textContent = `Mostrando vino ${activeId}. Sincronizado en tiempo real.`;
+        renderWine(activeId, hostNote, ratingsMap, quizMap, notesMap, mouthMap);
+      }
+    }
+
+    updateMobileBar(activeId);
+    resizeGuestScene();
+
+    if(lastWine !== null && lastWine !== activeId){
+      showOverlayFor(activeId);
+      chime();
+    }
+    lastWine = activeId;
+
+  }, (err)=>{
+    if(statusEl) statusEl.textContent = "Error de conexión a Firebase.";
+    console.error(err);
+  });
+
+  if(isHost){
+    onValue(rootRef, async (snap)=>{
+      const val = snap.val();
+
+      if(val == null){
+        await set(rootRef, {
+          activeWine: -1,
+          miniGames: { currentScreen: "cata" },
+          hostNote: "",
+          expectedUsers: 12,
+          sessionVersion: Date.now(),
+          ratings: {},
+          quiz: {},
+          notes: {},
+          mouth: {},
+          userActions: {},
+          joinedUsers: {},
+          infoScreen: "none"
+        });
+      }else if(!val.sessionVersion){
+        await update(rootRef, {
+          sessionVersion: Date.now()
+        });
+      }
+    }, { onlyOnce:true });
+  }
+
+  renderOrder();
+  setupHostUI();
+</script>
+
+</body>
+</html>
