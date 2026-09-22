@@ -88,3 +88,11 @@ No se usan timestamps para desempatar. Si dos participantes obtienen exactamente
 - Línea consume el intento justo cuando, tras validar el sensor, comienzan los 15 segundos. Si se recarga durante el intento, queda consumido como `interrupted`.
 - `index.html` ya no redirige a un invitado tardío hacia un minijuego hasta que tenga nombre y `sessionVersion` válida. Además, `burbujas.html`, `linea.html` y `flappy.html` validan por sí mismos la identidad/sesión contra Firebase y devuelven a `index.html` si no es válida.
 - Bubble Pop, Línea y Flappy Wine reintentan la publicación de resultados guardados localmente al volver a abrir el juego. Así, un fallo temporal de Firebase/Wi-Fi no obliga a repetir una partida ya consumida.
+
+## Demo visual · Flappy Wine
+
+- Antes del primer intento de la sesión, `flappy.html` reproduce automáticamente una demostración visual de unos segundos.
+- La demo muestra el impulso de cada toque, la caída por gravedad y cómo atravesar el hueco entre barricas.
+- Incluye indicaciones visuales, pulsación animada y botón `Saltar`.
+- La demo no consume intentos, no escribe puntuación y no modifica Firebase.
+- Tras verla, queda disponible el botón `👀 Ver demo` para repetirla antes de cualquier intento pendiente.
