@@ -67,6 +67,16 @@
     .attempt{border:1px solid #303750;background:#0a0e1c;border-radius:10px;padding:6px;text-align:center;font-size:.73rem;color:var(--muted)}
     .attempt strong{display:block;color:var(--text);font-size:.9rem}
     .hint{text-align:center;color:var(--muted);font-size:.76rem;margin-top:8px}
+    .demo-hud{position:absolute;inset:0;z-index:4;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:14px;opacity:1;transition:.18s opacity}
+    .demo-hud.hidden{opacity:0;pointer-events:none}
+    .demo-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .demo-badge{padding:6px 10px;border-radius:999px;background:rgba(5,8,19,.88);border:1px solid #59607d;font-size:.72rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 5px 18px rgba(0,0,0,.32)}
+    .demo-skip{pointer-events:auto;flex:0 0 auto;padding:6px 10px;border-radius:999px;background:rgba(5,8,19,.88);font-size:.72rem}
+    .demo-caption{align-self:center;max-width:310px;padding:9px 12px;border-radius:14px;background:rgba(5,8,19,.91);border:1px solid #4b5474;text-align:center;font-size:.82rem;line-height:1.35;box-shadow:0 8px 24px rgba(0,0,0,.38)}
+    .demo-caption strong{display:block;color:#fff;font-size:.96rem;margin-bottom:2px}
+    .demo-tap{position:absolute;left:50%;top:43%;width:72px;height:72px;margin:-36px 0 0 -36px;border:2px solid rgba(255,255,255,.88);border-radius:50%;opacity:0;transform:scale(.55);box-shadow:0 0 0 0 rgba(214,165,255,.45)}
+    .demo-tap.pulse{animation:demoTap .72s ease-out}
+    @keyframes demoTap{0%{opacity:.95;transform:scale(.55);box-shadow:0 0 0 0 rgba(214,165,255,.48)}100%{opacity:0;transform:scale(1.35);box-shadow:0 0 0 24px rgba(214,165,255,0)}}
     @media (max-height:700px){canvas{max-height:58vh}.card{padding:10px}.header{margin-bottom:7px}.status{margin-top:7px}}
   </style>
 </head>
@@ -93,8 +103,19 @@
           <div class="overlay-card">
             <div class="overlay-big" id="overlayTitle">Flappy Wine</div>
             <div class="overlay-text" id="overlayText">Toca la pantalla para impulsar la copa. Evita las barricas y atraviesa el hueco. Tienes 3 intentos; cuenta tu mejor carrera.</div>
-            <div class="buttons"><button class="primary" id="startBtn">▶ Empezar intento</button></div>
+            <div class="buttons">
+              <button class="primary" id="startBtn">▶ Empezar intento</button>
+              <button id="demoBtn" type="button">👀 Ver demo</button>
+            </div>
           </div>
+        </div>
+        <div class="demo-hud hidden" id="demoHud" aria-live="polite">
+          <div class="demo-top">
+            <div class="demo-badge">Demo · no consume intentos</div>
+            <button class="demo-skip" id="demoSkipBtn" type="button">Saltar</button>
+          </div>
+          <div class="demo-tap" id="demoTap"></div>
+          <div class="demo-caption" id="demoCaption"><strong>Así se juega</strong>Toca para dar un impulso hacia arriba.</div>
         </div>
       </div>
 
@@ -199,6 +220,11 @@
   const overlayTitle = document.getElementById("overlayTitle");
   const overlayText = document.getElementById("overlayText");
   const startBtn = document.getElementById("startBtn");
+  const demoBtn = document.getElementById("demoBtn");
+  const demoHud = document.getElementById("demoHud");
+  const demoSkipBtn = document.getElementById("demoSkipBtn");
+  const demoCaption = document.getElementById("demoCaption");
+  const demoTap = document.getElementById("demoTap");
   const statusEl = document.getElementById("statusEl");
 
   // Mismo recorrido para todos: secuencia fija de centros de hueco.
@@ -230,6 +256,16 @@
   let score = 0;
   let worldDistance = 0;
   let ending = false;
+
+  // Demo visual: usa su propio estado y nunca toca progreso, Firebase ni intentos.
+  let demoRunning = false;
+  let demoRaf = 0;
+  let demoStartedAt = 0;
+  let demoLastFrame = 0;
+  let demoPlayerY = H * .48;
+  let demoPlayerV = 0;
+  let demoObstacleX = W + 45;
+  let demoLastPulseStep = -1;
 
   function loadProgress(){
     let p = {attempts:[]};
@@ -297,6 +333,9 @@
       return `<div class="attempt">Intento ${i+1}<strong>${a.score} puertas</strong>${label}</div>`;
     }).join("");
 
+    demoBtn.disabled = running;
+    demoBtn.style.display = sum.attempts.length >= MAX_ATTEMPTS ? "none" : "";
+
     if(sum.attempts.length >= MAX_ATTEMPTS && !running){
       overlayTitle.textContent="Partida completada";
       overlayText.textContent=`Mejor carrera: ${sum.bestScore} puertas. Ya has usado tus 3 intentos en esta sesión.`;
@@ -361,6 +400,20 @@
     ctx.restore();
   }
 
+  function drawDemoPlayer(){
+    ctx.save();
+    ctx.translate(PLAYER_X,demoPlayerY);
+    const angle=Math.max(-.35,Math.min(.55,demoPlayerV/750));
+    ctx.rotate(angle);
+    ctx.strokeStyle="#f2dbe5";ctx.lineWidth=3;ctx.lineCap="round";
+    ctx.beginPath();
+    ctx.moveTo(-14,-14);ctx.quadraticCurveTo(-13,12,0,15);ctx.quadraticCurveTo(13,12,14,-14);ctx.stroke();
+    ctx.fillStyle="#92254a";ctx.beginPath();ctx.moveTo(-11,-2);ctx.quadraticCurveTo(-8,12,0,12);ctx.quadraticCurveTo(8,12,11,-2);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(0,15);ctx.lineTo(0,31);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-9,32);ctx.lineTo(9,32);ctx.stroke();
+    ctx.restore();
+  }
+
   function draw(){
     drawBackground();
     obstacles.forEach(o=>{
@@ -368,6 +421,89 @@
       drawBarrelColumn(o.x,o.gapBottom,H-o.gapBottom,false);
     });
     drawPlayer();
+  }
+
+  function pulseDemoTap(){
+    demoTap.classList.remove("pulse");
+    void demoTap.offsetWidth;
+    demoTap.classList.add("pulse");
+  }
+
+  function stopDemo(showReady=true){
+    if(!demoRunning && demoHud.classList.contains("hidden")) return;
+    demoRunning=false;
+    cancelAnimationFrame(demoRaf);
+    demoHud.classList.add("hidden");
+    if(showReady && progress.attempts.length < MAX_ATTEMPTS){
+      overlayTitle.textContent="Ahora tú";
+      overlayText.textContent="Toca para subir, deja caer la copa para bajar y atraviesa el hueco entre las barricas. La demo no ha consumido ningún intento.";
+      startOverlay.classList.remove("hidden");
+      startBtn.disabled=false;
+      startBtn.textContent=`▶ Empezar intento ${progress.attempts.length+1}`;
+      demoBtn.style.display="";
+      statusEl.innerHTML="<strong>Listo para jugar.</strong> Tienes 3 intentos y cuenta tu mejor carrera.";
+      draw();
+    }
+  }
+
+  function startDemo(){
+    if(running || demoRunning || progress.attempts.length>=MAX_ATTEMPTS) return;
+    demoRunning=true;
+    cancelAnimationFrame(demoRaf);
+    demoPlayerY=H*.50; demoPlayerV=0; demoObstacleX=W+35; demoLastPulseStep=-1;
+    demoStartedAt=performance.now(); demoLastFrame=demoStartedAt;
+    startOverlay.classList.add("hidden");
+    demoHud.classList.remove("hidden");
+    statusEl.innerHTML="<strong>Demo:</strong> observa el ritmo de los toques y pasa por el centro del hueco.";
+    demoRaf=requestAnimationFrame(demoLoop);
+  }
+
+  function demoLoop(now){
+    if(!demoRunning) return;
+    const t=(now-demoStartedAt)/1000;
+    let dt=Math.min((now-demoLastFrame)/1000,.04);
+    demoLastFrame=now;
+
+    // Un único obstáculo atraviesa la pantalla durante la explicación.
+    demoObstacleX = W + 35 - 55*t;
+    const gapCenter=H*.49;
+    const gapTop=gapCenter-GAP_H/2, gapBottom=gapCenter+GAP_H/2;
+
+    // Toques guionizados: se ven y se traducen en el mismo impulso que usará el jugador.
+    const taps=[.7,1.75,2.8,3.85,4.9,5.95,7.0];
+    let step=-1;
+    for(let i=0;i<taps.length;i++) if(t>=taps[i]) step=i;
+    if(step>demoLastPulseStep){
+      demoLastPulseStep=step;
+      demoPlayerV=FLAP_V;
+      pulseDemoTap();
+    }
+    demoPlayerV += GRAVITY*dt;
+    demoPlayerY += demoPlayerV*dt;
+    demoPlayerY = Math.max(80,Math.min(H-70,demoPlayerY));
+
+    if(t<2.2) demoCaption.innerHTML="<strong>1 · Toca para subir</strong>Cada toque da un impulso hacia arriba. No hace falta mantener pulsado.";
+    else if(t<4.8) demoCaption.innerHTML="<strong>2 · Deja caer para bajar</strong>Entre toques, la gravedad hace descender la copa. Busca el centro del hueco.";
+    else if(t<7.4) demoCaption.innerHTML="<strong>3 · Atraviesa la puerta</strong>No toques las barricas. Cada puerta superada suma 1 punto.";
+    else demoCaption.innerHTML="<strong>¡Eso es todo!</strong>Tienes 3 intentos y cuenta tu mejor carrera.";
+
+    drawBackground();
+    drawBarrelColumn(demoObstacleX,0,gapTop,true);
+    drawBarrelColumn(demoObstacleX,gapBottom,H-gapBottom,false);
+    drawDemoPlayer();
+
+    // Flecha visual hacia el hueco.
+    if(t>3.2 && t<7.5){
+      ctx.save();
+      ctx.strokeStyle="rgba(155,231,161,.9)"; ctx.fillStyle="rgba(155,231,161,.9)"; ctx.lineWidth=4;
+      const ax=Math.min(W-52,Math.max(150,demoObstacleX-28)), ay=gapCenter;
+      ctx.beginPath();ctx.moveTo(ax-42,ay);ctx.lineTo(ax,ay);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax-12,ay-9);ctx.lineTo(ax-12,ay+9);ctx.closePath();ctx.fill();
+      ctx.restore();
+    }
+
+    if(t>=8.4){ stopDemo(true); return; }
+    demoRaf=requestAnimationFrame(demoLoop);
   }
 
   function flap(){
@@ -403,6 +539,7 @@
 
   async function startAttempt(){
     if(!(await miniIdentityReady)) return;
+    if(demoRunning) stopDemo(false);
     if(running || progress.attempts.length>=MAX_ATTEMPTS) return;
     // El intento se consume al iniciar: recargar no permite repetirlo gratis.
     progress.attempts.push({index:progress.attempts.length+1,score:0,distance:0,duration:0,status:"running"});
@@ -473,16 +610,22 @@
   window.addEventListener("keydown",e=>{
     if(e.code==="Space"){
       e.preventDefault();
+      if(demoRunning) return;
       if(running) flap();
       else if(progress.attempts.length<MAX_ATTEMPTS) startAttempt();
     }
   });
   startBtn.addEventListener("click",startAttempt);
+  demoBtn.addEventListener("click",startDemo);
+  demoSkipBtn.addEventListener("click",()=>stopDemo(true));
 
   // Reintento automático de sincronización: cualquier progreso local existente
   // se vuelve a publicar al abrir el juego, incluida una carrera interrumpida.
   miniIdentityReady.then(valid => {
-    if(valid && progress.attempts.length) publishResult();
+    if(!valid) return;
+    if(progress.attempts.length) publishResult();
+    // Antes del primer intento de la sesión se reproduce automáticamente la demo.
+    if(progress.attempts.length===0) startDemo();
   });
   renderProgress();
   draw();
