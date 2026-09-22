@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Aroma Tetris · Falanghina Edition (Mobile)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <style>
+    :root{
+      --bg:#050509;
+      --bg2:#10111a;
+      --card:#151621;
+      --accent:#ffb347;
+      --accent2:#ff6f61;
+      --ok:#9be7a1;
+      --error:#ff8b94;
+      --text:#f5f5f7;
+      --muted:#b7bbc7;
+      --radius:18px;
+      --shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(900px 500px at 10% -10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 60%),
+        radial-gradient(800px 500px at 110% 0%, color-mix(in oklab, var(--accent2) 18%, transparent), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .shell{
+      width:100%;
+      max-width:420px;
+    }
+    .card{
+      background:color-mix(in oklab, var(--card) 92%, black);
+      border-radius:var(--radius);
+      padding:14px 14px 16px;
+      box-shadow:var(--shadow);
+      border:1px solid #25263a;
+    }
+    .header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .title{
+      font-weight:900;
+      font-size:1.1rem;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .subtitle{
+      font-size:.9rem;
+      color:var(--muted);
+      margin-top:3px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:.78rem;
+      background:#191a26;
+      border:1px solid #323347;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .pill b{color:var(--text);}
+    .top-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:10px;
+    }
+    .score-wrap{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      font-size:.85rem;
+    }
+    .score-wrap span b{
+      font-weight:800;
+      color:var(--accent);
+    }
+    .score-wrap .bad b{
+      color:var(--error);
+    }
+    .timer{
+      font-weight:900;
+      font-size:.95rem;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid #2e3044;
+      background:#10111a;
+    }
+
+    .instructions{
+      margin-top:10px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px dashed #2f3145;
+      background:#10111a;
+      font-size:.86rem;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .instructions b{color:var(--text);}
+
+    .playfield-wrap{
+      margin-top:12px;
+      border-radius:16px;
+      border:1px solid #2b2e42;
+      background:#070811;
+      padding:8px;
+      position:relative;
+      overflow:hidden;
+    }
+    .playfield{
+      position:relative;
+      width:100%;
+      height:420px;
+      border-radius:12px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent 18%),
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.05), transparent 55%),
+        #05050b;
+      touch-action:manipulation;
+    }
+
+    .column-labels{
+      position:absolute;
+      top:4px;
+      left:0;
+      right:0;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:4px;
+      padding:0 6px;
+      font-size:.7rem;
+      text-align:center;
+      color:var(--muted);
+      pointer-events:none;
+      z-index:3;
+    }
+    .column-labels div{
+      opacity:.85;
+    }
+
+    .block{
+      position:absolute;
+      left:50%;
+      transform:translate(-50%, -40px);
+      padding:8px 10px;
+      min-width:80px;
+      max-width:110px;
+      border-radius:12px;
+      font-size:.8rem;
+      text-align:center;
+      background:linear-gradient(145deg,#1f2130,#131422);
+      border:1px solid #323548;
+      color:var(--text);
+      box-shadow:0 6px 12px rgba(0,0,0,.45);
+      cursor:pointer;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:none;
+      z-index:2;
+    }
+    .block.correct-hint{
+      box-shadow:0 0 12px rgba(155,231,161,.35);
+    }
+    .block.hit-correct{
+      background:linear-gradient(145deg,#1c3222,#15301f);
+      border-color:rgba(155,231,161,.8);
+      box-shadow:
+        0 0 12px rgba(155,231,161,.55),
+        0 8px 16px rgba(0,0,0,.75);
+    }
+    .block.hit-wrong{
+      background:linear-gradient(145deg,#3a1519,#24080a);
+      border-color:rgba(255,139,148,.8);
+      box-shadow:
+        0 0 12px rgba(255,139,148,.6),
+        0 8px 16px rgba(0,0,0,.75);
+    }
+
+    .grid-overlay{
+      position:absolute;
+      inset:0;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      border-radius:12px;
+      opacity:.12;
+      pointer-events:none;
+      z-index:1;
+    }
+    .grid-overlay div{
+      border-left:1px solid #ffffff;
+    }
+    .grid-overlay div:first-child{border-left:none;}
+
+    .btn-row{
+      margin-top:12px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    button{
+      appearance:none;
+      border:none;
+      border-radius:999px;
+      padding:9px 14px;
+      font-weight:800;
+      font-size:.9rem;
+      letter-spacing:.03em;
+      cursor:pointer;
+      background:#1b1c28;
+      color:var(--text);
+      border:1px solid #323347;
+      transition:.15s transform,.15s box-shadow,.15s background,.15s border;
+      touch-action:manipulation;
+    }
+    button.primary{
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#1a1110;
+      border-color:transparent;
+      box-shadow:0 6px 16px rgba(0,0,0,.5);
+    }
+    button.small{
+      padding:7px 11px;
+      font-size:.8rem;
+    }
+    button:active{
+      transform:translateY(1px) scale(.98);
+      box-shadow:none;
+    }
+    button[disabled]{
+      opacity:.55;
+      cursor:default;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .status{
+      margin-top:8px;
+      font-size:.82rem;
+      color:var(--muted);
+    }
+    .status b{color:var(--text);}
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background:#10111b;
+      border-radius:999px;
+      padding:7px 14px;
+      font-size:.82rem;
+      color:var(--muted);
+      border:1px solid #323347;
+      box-shadow:0 12px 26px rgba(0,0,0,.65);
+      opacity:0;
+      pointer-events:none;
+      transition:.18s opacity,.18s transform;
+      z-index:99;
+    }
+    .toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(-4px);
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(4,4,10,.82);
+      backdrop-filter:blur(8px);
+      z-index:90;
+    }
+    .overlay.show{display:flex;}
+    .overlay-card{
+      width:min(420px,92vw);
+      border-radius:20px;
+      border:1px solid #2c2d40;
+      background:#10101b;
+      padding:18px 16px 14px;
+      box-shadow:0 18px 40px rgba(0,0,0,.8);
+    }
+    .overlay-title{
+      font-weight:900;
+      font-size:1.2rem;
+      margin-bottom:4px;
+    }
+    .overlay-sub{
+      font-size:.9rem;
+      color:var(--muted);
+      margin-bottom:12px;
+    }
+    .overlay-stats{
+      font-size:.9rem;
+      line-height:1.5;
+      margin-bottom:12px;
+    }
+    .overlay-stats b{color:var(--accent);}
+    .overlay-stats .bad{color:var(--error);}
+    .overlay-buttons{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+    }
+
+    @media (max-height:640px){
+      .playfield{height:360px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="card">
+    <div class="header">
+      <div>
+        <div class="title">Aroma Tetris</div>
+        <div class="subtitle">Vino de prueba: Falanghina (demo)</div>
+      </div>
+      <div class="pill">
+        🍋 <span>Solo toques<br><b>aromas que encajan</b></span>
+      </div>
+    </div>
+
+    <div class="top-row">
+      <div class="score-wrap">
+        <span>✅ Aciertos: <b id="score">0</b></span>
+        <span class="bad">❌ Fallos: <b id="mistakes">0</b></span>
+        <span>💨 Perdidos: <b id="missed">0</b></span>
+      </div>
+      <div class="timer" id="timer">00:30</div>
+    </div>
+
+    <div class="instructions">
+      <b>Cómo se juega:</b><br>
+      Van cayendo bloques de aromas por 4 columnas.<br>
+      Toca <b>solo</b> los que encajan con la Falanghina (cítrico, floral, salino).<br>
+      Si tocas algo raro (chocolate, café…) o dejas pasar un aroma bueno, cuenta como fallo o perdido.
+    </div>
+
+    <div class="playfield-wrap">
+      <div class="playfield" id="playfield">
+        <div class="column-labels">
+          <div>🍋 cítrico</div>
+          <div>🌸 floral</div>
+          <div>🧂 salino</div>
+          <div>☕ tostado / otros</div>
+        </div>
+        <div class="grid-overlay">
+          <div></div><div></div><div></div><div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button id="startBtn" class="primary">▶ Empezar partida</button>
+      <button id="hintBtn" class="small">Ver aromas buenos</button>
+    </div>
+
+    <div class="status" id="statusText">
+      Pulsa <b>“Empezar partida”</b> y prepárate para tocar solo los aromas que le van bien a la Falanghina.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="endOverlay">
+  <div class="overlay-card">
+    <div class="overlay-title">Fin de la partida</div>
+    <div class="overlay-sub">Resumen de tu nariz tetris 🍷</div>
+    <div class="overlay-stats" id="finalStats"></div>
+    <div class="overlay-buttons">
+      <button id="closeOverlayBtn">Cerrar</button>
+      <button id="restartOverlayBtn" class="primary">Jugar de nuevo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const playfield = document.getElementById("playfield");
+  const startBtn = document.getElementById("startBtn");
+  const hintBtn = document.getElementById("hintBtn");
+  const statusText = document.getElementById("statusText");
+  const scoreEl = document.getElementById("score");
+  const mistakesEl = document.getElementById("mistakes");
+  const missedEl = document.getElementById("missed");
+  const timerEl = document.getElementById("timer");
+  const toastEl = document.getElementById("toast");
+  const endOverlay = document.getElementById("endOverlay");
+  const finalStatsEl = document.getElementById("finalStats");
+  const closeOverlayBtn = document.getElementById("closeOverlayBtn");
+  const restartOverlayBtn = document.getElementById("restartOverlayBtn");
+
+  const NUM_COLS = 4;
+  const GAME_DURATION_MS = 30000;
+  const SPAWN_INTERVAL_SEC = 1.0;   // un poco más lento
+  const SPEED_PX_PER_SEC = 95;      // caída más suave para móvil
+
+  const aromas = [
+    { label:"Cítrico 🍋", correct:true },
+    { label:"Floral 🌸", correct:true },
+    { label:"Salino / mineral 🧂", correct:true },
+    { label:"Fruta roja 🍓", correct:false },
+    { label:"Fruta negra 🍇", correct:false },
+    { label:"Chocolate 🍫", correct:false },
+    { label:"Café / tostado ☕", correct:false },
+    { label:"Caramelo 🍬", correct:false },
+    { label:"Mantequilla 🧈", correct:false },
+    { label:"Especia dulce 🌶️", correct:false }
+  ];
+
+  let blocks = [];
+  let gameRunning = false;
+  let lastFrameTime = null;
+  let spawnTimer = 0;
+  let remainingMs = GAME_DURATION_MS;
+
+  let score = 0;
+  let mistakes = 0;
+  let missed = 0;
+  let totalCorrectTaps = 0;
+  let totalWrongTaps = 0;
+
+  let rafId = null;
+
+  function formatTime(ms){
+    const t = Math.max(0, Math.floor(ms / 1000));
+    const s = t % 60;
+    const m = Math.floor(t / 60);
+    const mm = (m < 10 ? "0" + m : m);
+    const ss = (s < 10 ? "0" + s : s);
+    return mm + ":" + ss;
+  }
+
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    setTimeout(()=> toastEl.classList.remove("show"), 1300);
+  }
+
+  function createBlock(){
+    const aroma = aromas[Math.floor(Math.random() * aromas.length)];
+    const colIndex = Math.floor(Math.random() * NUM_COLS);
+    const blockEl = document.createElement("div");
+    blockEl.className = "block";
+    blockEl.textContent = aroma.label;
+
+    const colPercent = (colIndex + 0.5) * (100 / NUM_COLS);
+    blockEl.style.left = colPercent + "%";
+
+    const block = {
+      el: blockEl,
+      y: -40,
+      colIndex,
+      label: aroma.label,
+      correct: aroma.correct,
+      hit: false,
+      removed: false
+    };
+
+    // Mejoramos interacción móvil: touchstart + mousedown
+    ["touchstart","mousedown"].forEach(evtName=>{
+      blockEl.addEventListener(evtName, (ev)=>{
+        ev.preventDefault();
+        ev.stopPropagation();
+        handleBlockTap(block);
+      }, { passive:false });
+    });
+
+    playfield.appendChild(blockEl);
+    blocks.push(block);
+  }
+
+  function handleBlockTap(block){
+    if(!gameRunning || block.removed) return;
+    if(block.hit) return; // por si llega doble evento (touch + mouse)
+
+    block.hit = true;
+
+    if(block.correct){
+      score++;
+      totalCorrectTaps++;
+      scoreEl.textContent = score;
+      block.el.classList.add("hit-correct");
+      setTimeout(()=> removeBlock(block), 200);
+      statusText.textContent = "Bien visto 🍋🌸🧂 ¡Ese sí que encaja con la Falanghina!";
+    }else{
+      mistakes++;
+      totalWrongTaps++;
+      mistakesEl.textContent = mistakes;
+      block.el.classList.add("hit-wrong");
+      setTimeout(()=> removeBlock(block), 220);
+      statusText.textContent = "Ese aroma no pega mucho… 😅 caza mejor los cítricos / florales / salinos.";
+    }
+  }
+
+  function removeBlock(block){
+    if(block.removed) return;
+    block.removed = true;
+    if(block.el && block.el.parentNode){
+      block.el.parentNode.removeChild(block.el);
+    }
+    blocks = blocks.filter(b => b !== block);
+  }
+
+  function resetBlocks(){
+    blocks.forEach(b=>{
+      if(b.el && b.el.parentNode){
+        b.el.parentNode.removeChild(b.el);
+      }
+    });
+    blocks = [];
+  }
+
+  function updateBlocks(dt){
+    const fieldRect = playfield.getBoundingClientRect();
+    const fieldHeight = fieldRect.height || 420;
+
+    blocks.forEach(block=>{
+      if(block.removed) return;
+      block.y += SPEED_PX_PER_SEC * dt;
+      block.el.style.transform = `translate(-50%, ${block.y}px)`;
+    });
+
+    blocks.slice().forEach(block=>{
+      if(block.removed) return;
+      if(block.y > fieldHeight + 40){
+        if(block.correct && !block.hit){
+          missed++;
+          missedEl.textContent = missed;
+        }
+        removeBlock(block);
+      }
+    });
+  }
+
+  function endGame(){
+    gameRunning = false;
+    if(rafId !== null){
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+
+    timerEl.textContent = "00:00";
+
+    const totalTouches = totalCorrectTaps + totalWrongTaps;
+    const accuracy = totalTouches ? Math.round((totalCorrectTaps / totalTouches) * 100) : 0;
+
+    let nivel;
+    if(score >= 12) nivel = "Nariz de halcón 🍋🦅";
+    else if(score >= 7) nivel = "Nariz muy fina 😏";
+    else if(score >= 3) nivel = "Nariz curiosa 👃";
+    else nivel = "Nariz en prácticas 😄";
+
+    finalStatsEl.innerHTML = `
+      ✅ Aciertos: <b>${score}</b><br>
+      ❌ Fallos al tocar: <span class="bad"><b>${mistakes}</b></span><br>
+      💨 Aromas buenos que se escaparon: <b>${missed}</b><br>
+      🎯 Precisión al tocar: <b>${accuracy}%</b><br><br>
+      Nivel de nariz en este vino:<br><b>${nivel}</b>
+    `;
+
+    endOverlay.classList.add("show");
+    statusText.textContent = "Partida terminada. Mira tu resumen y vuelve a jugar cuando quieras.";
+  }
+
+  function loop(timestamp){
+    if(!gameRunning) return;
+
+    if(lastFrameTime === null){
+      lastFrameTime = timestamp;
+      rafId = requestAnimationFrame(loop);
+      return;
+    }
+
+    const dt = (timestamp - lastFrameTime) / 1000;
+    lastFrameTime = timestamp;
+
+    remainingMs -= (dt * 1000);
+    if(remainingMs < 0) remainingMs = 0;
+    timerEl.textContent = formatTime(remainingMs);
+
+    spawnTimer += dt;
+    if(spawnTimer >= SPAWN_INTERVAL_SEC){
+      spawnTimer = 0;
+      createBlock();
+    }
+
+    updateBlocks(dt);
+
+    if(remainingMs <= 0){
+      endGame();
+      return;
+    }
+
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function resetGameState(){
+    resetBlocks();
+    lastFrameTime = null;
+    spawnTimer = 0;
+    remainingMs = GAME_DURATION_MS;
+    score = 0;
+    mistakes = 0;
+    missed = 0;
+    totalCorrectTaps = 0;
+    totalWrongTaps = 0;
+    scoreEl.textContent = "0";
+    mistakesEl.textContent = "0";
+    missedEl.textContent = "0";
+    timerEl.textContent = formatTime(GAME_DURATION_MS);
+  }
+
+  function startGame(){
+    if(gameRunning) return;
+    resetGameState();
+    gameRunning = true;
+    endOverlay.classList.remove("show");
+    statusText.textContent = "¡A jugar! Caza los aromas cítricos, florales y salinos. Evita los raros.";
+    showToast("Partida iniciada · 30 segundos de Aromas Tetris");
+    rafId = requestAnimationFrame(loop);
+  }
+
+  startBtn.addEventListener("click", startGame);
+
+  hintBtn.addEventListener("click", ()=>{
+    const good = aromas.filter(a => a.correct).map(a => a.label).join(", ");
+    showToast("Aromas buenos: " + good);
+  });
+
+  closeOverlayBtn.addEventListener("click", ()=>{
+    endOverlay.classList.remove("show");
+  });
+
+  restartOverlayBtn.addEventListener("click", ()=>{
+    endOverlay.classList.remove("show");
+    startGame();
+  });
+
+  statusText.textContent = "Pulsa “Empezar partida” para probar este minijuego de aromas tipo Tetris con Falanghina.";
+})();
+</script>
+
+</body>
+</html>

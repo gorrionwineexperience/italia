@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Test alcoholemia · Carretera hardcore</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <style>
+    :root{
+      --bg:#05070f;
+      --bg2:#0b0f1b;
+      --card:#141729;
+      --accent:#ffb347;
+      --accent2:#ff6f61;
+      --ok:#9be7a1;
+      --error:#ff8b94;
+      --text:#f5f5f7;
+      --muted:#b7bbc7;
+      --radius:18px;
+      --shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(900px 500px at 10% -10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 60%),
+        radial-gradient(800px 500px at 110% 0%, color-mix(in oklab, var(--accent2) 18%, transparent), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .shell{
+      width:100%;
+      max-width:420px;
+    }
+    .card{
+      background:color-mix(in oklab, var(--card) 92%, black);
+      border-radius:var(--radius);
+      padding:14px 14px 16px;
+      box-shadow:var(--shadow);
+      border:1px solid #262a44;
+    }
+    .header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .title{
+      font-weight:900;
+      font-size:1.1rem;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .subtitle{
+      font-size:.9rem;
+      color:var(--muted);
+      margin-top:3px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:.78rem;
+      background:#171b2b;
+      border:1px solid #343a56;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .pill b{color:var(--text);}
+
+    .top-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:10px;
+    }
+    .timer{
+      font-weight:900;
+      font-size:1rem;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid #343a56;
+      background:#0c1020;
+    }
+    .score-wrap{
+      font-size:.86rem;
+      color:var(--muted);
+    }
+    .score-wrap b{color:var(--accent);}
+
+    .instructions{
+      margin-top:10px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px dashed #343a56;
+      background:#0d1121;
+      font-size:.86rem;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .instructions b{color:var(--text);}
+
+    .field-wrap{
+      margin-top:14px;
+      border-radius:16px;
+      border:1px solid #343a56;
+      background:#050814;
+      padding:12px 16px;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+    }
+    .field-label{
+      font-size:.8rem;
+      color:var(--muted);
+      margin-bottom:8px;
+      text-align:center;
+    }
+
+    /* 🚗 Carretera vertical */
+    .field{
+      position:relative;
+      width:140px;
+      height:260px;
+      border-radius:40px;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,255,255,.05), transparent 60%),
+        radial-gradient(circle at 80% 100%, rgba(255,255,255,.03), transparent 60%),
+        #111317;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.06),
+        0 12px 22px rgba(0,0,0,.8);
+      overflow:hidden;
+    }
+    /* bordes de la carretera */
+    .field::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(90deg,
+          rgba(240,240,240,.2) 0px,
+          rgba(240,240,240,.2) 4px,
+          transparent 4px,
+          transparent calc(100% - 4px),
+          rgba(240,240,240,.2) calc(100% - 4px),
+          rgba(240,240,240,.2) 100%);
+      pointer-events:none;
+      mix-blend-mode:screen;
+      opacity:.6;
+    }
+    /* línea discontinua central */
+    .field::after{
+      content:"";
+      position:absolute;
+      top:0;
+      bottom:0;
+      left:50%;
+      width:4px;
+      transform:translateX(-50%);
+      background:
+        repeating-linear-gradient(
+          180deg,
+          rgba(255,255,255,.8) 0,
+          rgba(255,255,255,.8) 14px,
+          transparent 14px,
+          transparent 26px
+        );
+      opacity:.9;
+      box-shadow:0 0 4px rgba(255,255,255,.9);
+      pointer-events:none;
+    }
+
+    /* 🟩 Zona segura MUY MUY pequeña */
+    .safe-zone{
+      position:absolute;
+      width:18%;
+      height:14%;
+      left:41%;
+      top:43%;
+      border-radius:12px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(155,231,161,.3), transparent 80%);
+      border:1px solid rgba(155,231,161,.75);
+      box-shadow:0 0 12px rgba(155,231,161,.7);
+      pointer-events:none;
+    }
+
+    .dot{
+      position:absolute;
+      width:22px;
+      height:22px;
+      border-radius:999px;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      background:radial-gradient(circle at 30% 30%, #ffffff, #ffb347);
+      box-shadow:
+        0 0 10px rgba(255,179,71,.7),
+        0 8px 16px rgba(0,0,0,.7);
+      border:1px solid rgba(255,255,255,.85);
+      transition:box-shadow .1s;
+    }
+    .dot.out{
+      box-shadow:
+        0 0 12px rgba(255,139,148,.9),
+        0 8px 18px rgba(0,0,0,.85);
+      background:radial-gradient(circle at 30% 30%, #ffffff, #ff8b94);
+      border-color:rgba(255,139,148,.95);
+    }
+
+    .status{
+      margin-top:8px;
+      font-size:.82rem;
+      color:var(--muted);
+    }
+    .status b{color:var(--text);}
+
+    .btn-row{
+      margin-top:12px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    button{
+      appearance:none;
+      border:none;
+      border-radius:999px;
+      padding:9px 14px;
+      font-weight:800;
+      font-size:.9rem;
+      letter-spacing:.03em;
+      cursor:pointer;
+      background:#171b2b;
+      color:var(--text);
+      border:1px solid #343a56;
+      transition:.15s transform,.15s box-shadow,.15s background,.15s border;
+      touch-action:manipulation;
+    }
+    button.primary{
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#1a1310;
+      border-color:transparent;
+      box-shadow:0 6px 16px rgba(0,0,0,.5);
+    }
+    button.small{
+      padding:7px 11px;
+      font-size:.8rem;
+    }
+    button:active{
+      transform:translateY(1px) scale(.98);
+      box-shadow:none;
+    }
+    button[disabled]{
+      opacity:.55;
+      cursor:default;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background:#0c1020;
+      border-radius:999px;
+      padding:7px 14px;
+      font-size:.82rem;
+      color:var(--muted);
+      border:1px solid #343a56;
+      box-shadow:0 12px 26px rgba(0,0,0,.65);
+      opacity:0;
+      pointer-events:none;
+      transition:.18s opacity,.18s transform;
+      z-index:99;
+    }
+    .toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(-4px);
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(5,7,18,.85);
+      backdrop-filter:blur(8px);
+      z-index:90;
+    }
+    .overlay.show{display:flex;}
+    .overlay-card{
+      width:min(420px,92vw);
+      border-radius:20px;
+      border:1px solid #343a56;
+      background:#090d1d;
+      padding:18px 16px 14px;
+      box-shadow:0 18px 40px rgba(0,0,0,.8);
+    }
+    .overlay-title{
+      font-weight:900;
+      font-size:1.2rem;
+      margin-bottom:4px;
+    }
+    .overlay-sub{
+      font-size:.9rem;
+      color:var(--muted);
+      margin-bottom:12px;
+    }
+    .overlay-stats{
+      font-size:.9rem;
+      line-height:1.5;
+      margin-bottom:12px;
+    }
+    .overlay-stats b{color:var(--accent);}
+    .overlay-stats .bad{color:var(--error);}
+    .overlay-buttons{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+    }
+
+    @media (max-height:640px){
+      .field-wrap{margin-top:10px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="card">
+    <div class="header">
+      <div>
+        <div class="title">Test alcoholemia</div>
+        <div class="subtitle">Carretera vertical · 3 intentos máximo</div>
+      </div>
+      <div class="pill">
+        🚫🚗 <span><b>Solo es un juego</b><br>no sirve para conducir</span>
+      </div>
+    </div>
+
+    <div class="top-row">
+      <div class="score-wrap">
+        Tiempo en el recuadro: <b id="insidePercent">0%</b>
+      </div>
+      <div class="timer" id="timer">00:15</div>
+    </div>
+
+    <div class="instructions">
+      <b>Cómo se juega:</b><br>
+      Sujeta el móvil frente a ti.<br>
+      Inclínalo suave arriba/abajo/izquierda/derecha para mantener el punto
+      dentro del <b>micro-recuadro verde</b> en mitad de la carretera durante 15 segundos.<br><br>
+      Tienes <b>3 intentos</b>. Al final verás la media de tus resultados.
+    </div>
+
+    <div class="field-wrap">
+      <div class="field-label">
+        Mantén el punto dentro del tramo verde central de la carretera.
+      </div>
+      <div class="field" id="field">
+        <div class="safe-zone"></div>
+        <div class="dot" id="dot"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button id="startBtn" class="primary">▶ Activar sensores y empezar</button>
+      <button id="recalBtn" class="small">Recalibrar centro</button>
+    </div>
+
+    <div class="status" id="statusText">
+      Pulsa <b>“Activar sensores y empezar”</b>. Tienes 3 intentos: sujeta el móvil cómodo, deja que calibre el centro y luego muévete lo mínimo posible.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="endOverlay">
+  <div class="overlay-card">
+    <div class="overlay-title">Fin del test</div>
+    <div class="overlay-sub">Resumen de tu puntería en carretera 🍷</div>
+    <div class="overlay-stats" id="finalStats"></div>
+    <div class="overlay-buttons">
+      <button id="closeOverlayBtn">Cerrar</button>
+      <button id="restartOverlayBtn" class="primary">Repetir prueba</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDwlXwWlmgLhwgjONXQmWE7O5H54aZd6dk",
+    authDomain: "catas-9d780.firebaseapp.com",
+    databaseURL: "https://catas-9d780-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "catas-9d780",
+    storageBucket: "catas-9d780.firebasestorage.app",
+    messagingSenderId: "554356727364",
+    appId: "1:554356727364:web:2e8a754067872751efa611",
+    measurementId: "G-F2YRVJ9B00"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const rawName = (localStorage.getItem("gw_name") || "INVITADO").toUpperCase().slice(0, 8);
+  const sessionId = rawName || "INVITADO";
+
+  const qs = new URLSearchParams(location.search);
+  const isHost = qs.get("host") === "1";
+  const isDashboard = qs.get("dashboard") === "1";
+
+  if(!isHost && !isDashboard){
+    const screenRef = ref(db, "miniGames/currentScreen");
+    onValue(screenRef, (snap) => {
+      const screen = snap.val() || "cata";
+      const current = (location.pathname.split("/").pop() || "").toLowerCase();
+
+      if(screen === "cata"){
+        if(current !== "index.html"){
+          window.location.href = "index.html";
+        }
+      }else if(screen === "bubbles"){
+        if(!current.includes("burbujas")){
+          window.location.href = "burbujas.html";
+        }
+      }else if(screen === "linea"){
+        // Nos quedamos aquí
+      }
+    });
+  }
+
+(function(){
+  const dotEl = document.getElementById("dot");
+  const startBtn = document.getElementById("startBtn");
+  const recalBtn = document.getElementById("recalBtn");
+  const statusText = document.getElementById("statusText");
+  const timerEl = document.getElementById("timer");
+  const insidePercentEl = document.getElementById("insidePercent");
+  const toastEl = document.getElementById("toast");
+  const endOverlay = document.getElementById("endOverlay");
+  const finalStatsEl = document.getElementById("finalStats");
+  const closeOverlayBtn = document.getElementById("closeOverlayBtn");
+  const restartOverlayBtn = document.getElementById("restartOverlayBtn");
+
+  const overlayTitleEl = document.querySelector(".overlay-title");
+  const overlaySubEl = document.querySelector(".overlay-sub");
+
+  const GAME_DURATION_MS = 15000;
+  const MAX_TILT = 8;    // rango máximo que mapeamos
+  const SAFE_TILT = 2.0; // zona segura muy pequeña en X e Y
+  const MAX_ATTEMPTS = 3;
+
+  let gameRunning = false;
+  let sensorActive = false;
+
+  let baselineGamma = null; // izquierda/derecha
+  let baselineBeta = null;  // adelante/atrás
+  let latestGamma = 0;
+  let latestBeta = 0;
+
+  let lastFrameTime = null;
+  let elapsedMs = 0;
+  let insideMs = 0;
+
+  let rafId = null;
+
+  let attemptCount = 0;
+  const attempts = []; // {insideMs, percent}
+
+  function formatTime(ms){
+    const t = Math.max(0, Math.floor(ms / 1000));
+    const s = t % 60;
+    const m = Math.floor(t / 60);
+    const mm = (m < 10 ? "0" + m : m);
+    const ss = (s < 10 ? "0" + s : s);
+    return mm + ":" + ss;
+  }
+
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    setTimeout(()=> toastEl.classList.remove("show"), 1400);
+  }
+
+  function handleOrientation(ev){
+    if(ev.gamma == null || ev.beta == null) return;
+    latestGamma = ev.gamma; // izq/der
+    latestBeta  = ev.beta;  // adelante/atrás
+    if(baselineGamma === null) baselineGamma = latestGamma;
+    if(baselineBeta === null)  baselineBeta  = latestBeta;
+  }
+
+  async function requestSensorPermission(){
+    try{
+      if (typeof DeviceOrientationEvent !== "undefined" &&
+          typeof DeviceOrientationEvent.requestPermission === "function"){
+        const resp = await DeviceOrientationEvent.requestPermission();
+        return resp === "granted";
+      }
+    }catch(e){
+      console.warn("Error pidiendo permiso DeviceOrientation:", e);
+    }
+    return true;
+  }
+
+  function attachSensor(){
+    if(sensorActive) return;
+    if(typeof window.DeviceOrientationEvent === "undefined"){
+      showToast("Tu móvil no soporta sensor de orientación.");
+      statusText.textContent = "Este dispositivo no permite leer la orientación. Solo puedes ver la demo.";
+      return;
+    }
+    window.addEventListener("deviceorientation", handleOrientation, true);
+    sensorActive = true;
+  }
+
+  function detachSensor(){
+    if(!sensorActive) return;
+    window.removeEventListener("deviceorientation", handleOrientation, true);
+    sensorActive = false;
+  }
+
+  function resetState(){
+    detachSensor();
+    dotEl.style.left = "50%";
+    dotEl.style.top  = "50%";
+    dotEl.classList.remove("out");
+    elapsedMs = 0;
+    insideMs = 0;
+    lastFrameTime = null;
+    baselineGamma = null;
+    baselineBeta  = null;
+    timerEl.textContent = formatTime(GAME_DURATION_MS);
+    insidePercentEl.textContent = "0%";
+  }
+
+  function updateDotAndStats(dt){
+    let tiltX = 0; // gamma
+    let tiltY = 0; // beta
+
+    if(baselineGamma !== null){
+      tiltX = latestGamma - baselineGamma;
+    }
+    if(baselineBeta !== null){
+      tiltY = latestBeta - baselineBeta;
+    }
+
+    // limitar
+    tiltX = Math.max(-MAX_TILT, Math.min(MAX_TILT, tiltX));
+    tiltY = Math.max(-MAX_TILT, Math.min(MAX_TILT, tiltY));
+
+    // mapear a % campo (5..95)
+    const ratioX = tiltX / MAX_TILT;
+    let posX = 50 + ratioX * 40;
+    if(posX < 5) posX = 5;
+    if(posX > 95) posX = 95;
+
+    const ratioY = tiltY / MAX_TILT;
+    let posY = 50 + ratioY * 40;
+    if(posY < 5) posY = 5;
+    if(posY > 95) posY = 95;
+
+    dotEl.style.left = posX + "%";
+    dotEl.style.top  = posY + "%";
+
+    const inside = (Math.abs(tiltX) <= SAFE_TILT) && (Math.abs(tiltY) <= SAFE_TILT);
+    if(inside){
+      insideMs += dt * 1000;
+      dotEl.classList.remove("out");
+    }else{
+      dotEl.classList.add("out");
+    }
+
+    const p = Math.max(0, Math.min(100, Math.round(insideMs / GAME_DURATION_MS * 100)));
+    insidePercentEl.textContent = p + "%";
+
+    if(inside){
+      statusText.textContent = "En el tramo verde ✅ · Mantén el pulso firme…";
+    }else{
+      statusText.textContent = "Fuera del tramo 😅 · Cualquier mínimo temblor te saca de la carretera.";
+    }
+  }
+
+  function buildFinalSummaryHTML(){
+    let html = "Resumen de tus 3 intentos:<br><br>";
+    attempts.forEach((att, i) => {
+      const sec = Math.round(att.insideMs / 1000);
+      html += `
+        <div style="margin-bottom:8px;">
+          Intento ${i+1}:<br>
+          ✅ Tiempo en verde: <b>${sec} s</b><br>
+          📊 Porcentaje en tramo: <b>${att.percent}%</b>
+        </div>
+      `;
+    });
+
+    const avgPercent = Math.round(
+      attempts.reduce((sum,a)=>sum + a.percent,0) / attempts.length
+    );
+    const avgInsideSec = Math.round(
+      attempts.reduce((sum,a)=>sum + a.insideMs,0) / attempts.length / 1000
+    );
+
+    let nivel;
+    if(avgPercent >= 50){
+      nivel = "Pulso sobrenatural en este Test de alcoholemia 🧠🍷";
+    }else if(avgPercent >= 20){
+      nivel = "Muy buen control medio para lo pequeño del tramo 😏";
+    }else if(avgPercent >= 5){
+      nivel = "Has pasado por el tramo verde varias veces, nada mal 😄";
+    }else{
+      nivel = "Modo lavadora · la carretera iba por un lado y tú por otro 🤣";
+    }
+
+    html += `
+      <br>
+      <b>Media de los 3 intentos</b><br>
+      ✅ Tiempo medio en verde: <b>${avgInsideSec} s</b><br>
+      📊 Porcentaje medio en tramo: <b>${avgPercent}%</b><br><br>
+      Diagnóstico global:<br>
+      <b>${nivel}</b><br><br>
+      <small>Comparte este resultado con el anfitrión para el ranking de la cata.</small>
+    `;
+    return html;
+  }
+
+  function endGame(){
+    gameRunning = false;
+    if(rafId !== null){
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    detachSensor();
+    timerEl.textContent = "00:00";
+
+    const percent = Math.max(0, Math.min(100, Math.round(insideMs / GAME_DURATION_MS * 100)));
+    attempts.push({ insideMs, percent });
+    attemptCount = attempts.length;
+
+    const remainingAttempts = Math.max(0, MAX_ATTEMPTS - attemptCount);
+
+    if(attemptCount >= MAX_ATTEMPTS){
+      // nuevo: subir resumen final de los 3 intentos a Firebase
+      try{
+        if(typeof db !== "undefined"){
+          const safeId = sessionId || "INVITADO";
+          const attemptsCount = attempts.length || 0;
+          let avgPercent = attemptsCount
+            ? Math.round(attempts.reduce((sum,a)=>sum + (a.percent || 0),0) / attemptsCount)
+            : 0;
+          let avgInsideSec = attemptsCount
+            ? Math.round(attempts.reduce((sum,a)=>sum + (a.insideMs || 0),0) / attemptsCount / 1000)
+            : 0;
+
+          const resultsRef = ref(db, "miniGames/linea/results/" + safeId);
+          const payload = {
+            sessionId: safeId,
+            name: safeId,
+            ts: Date.now(),
+            attempts: attempts.map((att, i) => ({
+              index: i+1,
+              insideMs: att.insideMs,
+              percent: att.percent
+            })),
+            avgPercent,
+            avgInsideSec
+          };
+          set(resultsRef, payload);
+        }
+      }catch(e){
+        console.error("Error guardando resultados de Test alcoholemia", e);
+      }
+
+      // Resumen final de los 3 intentos
+      overlayTitleEl.textContent = "Resumen final · Test alcoholemia";
+      overlaySubEl.textContent = "Media de tus 3 intentos en la carretera 2D.";
+      finalStatsEl.innerHTML = buildFinalSummaryHTML();
+      restartOverlayBtn.style.display = "none";
+      startBtn.disabled = true;
+      recalBtn.disabled = true;
+      statusText.textContent = "Has completado tus 3 intentos. Enseña el resumen al anfitrión de la cata.";
+    }else{
+      // Resumen solo de este intento
+      let nivel;
+      if(percent >= 50){
+        nivel = "Pulso sobrenatural en carretera hardcore 🧠🍷";
+      }else if(percent >= 20){
+        nivel = "Muy buen control para lo pequeño del tramo 😏";
+      }else if(percent >= 5){
+        nivel = "Has tocado el tramo verde, que ya es mucho 😄";
+      }else{
+        nivel = "Modo lavadora · la carretera iba por un lado y tú por otro 🤣";
+      }
+
+      overlayTitleEl.textContent = "Fin del intento " + attemptCount + " de 3";
+      overlaySubEl.textContent = "Puedes repetir hasta completar tus 3 intentos.";
+      finalStatsEl.innerHTML = `
+        ⏱️ Tiempo total: <b>${(GAME_DURATION_MS/1000).toFixed(0)} s</b><br>
+        ✅ Tiempo dentro del tramo verde: <b>${Math.round(insideMs/1000)} s</b><br>
+        📊 Porcentaje en el tramo: <b>${percent}%</b><br><br>
+        Diagnóstico de este intento:<br>
+        <b>${nivel}</b><br><br>
+        <small>Te quedan <b>${remainingAttempts}</b> intento(s) de Test alcoholemia.</small>
+      `;
+      restartOverlayBtn.style.display = "inline-flex";
+      statusText.textContent = "Intento " + attemptCount + " completado. Puedes repetir hasta llegar a 3 intentos.";
+    }
+
+    endOverlay.classList.add("show");
+  }
+
+  function loop(timestamp){
+    if(!gameRunning) return;
+
+    if(lastFrameTime === null){
+      lastFrameTime = timestamp;
+      rafId = requestAnimationFrame(loop);
+      return;
+    }
+
+    const dt = (timestamp - lastFrameTime) / 1000;
+    lastFrameTime = timestamp;
+
+    elapsedMs += dt * 1000;
+    const remaining = Math.max(0, GAME_DURATION_MS - elapsedMs);
+    timerEl.textContent = formatTime(remaining);
+
+    updateDotAndStats(dt);
+
+    if(remaining <= 0){
+      endGame();
+      return;
+    }
+
+    rafId = requestAnimationFrame(loop);
+  }
+
+  async function startGame(){
+    if(gameRunning) return;
+
+    if(attemptCount >= MAX_ATTEMPTS){
+      showToast("Ya has usado tus 3 intentos del Test alcoholemia.");
+      statusText.textContent = "Has terminado tus 3 intentos. No puedes repetir más esta prueba.";
+      return;
+    }
+
+    resetState();
+
+    const granted = await requestSensorPermission();
+    if(!granted){
+      showToast("Hace falta permiso para usar el sensor.");
+      statusText.textContent = "No se pudo activar el sensor. Revisa los permisos del navegador.";
+      return;
+    }
+
+    attachSensor();
+
+    gameRunning = true;
+    endOverlay.classList.remove("show");
+    statusText.textContent = "Mantén el punto en el micro-tramo verde inclinando el móvil lo mínimo posible. Intento " + (attemptCount+1) + " de 3.";
+    showToast("Test iniciado · 15 s de carretera 2D (intento " + (attemptCount+1) + " de 3)");
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function recalibrate(){
+    if(attemptCount >= MAX_ATTEMPTS){
+      showToast("Test alcoholemia completado. Ya no hace falta recalibrar.");
+      return;
+    }
+    baselineGamma = latestGamma;
+    baselineBeta  = latestBeta;
+    showToast("Centro recalibrado. Esta orientación es tu nuevo “recto” en carretera.");
+  }
+
+  startBtn.addEventListener("click", startGame);
+  recalBtn.addEventListener("click", recalibrate);
+
+  closeOverlayBtn.addEventListener("click", ()=>{
+    endOverlay.classList.remove("show");
+  });
+
+  restartOverlayBtn.addEventListener("click", ()=>{
+    endOverlay.classList.remove("show");
+    startGame();
+  });
+
+  statusText.textContent = "Pulsa “Activar sensores y empezar”. Tienes 3 intentos: sujeta el móvil cómodo, deja que calibre y luego muévete lo mínimo posible.";
+})();
+</script>
+
+</body>
+</html>

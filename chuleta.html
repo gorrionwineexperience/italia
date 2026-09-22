@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chuleta Cata – Argentina</title>
+  <style>
+    :root{
+      --bg:#f6f1e7;
+      --paper:#fffaf2;
+      --ink:#2d241f;
+      --muted:#6b5a50;
+      --accent:#6f1d1b;
+      --accent-2:#a43d2f;
+      --line:#e4d7c7;
+      --quote:#f1e6d7;
+      --chip:#efe3d5;
+      --shadow:0 12px 35px rgba(61,35,20,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(164,61,47,.08), transparent 26%),
+        linear-gradient(180deg, #f8f3ec 0%, var(--bg) 100%);
+      line-height:1.72;
+    }
+    .wrap{max-width:980px;margin:0 auto;padding:28px 18px 90px}
+    .hero{
+      background:linear-gradient(135deg, rgba(111,29,27,.95), rgba(164,61,47,.88));
+      color:#fff;
+      padding:34px 28px;
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+      margin-bottom:20px;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -60px auto;
+      width:220px;height:220px;border-radius:50%;
+      background:rgba(255,255,255,.08);
+      filter:blur(2px);
+    }
+    h1,h2,h3,h4{font-family: Georgia, "Times New Roman", serif; line-height:1.2; margin:0 0 .6rem}
+    h1{font-size:2.2rem; margin-bottom:.4rem}
+    h2{font-size:1.7rem; color:var(--accent); margin-top:0}
+    h3{font-size:1.2rem; color:#4a352c; margin-top:1rem}
+    h4{font-size:1rem; color:#4a352c; margin-top:.9rem}
+    .subtitle{max-width:760px;color:rgba(255,255,255,.92);margin:0 0 1rem}
+    .topbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:10px}
+    .btn{
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:600;
+      cursor:pointer;
+      backdrop-filter: blur(4px);
+    }
+    .toc{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+      gap:10px;
+      margin:22px 0 26px;
+    }
+    .toc a{
+      display:block;
+      text-decoration:none;
+      color:var(--ink);
+      background:var(--paper);
+      border:1px solid var(--line);
+      padding:12px 14px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      font-weight:600;
+    }
+    .section{
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:24px 22px;
+      box-shadow:var(--shadow);
+      margin:18px 0;
+    }
+    .lead{color:var(--muted); margin-top:-4px}
+    blockquote{
+      margin:14px 0;
+      padding:14px 16px;
+      background:var(--quote);
+      border-left:5px solid var(--accent-2);
+      border-radius:12px;
+      color:#3c2f28;
+    }
+    .wine{
+      border-top:1px dashed var(--line);
+      padding-top:18px;
+      margin-top:18px;
+    }
+    .wine:first-of-type{border-top:none;padding-top:0;margin-top:0}
+    .tagline{
+      display:inline-block;
+      background:var(--chip);
+      color:#5a463d;
+      border:1px solid var(--line);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.92rem;
+      margin:.2rem 0 .9rem;
+    }
+    ul{margin:.3rem 0 1rem 1.2rem;padding:0}
+    li{margin:.25rem 0}
+    .muted{color:var(--muted)}
+    .footer-note{font-size:.95rem;color:var(--muted);margin-top:26px}
+    .sticky-actions{position:fixed;right:14px;bottom:14px;display:flex;gap:10px;z-index:50;}
+    .mini-btn{border:none;background:var(--accent);color:#fff;padding:11px 14px;border-radius:999px;cursor:pointer;box-shadow:0 10px 25px rgba(111,29,27,.25);font-weight:700;}
+    .quote-inline{font-style:italic;color:#4b3a31}
+    @media print{
+      body{background:#fff}
+      .hero,.section,.toc a{box-shadow:none}
+      .sticky-actions,.btn{display:none!important}
+      .wrap{max-width:none;padding:0}
+      .section,.hero{border:1px solid #ddd; break-inside:avoid}
+      a{text-decoration:none;color:inherit}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>Chuleta completa para cata de vinos argentinos</h1>
+      <p class="subtitle">Texto pensado para leer o inspirarte durante la cata. Incluye geografía, historia, uvas, zonas, denominaciones, fichas de vino, glosario, frases de enlace y cierre final.</p>
+      <div class="topbar">
+        <span class="tagline" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22);color:#fff">Mendoza · Neuquén · Malbec · Patagonia</span>
+        <button class="btn" onclick="toggleFullscreen()">⛶ Pantalla completa</button>
+      </div>
+    </header>
+
+    <nav class="toc">
+      <a href="#geo">0) Geografía</a>
+      <a href="#historia">1) Historia</a>
+      <a href="#pouget">2) Michel Aimé Pouget</a>
+      <a href="#uvas-arg">3) Uvas de Argentina</a>
+      <a href="#origen">4) Origen de las uvas</a>
+      <a href="#zonas">5) Zonas y porcentajes</a>
+      <a href="#do">6) Denominaciones</a>
+      <a href="#vinos">7) Los vinos</a>
+      <a href="#glosario">8) Glosario</a>
+      <a href="#frases">9) Frases de apoyo</a>
+      <a href="#cierre">10) Cierre</a>
+    </nav>
+
+    <section class="section" id="geo">
+      <h2>0) Geografía de la cata: de Mendoza a Neuquén</h2>
+      <blockquote>“Antes de entrar en la historia, conviene situar geográficamente la cata. Aunque hablamos de vino argentino en general, esta selección se apoya sobre todo en dos territorios muy concretos: Mendoza y Neuquén.”</blockquote>
+      <p>Según el INV, al 31 de diciembre de 2025 Argentina tenía <strong>196.220 hectáreas</strong> de vid y <strong>20.939 viñedos</strong>; <strong>Mendoza concentra el 71,7%</strong> de la superficie nacional y <strong>Neuquén el 0,8%</strong>. En esta cata, cuatro vinos se apoyan en el universo mendocino de <strong>La Linda</strong> y <strong>Alamos</strong>, y el cierre patagónico llega con <strong>Reserva del Fin del Mundo</strong> desde San Patricio del Chañar, en Neuquén.</p>
+
+      <blockquote>“Mendoza es el gran corazón del vino argentino y eso se nota también en esta cata.”</blockquote>
+      <p>Wines of Argentina describe a Mendoza como la provincia vitivinícola más importante del país y uno de los grandes centros productores del mundo. Su ficha regional destaca la influencia de los Andes, la baja pluviometría y la altitud, con viñedos situados aproximadamente entre <strong>430 y 2.000 metros</strong>. Ese marco climático favorece muy bien la maduración de la uva y, a la vez, ayuda a conservar frescura y acidez.</p>
+
+      <blockquote>“Eso explica muy bien los vinos mendocinos que vas a servir.”</blockquote>
+      <p>En Mendoza, la altitud enfría el viñedo, el sol asegura madurez y la amplitud térmica ayuda a mantener definición aromática. Por eso encajan tan bien en esta cata un <strong>Chardonnay fresco y limpio</strong>, un <strong>Malbec rosado aromático</strong>, un <strong>Cabernet Sauvignon más estructurado</strong> y un <strong>Malbec franco y frutal</strong>. Las propias fichas de La Linda sitúan sus viñedos en torno a los <strong>960 metros</strong>, y Alamos habla de viñedos mendocinos entre <strong>3.000 y 5.000 pies</strong> de altitud.</p>
+
+      <blockquote>“Neuquén, en cambio, aporta otro tono a la cata: el perfil patagónico.”</blockquote>
+      <p>Wines of Argentina explica que en Neuquén la altitud es menor que en Mendoza, pero la <strong>latitud más austral</strong> compensa térmicamente esa diferencia. También destaca un clima de <strong>gran insolación, sequedad marcada, noches frías y vientos intensos</strong>, factores que ayudan a mantener el viñedo sano y a obtener uvas con buena acidez y una expresión aromática muy definida.</p>
+
+      <blockquote>“Ahí está una de las claves de la diferencia entre Mendoza y Patagonia.”</blockquote>
+      <p>Mendoza suele jugar muy bien la carta de la <strong>altitud</strong>: gana frescura subiendo en metros. La Patagonia, en cambio, juega la carta de la <strong>latitud</strong>: está mucho más al sur y encuentra el frío por ubicación geográfica, no tanto por altura. Dicho de forma sencilla, Mendoza suele dar vinos con <strong>más madurez de fruta y más volumen</strong>, mientras que Neuquén y la Patagonia tienden a ofrecer vinos con <strong>más nervio, más tensión y más elegancia lineal</strong>, algo especialmente interesante en uvas como <strong>Pinot Noir</strong> y <strong>Chardonnay</strong>.</p>
+
+      <blockquote>“Eso se nota especialmente en las uvas de tu cata.”</blockquote>
+      <p>En Mendoza, <strong>Malbec</strong> y <strong>Cabernet Sauvignon</strong> encuentran un entorno ideal para desarrollar fruta madura, concentración y estructura, y por eso funcionan tan bien en los vinos de <strong>Alamos</strong> y <strong>La Linda</strong>. En Patagonia, en cambio, el clima más frío y ventoso favorece especialmente variedades como <strong>Pinot Noir</strong> y <strong>Chardonnay</strong>, que agradecen esa frescura para conservar sutileza y definición aromática. Wines of Argentina incluye precisamente entre las variedades principales de Neuquén a <strong>Malbec, Cabernet Sauvignon, Merlot, Pinot Noir y Chardonnay</strong>.</p>
+
+      <blockquote>“Y aquí aparece una pregunta interesante: si Mendoza es la capital del vino argentino, ¿por qué hay bodegas en la Patagonia?”</blockquote>
+      <p>Porque la vitivinicultura argentina no busca solo volumen: también busca <strong>nuevos climas y nuevos estilos</strong>. Wines of Argentina explica que la Patagonia se consolidó como región por sus condiciones australes y por la búsqueda de perfiles distintos, y su dossier regional señala que en <strong>1999</strong> nació un nuevo polo vitícola en <strong>San Patricio del Chañar</strong> y que la <strong>IG Patagonia</strong> fue aprobada en <strong>2002</strong>. Bodega del Fin del Mundo, además, se presenta como elaboradora desde <strong>2002</strong> y como pionera y creadora de región.</p>
+
+      <blockquote>“En otras palabras: Mendoza es la gran capital del vino argentino, pero la Patagonia existe porque Argentina también se ha vuelto un país de diversidad de terroirs.”</blockquote>
+      <p>Mendoza representa el centro histórico, productivo y simbólico; Patagonia representa la búsqueda de otra expresión del vino argentino, más austral, más fresca y más singular. Y justamente por eso tiene sentido que tu cata viaje de una región a la otra.</p>
+
+      <p><strong>Frase corta para usar antes de la historia</strong></p>
+      <blockquote>“Geográficamente, esta cata viaja del pie de los Andes mendocinos a la Patagonia neuquina: de la altitud y la fruta madura a la frescura y la elegancia del sur.”</blockquote>
+    </section>
+
+    <section class="section" id="historia">
+      <h2>1) Apertura: historia del vino en Argentina</h2>
+      <p class="lead">Puedes empezar así:</p>
+      <blockquote>“Argentina tiene más de cinco siglos de historia vitivinícola. El vino llegó en época colonial con los españoles y con las órdenes religiosas, y con el tiempo pasó de ser un producto ligado a la liturgia a convertirse en una de las grandes expresiones agroindustriales y culturales del país.”</blockquote>
+      <p>Argentina.gob define a la vitivinicultura como una actividad con más de cinco siglos de historia, y la presenta como la industria vitivinícola más importante de Sudamérica.</p>
+
+      <h3>Los jesuitas y el uso inicial del vino</h3>
+      <blockquote>“Al principio, el vino no era una bebida de ocio: era una necesidad religiosa. Los sacerdotes plantaban viñedos cerca de monasterios y misiones para asegurar vino de misa o de comunión.”</blockquote>
+      <p>Wine Folly resume que los primeros viñedos se plantaron junto a misiones franciscanas, benedictinas y jesuitas para producir vino de comunión.</p>
+      <blockquote>“Los jesuitas no solo ayudaron a plantar viña: ayudaron a crear una cultura agrícola del vino en zonas secas y difíciles.”</blockquote>
+      <p>El Museo Jesuítico de Jesús María recuerda que la estancia, comprada por la Compañía de Jesús en 1618, se destacó por su producción de vino, y describe la construcción de bodega y lagares como parte de esa economía vitivinícola temprana.</p>
+
+      <h3>Cómo llegó la vid</h3>
+      <blockquote>“La vid llegó con colonos y misioneros españoles, y las primeras plantaciones exitosas se extendieron desde el norte y el oeste hacia territorios como Santiago del Estero, Córdoba, San Juan y Mendoza.”</blockquote>
+      <p>Las reconstrucciones históricas del vino argentino coinciden en ubicar ese primer desarrollo en el marco colonial y religioso.</p>
+
+      <h3>El gran salto: Michel Aimé Pouget</h3>
+      <blockquote>“El gran punto de inflexión llega en 1853, cuando Mendoza impulsa la Quinta Normal de Agricultura y la Escuela de Agricultura. Allí aparece la figura del ingeniero agrónomo francés Michel Aimé Pouget, que introdujo varias cepas europeas, entre ellas Malbec, Cabernet Sauvignon, Merlot y Semillón.”</blockquote>
+      <p>Argentina.gob lo explica así en sus notas oficiales sobre el Malbec y su historia.</p>
+
+      <h3>El ferrocarril</h3>
+      <blockquote>“Luego llegó otro cambio decisivo: el ferrocarril. Ahí el vino argentino deja de ser solo regional y empieza a convertirse en gran industria.”</blockquote>
+      <p>La UNCuyo sitúa la llegada del tren a Mendoza en 1885 como un hito económico y territorial, y otra nota de la misma universidad resume que desde ese año empieza un proceso espectacular de crecimiento hacia la vitivinicultura moderna.</p>
+
+      <p><strong>Frase corta para abrir</strong></p>
+      <blockquote>“El vino argentino nace con los religiosos, se moderniza con Pouget y despega de verdad con el ferrocarril.”</blockquote>
+    </section>
+
+    <section class="section" id="pouget">
+      <h2>2) Michel Aimé Pouget y el Malbec</h2>
+      <blockquote>“Michel Aimé Pouget fue un ingeniero agrónomo francés decisivo para la historia del vino argentino. Su nombre está unido a la llegada del Malbec y a la modernización de la viticultura en Mendoza.”</blockquote>
+      <p>Argentina.gob explica que el 17 de abril de 1853 se presentó el proyecto para fundar la Quinta Normal y que Pouget introdujo varias cepas europeas, entre ellas Malbec.</p>
+      <blockquote>“Pouget no solo trajo cepas; trajo una manera moderna de pensar el viñedo.”</blockquote>
+      <p>Las notas oficiales del gobierno argentino lo presentan como la figura técnica clave en la introducción de nuevas variedades y en el arranque de la viticultura moderna mendocina.</p>
+      <blockquote>“Por eso el 17 de abril se celebra el Día Mundial del Malbec.”</blockquote>
+      <p>La efeméride recuerda precisamente la presentación de aquel proyecto en Mendoza.</p>
+    </section>
+
+    <section class="section" id="uvas-arg">
+      <h2>3) Qué uvas se producen en Argentina</h2>
+      <blockquote>“Hoy Argentina tiene 196.220 hectáreas de vid distribuidas en 20.939 viñedos.”</blockquote>
+      <p>Es el dato oficial del INV para el cierre de 2025.</p>
+      <blockquote>“Las variedades más cultivadas del país son Malbec, Cereza, Bonarda, Cabernet Sauvignon y Criolla Grande.”</blockquote>
+      <p>El Anuario de Superficie 2025 del INV las sitúa con participaciones de 23,9%, 11,8%, 8,3%, 6,3% y 5,7%, respectivamente.</p>
+      <p><strong>Frase útil</strong></p>
+      <blockquote>“Argentina mezcla grandes uvas internacionales con un patrimonio criollo muy fuerte.”</blockquote>
+      <p>Esa convivencia entre Malbec o Cabernet Sauvignon y variedades como Cereza o Criolla Grande forma parte de la identidad del viñedo argentino.</p>
+    </section>
+
+    <section class="section" id="origen">
+      <h2>4) Origen de las uvas de tu cata</h2>
+      <blockquote>“Muchas de las uvas que hoy asociamos a Argentina no nacieron allí: llegaron desde Europa, sobre todo desde Francia, y en Argentina encontraron una voz propia.”</blockquote>
+      <p>Los informes varietales del INV ubican a Malbec, Chardonnay, Cabernet Sauvignon y Pinot Noir en regiones francesas concretas y muestran cómo esas variedades se adaptaron al país.</p>
+
+      <h3>Malbec</h3>
+      <p>“La Malbec es de origen francés, concretamente de Burdeos, y procede de un antiguo cruzamiento entre Magdeleine noire y Prunelard. En Francia fue importante, pero en Argentina se convirtió en símbolo nacional.”</p>
+
+      <h3>Chardonnay</h3>
+      <p>“La Chardonnay también es francesa. El INV la sitúa en Borgoña, Chablis y Champagne, y por eso suele considerarse la gran blanca clásica de Francia.”</p>
+
+      <h3>Cabernet Sauvignon</h3>
+      <p>“La Cabernet Sauvignon procede de Burdeos y nace del cruzamiento natural entre Cabernet Franc y Sauvignon Blanc.”</p>
+
+      <h3>Pinot Noir</h3>
+      <p>“La Pinot Noir es originaria de Borgoña y se asocia históricamente a regiones frías, vinos delicados y mucha elegancia.”</p>
+
+      <h3>Bonarda y Cabernet Franc, que aparecen en uno de tus vinos</h3>
+      <p>“La Bonarda que aparece en el Alamos Cabernet tiene origen en Saboya, en la zona francesa lindante con Italia, y llegó a Argentina con las corrientes inmigratorias de fines del siglo XIX.” El INV sitúa así su origen y también presenta al Cabernet Franc como variedad de origen bordelés.</p>
+
+      <p><strong>Frase bonita para resumir</strong></p>
+      <blockquote>“Muchas grandes uvas argentinas nacieron en Francia; lo que hizo Argentina fue darles otra personalidad.”</blockquote>
+    </section>
+
+    <section class="section" id="zonas">
+      <h2>5) Zonas de producción y porcentajes</h2>
+      <blockquote>“Aunque hay vid en 20 provincias, el mapa argentino está muy concentrado.”</blockquote>
+      <p>El INV indica que en 2025 Mendoza representa el 71,7% de la superficie de vid del país; San Juan, el 19,7%; La Rioja, el 3,4%; Salta, el 1,9%; Catamarca, el 1,2%; Neuquén, el 0,8%; y Río Negro, el 0,6%. Estas siete provincias concentran el 99,3% del viñedo nacional.</p>
+      <p><strong>Cómo contarlo fácil</strong></p>
+      <blockquote>“El gran corazón del vino argentino sigue siendo Cuyo, sobre todo Mendoza y San Juan. Luego vienen el NOA, con Salta y los vinos de altura, y la Patagonia, con Neuquén y Río Negro como grandes zonas frescas.”</blockquote>
+    </section>
+
+    <section class="section" id="do">
+      <h2>6) Denominaciones de origen</h2>
+      <blockquote>“En Argentina la protección del origen se organiza a través de IP, IG y DOC: Indicación de Procedencia, Indicación Geográfica y Denominación de Origen Controlada.”</blockquote>
+      <p>El sistema está regulado por la Ley 25.163 y administrado por el INV.</p>
+      <blockquote>“Las dos DOC más conocidas son Luján de Cuyo y San Rafael, ambas en Mendoza.”</blockquote>
+      <p>El listado oficial del INV de indicaciones geográficas y denominaciones protegidas las recoge expresamente.</p>
+      <blockquote>“Luego hay muchísimas IG importantes, como Valle de Uco, Paraje Altamira, Los Chacayes, Cafayate, Patagonia, Chapadmalal, Trevelin o Valle del Pedernal.”</blockquote>
+      <p>Todas aparecen dentro del registro oficial de IG y DOC protegidas.</p>
+      <p><strong>Frase útil</strong></p>
+      <blockquote>“En Argentina veréis mucho más la IG que la DOC en las etiquetas.”</blockquote>
+    </section>
+
+    <section class="section" id="vinos">
+      <h2>7) Los vinos de la cata</h2>
+
+      <article class="wine">
+        <h3>1. La Linda Chardonnay</h3>
+        <blockquote>“Empezamos con una blanca mendocina para ver la cara más fresca y limpia de Argentina.”</blockquote>
+
+        <h4>1) Información sobre la uva</h4>
+        <p>“La Chardonnay es una uva blanca de origen francés, especialmente ligada a Borgoña, Chablis y Champagne. Es probablemente la blanca más conocida del mundo y una de las más versátiles, porque puede dar vinos muy frescos y rectos o vinos más amplios y cremosos según el clima y la elaboración.” En Argentina está presente en 17 provincias, aunque el 93,7% se concentra en Mendoza y San Juan.</p>
+        <p>“En Argentina se usa tanto para vinos tranquilos como para espumosos, y funciona especialmente bien en zonas como Mendoza y San Juan. En este vino aparece en versión 100% Chardonnay, con un perfil pensado para resaltar frescura, fruta y limpieza aromática.”</p>
+        <p><strong>Frase corta:</strong> “La Chardonnay es una gran uva para explicar terroir: cambia muchísimo según clima y elaboración.”</p>
+
+        <h4>2) Información e historia sobre la bodega</h4>
+        <p>“La Linda pertenece al universo de Luigi Bosca.” Detrás está la familia Arizu, una de las grandes familias históricas del vino mendocino.</p>
+        <p>“Detrás está Leoncio Arizu, una figura clave del vino mendocino.” La historia oficial de la casa cuenta que Leoncio Arizu llegó a Argentina en 1890, fundó la bodega en Mendoza en 1901 y era descendiente de una familia europea dedicada al vino desde el siglo XVIII. La misma cronología añade que los Arizu participaron en 1989 en la fundación de la DOC Luján de Cuyo. A eso puedes sumarle que, según el perfil publicado por La Nación, Leoncio llegó desde Unzué, Navarra, con solo 7 años, escapando de la crisis económica y del deterioro de la viticultura española; primero pasó por la ciudad de Mendoza y por San Rafael, y terminó instalándose en Luján de Cuyo, donde levantó el proyecto familiar que con el tiempo daría lugar a una de las casas más emblemáticas del vino argentino. El mismo artículo añade que la familia mantuvo un vínculo muy fuerte con su pueblo de origen y llegó a traer a Mendoza a numerosos parientes de Unzué para sumarse al crecimiento de la bodega.</p>
+
+        <h4>3) Vinificación y crianza</h4>
+        <p>La ficha de La Linda Chardonnay 2022 sitúa las uvas en viñedos de unos 30 años en Maipú y Luján de Cuyo, a 960 metros de altitud media. La propia ficha técnica indica prensado neumático, decantación y fermentación en acero inoxidable a 15 °C con levaduras seleccionadas.</p>
+
+        <h4>4) Curiosidad para soltar</h4>
+        <p>“La Linda es como la cara más relajada de una familia histórica: mucha tradición detrás, pero en un lenguaje más sencillo y cotidiano.”</p>
+      </article>
+
+      <article class="wine">
+        <h3>2. Alamos Malbec Rosado</h3>
+        <blockquote>“Ahora vamos a ver cómo la uva más emblemática del país también puede expresarse en rosado.”</blockquote>
+
+        <h4>1) Información sobre la uva</h4>
+        <p>“La Malbec es una uva tinta de origen francés, concretamente de Burdeos. Sin embargo, fue en Argentina donde encontró su identidad más reconocible y acabó convirtiéndose en la variedad emblema del país.”</p>
+        <p>“Normalmente asociamos la Malbec a tintos intensos, con fruta negra, ciruela, violetas y buena estructura, pero aquí aparece en una versión distinta: rosada. Eso demuestra que la Malbec también puede dar vinos frescos, aromáticos y muy expresivos.” En este vino la composición varietal indicada es 100% Malbec.</p>
+        <p><strong>Frase corta:</strong> “Este vino sirve para recordar que Malbec no significa solo tinto potente; también puede dar rosados muy expresivos.”</p>
+
+        <h4>2) Información e historia sobre la bodega</h4>
+        <p>“La historia de Catena empieza con Nicola Catena, un inmigrante italiano.” La propia bodega cuenta que Nicola partió de Italia hacia Argentina en 1898 y plantó su primera viña de Malbec en Mendoza en 1902.</p>
+        <p>“Nicola fue el fundador inmigrante; Nicolás Catena Zapata fue el gran modernizador.” Catena presenta a Nicolás como el “silencioso revolucionario” de la familia y el impulsor de un nuevo estilo de vinificación, apoyado en investigación, altura y proyección internacional.</p>
+        <p>“Alamos ayudó a llevar esa revolución a un público muy amplio.” La marca afirma que fue introducida al mundo en 1995 y que llegó a convertirse en el Malbec más premiado del mundo en 2018 y 2019.</p>
+
+        <h4>3) Vinificación y crianza</h4>
+        <p>La ficha consultada de Alamos Malbec Rosé indica 2-3 días de maceración prefermentativa en frío, 15-20 días de fermentación a 15-18 ºC y 5 meses en roble francés. También sitúa los viñedos en Mendoza, al pie de los Andes, entre 3.000 y 5.000 pies de altitud.</p>
+
+        <h4>4) Curiosidad para soltar</h4>
+        <p>“Detrás de este rosado hay una familia que empieza con un inmigrante italiano y acaba cambiando la imagen internacional del vino argentino.”</p>
+      </article>
+
+      <article class="wine">
+        <h3>3. Alamos Cabernet Sauvignon</h3>
+        <blockquote>“Hasta ahora hemos visto frescura y fruta; ahora vamos a una versión más estructurada.”</blockquote>
+
+        <h4>1) Información sobre la uva</h4>
+        <p>“La Cabernet Sauvignon es una uva tinta de origen francés, nacida en Burdeos, y es una de las grandes variedades del mundo para vinos estructurados y de guarda.” El INV recuerda que procede del cruce natural entre Cabernet Franc y Sauvignon Blanc.</p>
+        <p>“Se caracteriza por aportar más estructura, más tanino y un perfil más serio que otras uvas más amables. En Argentina ha encontrado muy buena adaptación y sigue siendo una de las variedades tintas importantes del país.” El informe varietal del INV de 2025 la sitúa en 12.430 hectáreas, equivalentes al 6,2% del viñedo argentino.</p>
+        <p>“En este vino no aparece sola, sino en un corte de 85% Cabernet Sauvignon, 10% Bonarda y 5% Cabernet Franc. Eso también tiene interés, porque la Bonarda suma jugosidad y fruta, y el Cabernet Franc conecta con la propia genealogía del Cabernet Sauvignon.”</p>
+        <p><strong>Frase corta:</strong> “Si el Malbec suele ser la cara más amable de Argentina, el Cabernet enseña su lado más serio y estructurado.”</p>
+
+        <h4>2) Información e historia sobre la bodega</h4>
+        <p>“La casa Catena arranca con Nicola Catena, inmigrante italiano llegado en 1898, y da su gran salto con Nicolás Catena Zapata, que puso al vino argentino en la conversación internacional de los grandes vinos.”</p>
+
+        <h4>3) Vinificación y crianza</h4>
+        <p>La ficha de Alamos Cabernet Sauvignon habla de 2-3 días de maceración prefermentativa en frío, 8-12 días de fermentación, 100% de fermentación maloláctica y 6-9 meses en roble francés. La marca lo sitúa en viñedos mendocinos de altura al pie de los Andes.</p>
+
+        <h4>4) Curiosidad para soltar</h4>
+        <p>“Este vino también te deja contar que la Bonarda del corte tiene origen en Saboya y que el Cabernet Franc forma parte de la propia genealogía del Cabernet Sauvignon.”</p>
+      </article>
+
+      <article class="wine">
+        <h3>4. La Linda Malbec</h3>
+        <blockquote>“Y ahora sí, entramos de lleno en la gran bandera varietal argentina.”</blockquote>
+
+        <h4>1) Información sobre la uva</h4>
+        <p>“La Malbec nace en Francia, en el entorno de Burdeos, pero en Argentina encontró su gran identidad.” El INV la define como la variedad emblemática de la producción vitivinícola argentina.</p>
+        <p>“Es la variedad emblemática del país y suele dar vinos con color intenso, fruta negra y roja, notas florales como violeta y una textura generalmente amable. En Argentina se ha convertido en un símbolo nacional porque aquí logró una expresión propia, distinta a la de su origen europeo.”</p>
+        <p>“En esta botella aparece en versión 100% Malbec, y eso la hace muy útil para enseñar un estilo franco, jugoso y directo de la uva.”</p>
+        <p><strong>Frase corta:</strong> “Este vino funciona muy bien para enseñar un Malbec argentino franco, jugoso y directo.”</p>
+
+        <h4>2) Información e historia sobre la bodega</h4>
+        <p>“La Linda pertenece al universo de Luigi Bosca.” Detrás está la familia Arizu, una de las grandes familias históricas del vino mendocino.</p>
+        <p>“Detrás está Leoncio Arizu, una figura clave del vino mendocino.” La historia oficial de la casa cuenta que Leoncio Arizu llegó a Argentina en 1890, fundó la bodega en Mendoza en 1901 y era descendiente de una familia europea dedicada al vino desde el siglo XVIII. La misma cronología añade que los Arizu participaron en 1989 en la fundación de la DOC Luján de Cuyo. A eso puedes sumarle que, según el perfil publicado por La Nación, Leoncio llegó desde Unzué, Navarra, con solo 7 años, en un contexto de crisis económica y de fuerte deterioro de la viticultura española; primero pasó por la ciudad de Mendoza y por San Rafael, y terminó instalándose en Luján de Cuyo, donde levantó el proyecto familiar que con el tiempo daría lugar a una de las casas más emblemáticas del vino argentino. El mismo artículo subraya además que la familia mantuvo un vínculo muy fuerte con su pueblo de origen y llegó a traer a Mendoza a numerosos parientes de Unzué para sumarse al crecimiento de la bodega.</p>
+
+        <h4>3) Vinificación y crianza</h4>
+        <p>La ficha de La Linda Malbec 2022 sitúa las uvas en viñedos de unos 30 años en Luján de Cuyo, a 960 metros de altitud media. La propia ficha técnica indica cosecha manual, fermentación en acero inoxidable a temperatura controlada y crianza en hormigón y acero inoxidable.</p>
+
+        <h4>4) Curiosidad para soltar</h4>
+        <p>“Este vino te deja mostrar un Malbec con menos maquillaje de madera y más protagonismo de la fruta.”</p>
+      </article>
+
+      <article class="wine">
+        <h3>5. Reserva Fin del Mundo Pinot Noir</h3>
+        <blockquote>“Terminamos con un vino que recuerda que Argentina no es una sola región ni un solo estilo.”</blockquote>
+
+        <h4>1) Información sobre la uva</h4>
+        <p>“La Pinot Noir es una uva tinta de origen francés, nacida en Borgoña, y está asociada históricamente a climas fríos, vinos delicados y mucha elegancia.” El INV la presenta como una de las cepas más antiguas y la vincula claramente a regiones frescas.</p>
+        <p>“A diferencia de otras tintas más intensas, suele dar menos color, más finura y aromas muy reconocibles de cereza, fresa, frambuesa y flores. Es una variedad muy sensible al clima, por eso funciona especialmente bien en regiones frescas.”</p>
+        <p>“En Argentina, la Pinot Noir encaja muy bien en Patagonia, y en este vino aparece en versión 100% Pinot Noir, lo que lo convierte en una gran puerta de entrada para hablar de la identidad patagónica.”</p>
+        <p><strong>Frase corta:</strong> “Pinot Noir en Argentina es una gran puerta de entrada para hablar de Patagonia.”</p>
+
+        <h4>2) Información e historia sobre la bodega</h4>
+        <p>“Bodega del Fin del Mundo elabora vinos desde 2002 en San Patricio del Chañar, en Neuquén, y se presenta como pionera y creadora de una región.” Esa frase resume muy bien el papel de la bodega en la construcción del relato vitivinícola de la Patagonia.</p>
+
+        <h4>3) Vinificación y crianza</h4>
+        <p>La ficha de Reserva del Fin del Mundo Pinot Noir lo presenta como un vino de algunas de las mejores parcelas de San Patricio del Chañar. Indica maceración tradicional durante 10 días, fermentación maloláctica al 100% y que el 60% del corte se ha criado en barricas de roble francés.</p>
+
+        <h4>4) Curiosidad para soltar</h4>
+        <p>“Este vino rompe el tópico de que Argentina es solo Mendoza y Malbec: Patagonia también tiene voz propia.”</p>
+      </article>
+    </section>
+
+    <section class="section" id="glosario">
+      <h2>8) Glosario fácil para todo el público</h2>
+
+      <h3>Fermentación maloláctica</h3>
+      <p><strong>Explicación fácil:</strong> después de la fermentación alcohólica, unas bacterias transforman un ácido más punzante, el ácido málico, en otro más suave, el ácido láctico. Por eso el vino se nota más redondo y menos afilado. En tu cata aparece de forma explícita en el Alamos Cabernet Sauvignon y en el Reserva del Fin del Mundo Pinot Noir.</p>
+      <p><strong>Cómo decirlo en directo:</strong><br>“La maloláctica convierte una acidez más verde y cortante en una sensación más suave y redonda.”</p>
+
+      <h3>Maceración</h3>
+      <p><strong>Explicación fácil:</strong> es el tiempo en que el mosto o el vino está en contacto con las pieles, pepitas y, a veces, raspones de la uva. De ahí salen color, parte del aroma, sabor y taninos. En tus vinos está mencionada, por ejemplo, en Alamos Rosé, Alamos Cabernet y Reserva del Fin del Mundo Pinot Noir.</p>
+      <p><strong>Cómo decirlo en directo:</strong><br>“La maceración es como una infusión: cuanto más contacto hay con las pieles, más color y más estructura puede sacar el vino.”</p>
+
+      <h3>Crianza</h3>
+      <p>Tiempo que el vino pasa afinándose antes de salir al mercado, ya sea en depósito, hormigón, barrica o botella. En tu cata tienes ejemplos con muy poca huella de roble, como La Linda Malbec, y otros con crianza en barrica, como Alamos Cabernet o Fin del Mundo Pinot Noir.</p>
+
+      <h3>Barrica</h3>
+      <p>Recipiente, normalmente de roble, que puede aportar vainilla, especias, tostados y una textura más pulida. En tu cata aparece claramente en Alamos Rosé, Alamos Cabernet y Reserva del Fin del Mundo Pinot Noir.</p>
+
+      <h3>Tanino</h3>
+      <p>Sustancia natural que viene sobre todo de la piel, las pepitas y la madera. Es esa sensación de sequedad o de que el vino “agarra” la boca. El Cabernet Sauvignon, por ejemplo, destaca por su riqueza tánica.</p>
+
+      <h3>Acidez</h3>
+      <p>Es lo que hace que el vino se sienta vivo, fresco y con tensión. En regiones altas y frescas, como Mendoza de altura o la Patagonia, suele ser una de las claves del equilibrio.</p>
+
+      <h3>Vino de altura</h3>
+      <p>Vino elaborado con uvas de viñedos situados a bastante altitud. Alamos sitúa sus viñedos entre 3.000 y 5.000 pies, y Wines of Argentina ubica a Mendoza entre 430 y 2.000 metros de altitud vitícola.</p>
+    </section>
+
+    <section class="section" id="frases">
+      <h2>9) Frases de apoyo para ir enlazando la cata</h2>
+      <p><strong>Para abrir:</strong><br>“Argentina es un país de vino que arranca con los religiosos, se transforma con la inmigración y se moderniza con la técnica y el ferrocarril.”</p>
+      <p><strong>Antes de La Linda Chardonnay:</strong><br>“Empezamos con una blanca mendocina para ver la cara más fresca y limpia de Argentina.”</p>
+      <p><strong>Antes del rosado:</strong><br>“Ahora vamos a ver cómo la uva más emblemática del país también puede expresarse en rosado.”</p>
+      <p><strong>Antes del Cabernet:</strong><br>“Hasta ahora hemos visto frescura y fruta; ahora vamos a una versión más estructurada.”</p>
+      <p><strong>Antes de La Linda Malbec:</strong><br>“Y ahora sí, entramos de lleno en la gran bandera varietal argentina.”</p>
+      <p><strong>Antes del Pinot patagónico:</strong><br>“Terminamos con un vino que recuerda que Argentina no es una sola región ni un solo estilo.”</p>
+    </section>
+
+    <section class="section" id="cierre">
+      <h2>10) Cierre final</h2>
+      <blockquote>“Si tuviera que resumir el vino argentino en una frase, diría esto: muchas de sus grandes uvas nacieron en Francia, pero Argentina les dio una voz propia.”</blockquote>
+      <blockquote>“Y si hay una uva que resume mejor esa historia, esa es la Malbec: nació en Burdeos, llegó con la modernización del siglo XIX y terminó convirtiéndose en emblema nacional.”</blockquote>
+      <p class="footer-note">Si quieres, en el siguiente paso puedo convertir esta misma chuleta en una versión mucho más corta, tipo hoja de mano de una sola página.</p>
+    </section>
+  </div>
+
+  <div class="sticky-actions">
+    <button class="mini-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Arriba</button>
+  </div>
+
+  <script>
+    function toggleFullscreen(){
+      if(!document.fullscreenElement){
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+  </script>
+</body>
+</html>
