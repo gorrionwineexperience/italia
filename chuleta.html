@@ -1,276 +1,577 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chuleta Cata – Italia · Sicilia y Puglia</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Chuleta Cata – Sicilia &amp; Puglia</title>
+<style>
     :root{
-      --bg:#f6f1e7;
-      --paper:#fffaf2;
-      --ink:#2d241f;
-      --muted:#6b5a50;
-      --accent:#6f1d1b;
-      --accent-2:#a43d2f;
-      --line:#e4d7c7;
-      --quote:#f1e6d7;
-      --chip:#efe3d5;
-      --shadow:0 12px 35px rgba(61,35,20,.08);
-      --radius:18px;
+      --bg:#f6f2ea;
+      --paper:#fffdf8;
+      --ink:#241d18;
+      --muted:#786e65;
+      --wine:#7b1734;
+      --wine2:#9a284b;
+      --gold:#b88a45;
+      --line:#ded5c8;
+      --soft:#efe7dc;
+      --shadow:0 10px 30px rgba(55,35,20,.08);
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{
       margin:0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:linear-gradient(180deg,#f2ece2 0,#f8f5ef 420px,#f6f2ea 100%);
       color:var(--ink);
-      background:
-        radial-gradient(circle at top, rgba(164,61,47,.08), transparent 26%),
-        linear-gradient(180deg, #f8f3ec 0%, var(--bg) 100%);
-      line-height:1.72;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      line-height:1.62;
     }
-    .wrap{max-width:980px;margin:0 auto;padding:28px 18px 90px}
     .hero{
-      background:linear-gradient(135deg, rgba(111,29,27,.95), rgba(164,61,47,.88));
-      color:#fff;
-      padding:34px 28px;
-      border-radius:26px;
-      box-shadow:var(--shadow);
-      position:relative;
-      overflow:hidden;
-      margin-bottom:20px;
+      padding:44px 22px 28px;
+      text-align:center;
+      background:
+        radial-gradient(circle at 15% 15%,rgba(184,138,69,.18),transparent 30%),
+        radial-gradient(circle at 85% 10%,rgba(123,23,52,.13),transparent 34%);
     }
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:auto -40px -60px auto;
-      width:220px;height:220px;border-radius:50%;
-      background:rgba(255,255,255,.08);
-      filter:blur(2px);
+    .hero h1{
+      margin:0;
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:clamp(34px,6vw,64px);
+      line-height:1.05;
+      color:var(--wine);
     }
-    h1,h2,h3,h4{font-family: Georgia, "Times New Roman", serif; line-height:1.2; margin:0 0 .6rem}
-    h1{font-size:2.2rem; margin-bottom:.4rem}
-    h2{font-size:1.7rem; color:var(--accent); margin-top:0}
-    h3{font-size:1.2rem; color:#4a352c; margin-top:1rem}
-    h4{font-size:1rem; color:#4a352c; margin-top:.9rem}
-    .subtitle{max-width:760px;color:rgba(255,255,255,.92);margin:0 0 1rem}
-    .topbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:10px}
-    .btn{
-      border:1px solid rgba(255,255,255,.35);
-      background:rgba(255,255,255,.12);
-      color:#fff;
-      padding:10px 14px;
+    .hero p{margin:12px auto 0;max-width:850px;color:var(--muted);font-size:17px}
+    .top-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+    button,.chip{
+      border:1px solid rgba(123,23,52,.16);
+      background:#fffaf2;
+      color:var(--wine);
       border-radius:999px;
-      font-weight:600;
+      padding:10px 14px;
+      font-weight:800;
       cursor:pointer;
-      backdrop-filter: blur(4px);
-    }
-    .toc{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-      gap:10px;
-      margin:22px 0 26px;
-    }
-    .toc a{
-      display:block;
       text-decoration:none;
-      color:var(--ink);
+      box-shadow:0 4px 14px rgba(55,35,20,.04);
+    }
+    .quick{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(255,253,248,.94);
+      backdrop-filter:blur(12px);
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      padding:10px 12px;
+      overflow:auto;
+      white-space:nowrap;
+    }
+    .quick .inner{
+      max-width:1060px;
+      margin:auto;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .quick a{
+      display:inline-block;
+      padding:7px 11px;
+      border-radius:999px;
+      text-decoration:none;
+      color:#5d4f45;
+      font-size:13px;
+      font-weight:800;
+      border:1px solid #e7dfd5;
+      background:white;
+    }
+    .quick a:hover{background:var(--wine);color:white;border-color:var(--wine)}
+    main{max-width:920px;margin:28px auto 72px;padding:0 18px}
+    section{
+      scroll-margin-top:72px;
       background:var(--paper);
       border:1px solid var(--line);
-      padding:12px 14px;
-      border-radius:14px;
+      border-radius:22px;
+      padding:30px;
+      margin:20px 0;
       box-shadow:var(--shadow);
-      font-weight:600;
     }
-    .section{
-      background:var(--paper);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:24px 22px;
-      box-shadow:var(--shadow);
-      margin:18px 0;
+    h2{
+      margin:0 0 18px;
+      color:var(--wine);
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:30px;
+      line-height:1.15;
     }
-    .lead{color:var(--muted); margin-top:-4px}
+    h3{
+      margin:28px 0 12px;
+      color:#4a3428;
+      font-size:20px;
+    }
+    h4{margin:24px 0 10px;color:var(--wine2);font-size:16px;text-transform:uppercase;letter-spacing:.07em}
+    p{margin:10px 0}
     blockquote{
       margin:14px 0;
-      padding:14px 16px;
-      background:var(--quote);
-      border-left:5px solid var(--accent-2);
+      padding:17px 19px;
+      border-left:5px solid var(--gold);
+      background:#fbf5ea;
+      border-radius:0 14px 14px 0;
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:18px;
+      line-height:1.55;
+    }
+    ul{padding-left:22px}
+    li{margin:7px 0}
+    .wine-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:16px;
+      flex-wrap:wrap;
+      border-bottom:1px solid var(--line);
+      padding-bottom:17px;
+      margin-bottom:18px;
+    }
+    .wine-no{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.13em;
+      color:var(--gold);
+      text-transform:uppercase;
+    }
+    .wine-title{
+      margin:2px 0 0;
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:31px;
+      color:var(--wine);
+    }
+    .wine-meta{
+      color:var(--muted);
+      font-weight:700;
+      text-align:right;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin:16px 0;
+    }
+    .fact{
+      background:#f8f3eb;
+      border:1px solid #e9dfd1;
+      padding:13px 14px;
+      border-radius:13px;
+    }
+    .fact b{display:block;color:var(--wine);font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+    .pairing{
+      background:#f3eadf;
+      border:1px solid #e3d4c1;
+      border-radius:16px;
+      padding:16px 18px;
+      margin-top:15px;
+    }
+    .pairing strong{color:var(--wine)}
+    .note{
+      padding:12px 14px;
       border-radius:12px;
-      color:#3c2f28;
+      background:#f2f1ed;
+      color:#5d564f;
+      font-size:14px;
+      border:1px dashed #d5cec4;
     }
-    .wine{
-      border-top:1px dashed var(--line);
-      padding-top:18px;
-      margin-top:18px;
+    .timeline{
+      border-left:3px solid #d9c2a4;
+      margin:16px 0 0 7px;
+      padding-left:18px;
     }
-    .wine:first-of-type{border-top:none;padding-top:0;margin-top:0}
-    .tagline{
-      display:inline-block;
-      background:var(--chip);
-      color:#5a463d;
-      border:1px solid var(--line);
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:.92rem;
-      margin:.2rem 0 .9rem;
+    .timeline p{position:relative;margin:15px 0}
+    .timeline p:before{
+      content:"";
+      position:absolute;
+      width:10px;height:10px;
+      border-radius:50%;
+      background:var(--wine);
+      left:-24px;top:.5em;
     }
-    ul{margin:.3rem 0 1rem 1.2rem;padding:0}
-    li{margin:.25rem 0}
-    .muted{color:var(--muted)}
-    .footer-note{font-size:.95rem;color:var(--muted);margin-top:26px}
-    .sticky-actions{position:fixed;right:14px;bottom:14px;display:flex;gap:10px;z-index:50;}
-    .mini-btn{border:none;background:var(--accent);color:#fff;padding:11px 14px;border-radius:999px;cursor:pointer;box-shadow:0 10px 25px rgba(111,29,27,.25);font-weight:700;}
-    .quote-inline{font-style:italic;color:#4b3a31}
+    .sources a{color:var(--wine);font-weight:700}
+    footer{text-align:center;color:var(--muted);padding:0 16px 45px;font-size:13px}
+    @media(max-width:700px){
+      section{padding:22px 18px;border-radius:17px}
+      .grid{grid-template-columns:1fr}
+      .wine-meta{text-align:left}
+      blockquote{font-size:17px}
+    }
     @media print{
-      body{background:#fff}
-      .hero,.section,.toc a{box-shadow:none}
-      .sticky-actions,.btn{display:none!important}
-      .wrap{max-width:none;padding:0}
-      .section,.hero{border:1px solid #ddd; break-inside:avoid}
-      a{text-decoration:none;color:inherit}
+      .quick,.top-actions{display:none!important}
+      body{background:white}
+      section{box-shadow:none;break-inside:avoid;border-color:#bbb}
+      main{max-width:none}
     }
   </style>
 </head>
 <body>
-<div class="wrap">
-    <header class="hero">
-      <h1>Chuleta completa para cata de vinos italianos</h1>
-      <p class="subtitle">Guion de apoyo para una cata de cuatro vinos del sur de Italia: Sicilia y Puglia, con contexto, variedades, bodegas, elaboración, maridajes y frases listas para usar.</p>
-      <div class="topbar">
-        <span class="tagline" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22);color:#fff">Sicilia · Puglia · Grillo · Negroamaro · Primitivo</span>
-        <button class="btn" onclick="toggleFullscreen()">⛶ Pantalla completa</button>
-      </div>
-    </header>
-
-    <nav class="toc">
-      <a href="#geo">0) Geografía</a>
-      <a href="#uvas">1) Las uvas</a>
-      <a href="#bodegas">2) Bodegas</a>
-      <a href="#vinos">3) Los 4 vinos</a>
-      <a href="#glosario">4) Glosario</a>
-      <a href="#frases">5) Frases de apoyo</a>
-      <a href="#cierre">6) Cierre</a>
-      <a href="#fuentes">Fuentes</a>
-    </nav>
-
-    <section class="section" id="geo">
-      <h2>0) Geografía: de Sicilia a Puglia</h2>
-      <blockquote>“Hoy la cata recorre dos grandes territorios del sur de Italia: Sicilia y Puglia. Empezamos en una isla mediterránea con un blanco de Grillo y cruzamos después al tacón de la bota para probar tres expresiones tintas de Tagaro.”</blockquote>
-      <p><strong>Sicilia</strong> combina sol, viento, influencia marina y una enorme diversidad de suelos. Saverio Faro sitúa sus viñedos en la parte occidental de la isla, sobre suelos calcáreo-arenosos y en un clima mediterráneo de veranos cálidos y ventosos. Esa combinación ayuda a explicar el lado aromático, fresco y sabroso del Grillo.</p>
-      <p><strong>Puglia</strong> forma el tacón de la península italiana. Tagaro nace en la <strong>Valle d’Itria</strong>, cerca de Fasano y de la zona de los trulli de Alberobello. La bodega trabaja variedades locales como Primitivo y Negroamaro y describe un paisaje de suelos ricos en caliza, mucho sol y brisas procedentes del mar.</p>
-      <blockquote>“El hilo conductor es el Mediterráneo, pero el recorrido cambia mucho: del blanco fresco de Sicilia a tintos puglieses cada vez más maduros y profundos.”</blockquote>
-    </section>
-
-    <section class="section" id="uvas">
-      <h2>1) Las uvas protagonistas</h2>
-      <h3>Grillo</h3>
-      <p>Variedad blanca muy ligada a Sicilia. El Consorzio DOC Sicilia señala que procede del cruce entre <strong>Catarratto y Zibibbo</strong> y que su cultivo está documentado en la isla desde finales del siglo XIX. Suele dar blancos con buena carga aromática, notas cítricas, florales y herbáceas, acidez y un carácter sabroso o mineral.</p>
-      <h3>Negroamaro</h3>
-      <p>Una de las grandes tintas del sur de Puglia y especialmente del Salento. Puede aportar color, fruta roja y negra, especias, una nota mediterránea y estructura. En Passo del Sud aparece mezclada con Primitivo para unir frescura, fruta y redondez.</p>
-      <h3>Primitivo</h3>
-      <p>La Regione Puglia sitúa su historia moderna a finales del siglo XVIII, cuando don Filippo Indelicati seleccionó en Gioia del Colle una variedad que maduraba muy pronto. De ahí el nombre <strong>Primitivo</strong>: hace referencia a su precocidad. Da tintos de fruta madura, volumen y calidez, aunque el estilo cambia bastante según viñedo y elaboración.</p>
-    </section>
-
-    <section class="section" id="bodegas">
-      <h2>2) Las bodegas</h2>
-      <h3>Saverio Faro</h3>
-      <p>Proyecto siciliano con bodegas modernas situadas en la costa occidental de Sicilia. Trabaja variedades tradicionales como Grillo y Nero d’Avola, junto con Syrah, y pone énfasis en el respeto por el entorno y en la influencia del clima mediterráneo y las brisas marinas.</p>
-      <h3>Tagaro</h3>
-      <p>Bodega familiar de la Valle d’Itria, con una tradición transmitida durante <strong>tres generaciones</strong>. La casa combina variedades autóctonas de Puglia —Primitivo, Negroamaro, Verdeca o Fiano Minutolo— con una visión moderna de la vinificación. Sus viñedos se reparten entre diferentes zonas de Puglia y la identidad de la bodega está muy ligada al paisaje calcáreo y a la cultura de los trulli.</p>
-    </section>
-
-    <section class="section" id="vinos">
-      <h2>3) Los cuatro vinos de la cata</h2>
-
-      <article class="wine">
-        <h3>1. Grillo — Saverio Faro</h3>
-        <blockquote>“Abrimos con Sicilia y con una uva que mezcla sol mediterráneo con frescura.”</blockquote>
-        <p><strong>Origen y uva:</strong> Sicilia DOC, 100% Grillo.</p>
-        <p><strong>Perfil:</strong> amarillo pajizo con reflejos verdosos; aromas de fruta blanca, matices herbáceos y minerales; boca fresca, sabrosa y equilibrada.</p>
-        <p><strong>Servicio:</strong> 8–10 ºC. La ficha consultada indica 12,5% vol.</p>
-        <p><strong>Maridaje de la cata:</strong> <em>arancini</em>, bolas o conos de arroz sicilianos rellenos normalmente de ragú, guisantes y queso, o de jamón y mozzarella.</p>
-        <p><strong>Idea para contar:</strong> “El Grillo es perfecto para empezar porque tiene aroma y personalidad, pero mantiene una boca fresca que prepara para lo que viene.”</p>
-      </article>
-
-      <article class="wine">
-        <h3>2. Passo Del Sud Negroamaro Primitivo — Tagaro</h3>
-        <blockquote>“Ahora cruzamos a Puglia y mezclamos dos de sus variedades tintas más reconocibles.”</blockquote>
-        <p><strong>Origen y uvas:</strong> Puglia IGP, Negroamaro y Primitivo.</p>
-        <p><strong>Viñedo:</strong> la ficha técnica habla de cepas de 10–15 años en suelos arcillosos y calcáreos, formadas en espaldera con poda Guyot.</p>
-        <p><strong>Elaboración:</strong> despalillado, criomaceración a 4–5 ºC durante 24 horas, fermentación controlada a 24–26 ºC, prensado suave y fermentación maloláctica. Después se afina unos cinco meses y otros tres en botella.</p>
-        <p><strong>Perfil:</strong> rojo intenso; fruta roja y especias; en boca aparecen mora y arándano con tanino suave y equilibrado.</p>
-        <p><strong>Maridaje de la cata:</strong> burrata con hojas verdes, nueces, tomates secos, AOVE y miel de caña.</p>
-      </article>
-
-      <article class="wine">
-        <h3>3. Pinataro Primitivo — Tagaro</h3>
-        <blockquote>“En el tercer vino quitamos el Negroamaro y dejamos al Primitivo hablar solo.”</blockquote>
-        <p><strong>Origen y uva:</strong> Puglia IGT, 100% Primitivo.</p>
-        <p><strong>Perfil:</strong> color cereza intenso; nariz de fresa, violeta y especias; boca suave y fresca, con final largo e intenso. La referencia actual consultada sitúa el alcohol en 13% vol.</p>
-        <p><strong>Maridaje de la cata:</strong> panzerotto de masa tipo pizza, relleno de mozzarella, tomate y aceitunas negras.</p>
-        <p><strong>Idea para comparar:</strong> “Con Pinataro podemos fijarnos en el lado más inmediato y frutal del Primitivo antes de pasar al Cinquenoci, que tiene más profundidad y crianza.”</p>
-      </article>
-
-      <article class="wine">
-        <h3>4. Cinquenoci Primitivo — Tagaro</h3>
-        <blockquote>“Cerramos manteniendo la misma uva, pero subiendo concentración, edad de viñedo y presencia de madera.”</blockquote>
-        <p><strong>Origen y uva:</strong> Puglia IGP, 100% Primitivo.</p>
-        <p><strong>Viñedo:</strong> cepas de unos 30 años, sobre suelo calcáreo mezclado con tierra roja.</p>
-        <p><strong>Elaboración y crianza:</strong> maceración inicial en frío, fermentación con maceración, prensado suave y maloláctica; después, aproximadamente 7–8 meses con madera y 3 meses en botella.</p>
-        <p><strong>Perfil:</strong> rojo profundo con reflejos violáceos; ciruela madura y grosella negra; boca intensa, persistente, armoniosa y envolvente.</p>
-        <p><strong>Maridaje de la cata:</strong> orecchiette con salsa de ricota, queso, manteca y limón.</p>
-      </article>
-    </section>
-
-    <section class="section" id="glosario">
-      <h2>4) Glosario rápido</h2>
-      <h3>Criomaceración</h3><p>Contacto de mosto y pieles a baja temperatura antes de fermentar. Ayuda a extraer color y aromas controlando la extracción.</p>
-      <h3>Fermentación maloláctica</h3><p>Transforma un ácido más punzante en otro más suave y puede hacer que el vino se sienta más redondo.</p>
-      <h3>IGP / IGT</h3><p>Indicación geográfica protegida; en Italia puede aparecer la mención tradicional IGT. Sitúa el vino en un territorio con reglas de producción determinadas, aunque normalmente con más flexibilidad que una DOC o DOCG.</p>
-      <h3>DOC</h3><p>Denominazione di Origine Controllata. En el primer vino, Sicilia DOC certifica el vínculo del vino con el territorio y sus normas de producción.</p>
-      <h3>Tanino</h3><p>Sensación de sequedad o agarre en boca, procedente principalmente de pieles, pepitas y, cuando se utiliza, madera.</p>
-    </section>
-
-    <section class="section" id="frases">
-      <h2>5) Frases de apoyo</h2>
-      <p><strong>Para abrir:</strong><br>“Hoy no vamos a intentar resumir Italia entera: vamos a hacer un pequeño viaje por el sur, desde Sicilia hasta Puglia.”</p>
-      <p><strong>Antes del Grillo:</strong><br>“Empezamos con una blanca siciliana para poner en la copa el Mediterráneo, el viento y la frescura.”</p>
-      <p><strong>Antes de Passo del Sud:</strong><br>“Cruzamos a Puglia y cambiamos completamente de registro: ahora aparecen fruta tinta, especias y tanino.”</p>
-      <p><strong>Antes de Pinataro:</strong><br>“Ahora probamos el Primitivo sin compañía para entender mejor la personalidad de la uva.”</p>
-      <p><strong>Antes de Cinquenoci:</strong><br>“Terminamos con la misma variedad, pero en una versión más profunda, con viñas maduras y más afinamiento.”</p>
-    </section>
-
-    <section class="section" id="cierre">
-      <h2>6) Cierre</h2>
-      <blockquote>“El viaje de hoy ha ido de la frescura del Grillo siciliano a tres tintos de Puglia que nos permiten ver cómo cambian Negroamaro y, sobre todo, Primitivo según el ensamblaje y la elaboración.”</blockquote>
-      <p>Una buena pregunta final para el grupo es: <strong>¿qué os ha enseñado más sobre la diferencia entre variedad y elaboración: comparar Passo del Sud con Pinataro, o comparar Pinataro con Cinquenoci?</strong></p>
-    </section>
-
-    <section class="section" id="fuentes">
-      <h2>Fuentes de referencia</h2>
-      <p class="muted">Contenido preparado a partir de fichas de productor y fuentes vitivinícolas consultadas. La graduación alcohólica puede variar ligeramente según la añada de la botella.</p>
-      <ul>
-        <li>Saverio Faro / Progetti Agricoli: ficha de Grillo Sicilia DOC y descripción de la bodega.</li>
-        <li>Consorzio di Tutela Vini DOC Sicilia: información sobre Grillo y Sicilia DOC.</li>
-        <li>Tagaro: historia de la bodega, viñedos y ficha de Cinquenoci.</li>
-        <li>Ficha técnica de Passo del Sud Negroamaro Primitivo.</li>
-        <li>Ficha comercial actual de Pinataro Primitivo, contrastada con información general de Tagaro.</li>
-        <li>Regione Puglia: referencias históricas sobre Primitivo y denominaciones regionales.</li>
-      </ul>
-    </section>
-
-  </div>
-
-  <div class="sticky-actions">
-    <button class="mini-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Arriba</button>
-  </div>
-
-  <script>
-    function toggleFullscreen(){
+<header class="hero">
+<h1>Chuleta Cata – Sicilia &amp; Puglia</h1>
+<p>Texto pensado para leer, inspirarte y tener datos rápidos a mano durante la cata. Cuatro vinos, dos regiones y un viaje del Mediterráneo blanco al Primitivo más intenso.</p>
+<div class="top-actions">
+<button onclick="toggleFullScreen()">⛶ Pantalla completa</button>
+<a class="chip" href="#vino1">🍋 Ir al Grillo</a>
+<a class="chip" href="#vino4">🍷 Ir al Cinquenoci</a>
+</div>
+</header>
+<nav aria-label="Accesos directos" class="quick">
+<div class="inner"><a href="#intro">Inicio</a><a href="#italia">Italia</a><a href="#sicilia">Sicilia</a><a href="#grillo-historia">Grillo · historia</a><a href="#saverio">Saverio Faro</a><a href="#vino1">Vino 1</a><a href="#puglia">Puglia</a><a href="#uvas-puglia">Uvas Puglia</a><a href="#tagaro">Tagaro</a><a href="#vino2">Vino 2</a><a href="#vino3">Vino 3</a><a href="#vino4">Vino 4</a><a href="#glosario">Glosario</a><a href="#cierre">Cierre</a></div>
+</nav>
+<main><section id="intro">
+<h2>1. Intro general a la cata (tono informal)</h2>
+<blockquote>“Antes de entrar en Sicilia y Puglia, una idea sencilla: una cata no es un examen. Vamos a mirar, oler, probar y comentar. Si a uno le recuerda a limón, a otro a flores y a otro a una cocina de su infancia, perfecto. Lo interesante es poner atención y comparar cómo cambia el vino de una copa a la siguiente.”</blockquote>
+<blockquote>“Hoy haremos un recorrido muy mediterráneo. Empezamos en Sicilia con un blanco de Grillo, fresco y salino, y luego saltamos a Puglia para probar tres tintos cada vez más intensos. Veremos cómo cambian la fruta, el cuerpo, el tanino y la sensación de calor en boca.”</blockquote>
+</section><section id="italia">
+<h2>2. Italia: una historia del vino de más de dos mil años</h2>
+<blockquote>“Hablar de vino en Italia es hablar de historia, comercio, religión, agricultura y vida cotidiana. La península no tuvo un único origen vinícola: distintas culturas fueron dejando técnicas, variedades y formas de beber que luego Roma convirtió en un sistema enorme.”</blockquote>
+<h3>2.1 Antes de Roma: griegos, etruscos y pueblos itálicos</h3>
+<p>La vid era conocida en la península antes de la expansión romana. En el centro y norte, los <strong>etruscos</strong> desarrollaron una viticultura organizada y comercial, mientras que en el sur y Sicilia la <strong>colonización griega</strong> impulsó fuertemente el cultivo de la vid y la elaboración del vino. Las colonias de la llamada Magna Grecia convirtieron el vino y el aceite en productos agrícolas fundamentales y también en mercancías de intercambio.</p>
+<blockquote>“Si quieres resumirlo en una frase: antes de que Roma dominara Italia, ya había dos grandes escuelas del vino —la etrusca en el centro y la griega en el sur—.”</blockquote>
+<h3>2.2 Roma: cuando el vino se convierte en industria</h3>
+<p>Los romanos heredaron técnicas griegas y etruscas y las llevaron a una escala mucho mayor. Seleccionaron variedades, especializaron zonas agrícolas, escribieron tratados sobre viticultura y crearon rutas comerciales por todo el Mediterráneo. El vino formaba parte de la mesa, del comercio y también de la religión: las fiestas de las <em>Vinalia</em> marcaban momentos clave del calendario de la vid y del vino.</p>
+<p>Durante el periodo romano se hicieron famosos vinos como <strong>Falerno</strong> y <strong>Cecubo</strong>. El gran aporte de Roma no fue “inventar” el vino, sino <strong>racionalizar la viticultura y difundirla</strong> por buena parte de Europa occidental.</p>
+<h3>2.3 Edad Media: monasterios, ciudades y continuidad</h3>
+<p>Tras la caída del Imperio romano, la viticultura no desapareció. En muchas zonas los monasterios, obispados, grandes propiedades y comunidades rurales conservaron viñedos porque el vino seguía teniendo valor alimentario, comercial y litúrgico. Con el crecimiento de las ciudades medievales y las rutas comerciales, los vinos locales volvieron a ganar importancia.</p>
+<h3>2.4 Renacimiento y nacimiento de reputaciones regionales</h3>
+<p>Durante el Renacimiento aumentó la fama de muchos vinos italianos y empezó a reforzarse la relación entre vino y territorio. Toscana, Piamonte, Véneto, Sicilia y numerosas regiones del centro y sur desarrollaron tradiciones particulares. Aún no existía el sistema moderno de denominaciones, pero ya se hablaba de vinos por su procedencia y por estilos reconocibles.</p>
+<h3>2.5 El gran trauma del siglo XIX: oídio, mildiu y filoxera</h3>
+<p>El siglo XIX cambió la viticultura europea. Enfermedades llegadas de América y, sobre todo, la <strong>filoxera</strong> devastaron los viñedos. La solución que terminó imponiéndose fue injertar las variedades europeas de <em>Vitis vinifera</em> sobre portainjertos americanos resistentes.</p>
+<blockquote>“La filoxera es uno de los puntos de inflexión más importantes de la historia del vino: obliga a Europa a reconstruir prácticamente todo su viñedo y marca el inicio de la viticultura moderna.”</blockquote>
+<h3>2.6 Siglo XX: de cantidad a identidad</h3>
+<p>Durante buena parte del siglo XX muchas zonas italianas estuvieron orientadas a grandes volúmenes, cooperativas y vino de consumo cotidiano. A partir de la segunda mitad del siglo creció el interés por la calidad, el embotellado en origen, la recuperación de variedades autóctonas y la creación o consolidación de denominaciones.</p>
+<p>Italia desarrolló su jerarquía moderna de indicaciones geográficas —hoy encajada en el sistema europeo— con categorías como <strong>IGT/IGP, DOC y DOCG</strong>. Más que una escala automática de calidad, estas figuras regulan procedencia, variedades y prácticas de producción.</p>
+<h3>2.7 La gran idea del vino italiano actual</h3>
+<p>Lo que hace especialmente interesante a Italia es su diversidad. El país conserva una enorme cantidad de variedades locales y estilos regionales. El vino italiano contemporáneo se mueve entre dos fuerzas: <strong>tradición</strong> —uvas, paisajes y elaboraciones históricas— e <strong>innovación</strong> —mejor viticultura, tecnología, precisión en bodega y una lectura más fina del territorio.</p>
+<div class="note"><strong>Frase útil:</strong> “Italia no tiene un único estilo de vino: tiene muchos idiomas vinícolas. Hoy vamos a escuchar dos de ellos, Sicilia y Puglia.”</div>
+</section><section id="sicilia">
+<h2>3. Sicilia: una de las historias vinícolas más antiguas de Italia</h2>
+<blockquote>“Sicilia es estratégica por geografía: está en el centro del Mediterráneo. Por eso casi todas las grandes culturas que navegaron por este mar pasaron por la isla, comerciaron con ella y dejaron huella en su agricultura y en su vino.”</blockquote>
+<h3>3.1 Antes de los griegos</h3>
+<p>Los hallazgos arqueológicos muestran una relación muy antigua entre Sicilia y las bebidas fermentadas. La isla tenía poblaciones como sicani, siculi y elimi, y su posición la convirtió pronto en punto de contacto con navegantes fenicios y otros pueblos mediterráneos.</p>
+<h3>3.2 Fenicios y comercio mediterráneo</h3>
+<p>Los fenicios establecieron enclaves comerciales especialmente en el oeste de Sicilia. Su importancia está ligada menos a una “invención” local del vino que a la circulación de productos, ánforas, técnicas y redes comerciales. El oeste siciliano —justamente donde hoy tiene enorme importancia el Grillo— estaba conectado con esas rutas.</p>
+<h3>3.3 Colonización griega: viticultura y cultura del vino</h3>
+<p>Desde los siglos VIII–VII a. C., las colonias griegas transformaron profundamente la agricultura siciliana. La viticultura se expandió, se perfeccionaron técnicas y el vino se integró en la economía y la vida social. Sicilia y el sur de Italia pasaron a formar parte del mundo de la <strong>Magna Grecia</strong>.</p>
+<p>Los griegos también dejaron una cultura del vino ligada al banquete, al comercio y a la religión. Esa herencia es importante porque conecta Sicilia con una tradición mediterránea más amplia, no solo italiana.</p>
+<h3>3.4 Sicilia romana</h3>
+<p>Tras la conquista romana, Sicilia fue fundamental como granero del imperio, pero también mantuvo producción de vino y aceite. Los romanos ampliaron las redes comerciales y algunos vinos sicilianos tuvieron reputación propia. La isla quedó integrada en una economía agrícola a gran escala.</p>
+<h3>3.5 Edad Media: una isla de muchas culturas</h3>
+<p>Después de Roma, Sicilia pasó por etapas bizantinas, islámicas, normandas, suabas, angevinas y aragonesas. Cada periodo modificó propiedad, comercio y agricultura. Bajo dominio musulmán la producción y consumo de vino estuvieron condicionados por normas religiosas, aunque la vid siguió cultivándose también para uva fresca, pasas y otros usos.</p>
+<p>Con normandos y posteriores poderes cristianos, la producción vinícola volvió a integrarse plenamente en la economía de la isla.</p>
+<h3>3.6 Marsala y el gran salto comercial</h3>
+<p>En el siglo XVIII la zona de Marsala se convirtió en un nombre internacional gracias al desarrollo y comercialización de vinos fortificados capaces de viajar bien por mar. Comerciantes británicos contribuyeron decisivamente a crear un estilo exportable y reconocible, en una época en la que Madeira, Oporto y Jerez ya dominaban importantes rutas.</p>
+<blockquote>“Marsala demuestra que Sicilia llevaba siglos conectada al mundo: el vino siciliano no es una historia aislada, sino una historia comercial mediterránea e internacional.”</blockquote>
+<h3>3.7 Filoxera, reconstrucción y siglo XX</h3>
+<p>La filoxera golpeó Sicilia a finales del siglo XIX y obligó a reconstruir gran parte del viñedo. Durante el siglo XX, especialmente hasta mediados de siglo, una porción importante de la producción siciliana se orientó a <strong>vino a granel</strong> o vino utilizado para reforzar color, alcohol y estructura de vinos de otras regiones y países.</p>
+<p>Esto dio a Sicilia durante años una imagen de gran zona productora más asociada al volumen que a la identidad de cada territorio.</p>
+<h3>3.8 La revolución moderna</h3>
+<p>Desde finales del siglo XX y principios del XXI, Sicilia experimentó una transformación profunda: reducción de rendimientos en muchos proyectos, más embotellado en origen, mejor control de temperatura, recuperación de variedades locales y una nueva lectura de zonas como <strong>Etna, Vittoria, Menfi, Marsala y el oeste de la isla</strong>.</p>
+<p>La <strong>DOC Sicilia</strong>, reconocida oficialmente en 2011, funciona como una gran denominación regional que ayuda a identificar y proteger el origen siciliano.</p>
+<h3>3.9 El paisaje vitícola siciliano</h3>
+<ul>
+<li><strong>Oeste:</strong> Trapani, Palermo y Agrigento; enorme tradición de variedades blancas y fuerte presencia de Grillo.</li>
+<li><strong>Etna:</strong> altitud, suelos volcánicos y gran amplitud térmica; territorio emblemático de Carricante y Nerello Mascalese.</li>
+<li><strong>Sureste:</strong> zona vinculada a Nero d’Avola y Frappato, entre otras.</li>
+<li><strong>Islas menores:</strong> estilos históricos ligados a variedades aromáticas como Zibibbo.</li>
+</ul>
+<h3>3.10 Grillo: la uva de nuestro primer vino</h3>
+<p>El <strong>Grillo</strong> es una variedad blanca estrechamente asociada al oeste siciliano. Hay constancia de su cultivo en Sicilia desde finales del siglo XIX. Estudios modernos han demostrado que procede de un cruce entre <strong>Catarratto</strong> y <strong>Zibibbo</strong> (Muscat of Alexandria).</p>
+<p>Es una planta vigorosa, de maduración media y con piel relativamente gruesa. Puede ofrecer vinos sencillos y frescos, pero también blancos con capacidad de evolución. Su perfil habitual combina <strong>cítricos, flores, hierbas, fruta blanca, salinidad y buena estructura</strong>.</p>
+<p>Históricamente el Grillo estuvo muy ligado a la producción de Marsala, pero hoy es también una de las grandes cartas de presentación del vino blanco seco siciliano.</p>
+<div class="note"><strong>Frase útil:</strong> “El Grillo tiene algo muy siciliano: sol suficiente para dar cuerpo, pero hierbas, cítricos y salinidad suficientes para que el vino siga pareciendo fresco.”</div>
+</section><section id="grillo-historia">
+<h2>4. Historia de la uva Grillo</h2>
+<blockquote>“El Grillo es una uva profundamente siciliana, pero su historia se entiende mejor conociendo a sus dos progenitores: Catarratto y Zibibbo.”</blockquote>
+<h3>4.1 Catarratto: la gran blanca histórica de Sicilia</h3>
+<p>El <strong>Catarratto</strong> es una familia de variedades blancas autóctonas de Sicilia y una de las uvas más antiguamente asociadas a la viticultura de la isla. Durante mucho tiempo fue la variedad blanca con mayor superficie plantada en Sicilia, favorecida por su productividad, adaptación al clima mediterráneo y capacidad para mantener una acidez útil incluso en zonas cálidas.</p>
+<p>Se cultiva en Sicilia desde tiempos muy antiguos y ha formado parte tanto de vinos de consumo local como de elaboraciones ligadas históricamente a Marsala. En estilos secos suele aportar <strong>acidez, notas florales, hierbas, cítricos y un fondo mineral o salino</strong>.</p>
+<div class="note"><strong>Idea rápida:</strong> “Catarratto es una especie de columna vertebral histórica del vino blanco siciliano.”</div>
+<h3>4.2 Zibibbo: Moscato d’Alessandria y la huella árabe</h3>
+<p>El <strong>Zibibbo</strong> es el nombre siciliano del <strong>Moscato d’Alessandria</strong> o Muscat of Alexandria, una de las grandes uvas aromáticas del Mediterráneo. Su historia está rodeada de tradiciones que la conectan con antiguas rutas fenicias y, más tarde, con la presencia árabe en Sicilia.</p>
+<p>Lo que sí está bien establecido es que el nombre <strong>Zibibbo</strong> deriva del árabe <em>zabīb</em>, que significa <strong>“uva pasa”</strong>. Esa etimología encaja con su uso tradicional para uva de mesa, pasificación y vinos dulces, especialmente en Sicilia y Pantelleria.</p>
+<p>La investigación moderna sitúa sus raíces en el Mediterráneo oriental y muestra que es una variedad antiquísima. En Sicilia está documentada desde hace siglos y terminó convirtiéndose en una de las uvas aromáticas más emblemáticas de la isla.</p>
+<ul>
+<li><strong>Aromas típicos:</strong> flor de azahar, rosa, albaricoque, melocotón y miel.</li>
+<li><strong>Uso histórico:</strong> uva fresca, pasa y vinos dulces o secos muy aromáticos.</li>
+<li><strong>Clave cultural:</strong> representa muy bien la mezcla de influencias mediterráneas de Sicilia.</li>
+</ul>
+<h3>4.3 El nacimiento del Grillo</h3>
+<p>Los estudios genéticos modernos demostraron que <strong>Grillo es un cruce natural entre Catarratto y Zibibbo</strong>. Esa combinación ayuda a entender su personalidad: del Catarratto puede heredar estructura, frescura y adaptación a Sicilia; del Zibibbo, una parte de su intensidad aromática y carácter mediterráneo.</p>
+<p>El Grillo está documentado en Sicilia desde finales del siglo XIX y se extendió especialmente por el oeste de la isla. Durante décadas estuvo muy ligado a la producción de <strong>Marsala</strong>, ya que podía aportar graduación, estructura y aromas. Con la modernización del vino siciliano, empezó a ganar protagonismo como <strong>vino blanco seco de calidad</strong>.</p>
+<h3>4.4 Del Marsala al blanco moderno</h3>
+<p>La gran transformación del Grillo ocurre cuando los productores sicilianos empiezan a buscar menos volumen y más identidad. El Grillo pasa de ser principalmente una uva funcional dentro del mundo de Marsala a convertirse en una de las tarjetas de presentación del vino blanco siciliano contemporáneo.</p>
+<ul>
+<li><strong>Zona emblemática:</strong> oeste de Sicilia, especialmente Trapani y alrededores.</li>
+<li><strong>Perfil habitual:</strong> limón, fruta blanca, flores, hierbas mediterráneas, mineralidad y salinidad.</li>
+<li><strong>En boca:</strong> puede tener más cuerpo de lo que su frescura inicial sugiere.</li>
+<li><strong>Versatilidad:</strong> funciona en vinos jóvenes y frescos, pero también puede dar versiones más complejas.</li>
+</ul>
+<blockquote>“El Grillo resume Sicilia bastante bien: tiene sol y madurez, pero también hierbas, cítricos y mar. No es solo una uva fresca; tiene estructura y personalidad.”</blockquote>
+</section><section id="saverio">
+<h2>5. Saverio Faro / Progetti Agricoli</h2>
+<p>Saverio Faro es una marca siciliana integrada en el portfolio de <strong>Progetti Agricoli</strong>. Su identidad se apoya en variedades asociadas a Sicilia, especialmente Grillo y Nero d’Avola.</p>
+<p>La bodega sitúa sus viñedos en la <strong>costa occidental de Sicilia</strong>, en un entorno de clima mediterráneo, suelos calcáreo-arenosos, veranos cálidos y ventilados e inviernos suaves. Las brisas marinas son importantes porque ayudan a reducir humedad y favorecen una maduración relativamente sana.</p>
+<p>La filosofía combina variedades locales con una elaboración moderna, utilizando control de temperatura para preservar aromas y frescura.</p>
+<blockquote>“Saverio Faro representa una Sicilia moderna: una uva histórica, un paisaje mediterráneo y una elaboración limpia que intenta dejar hablar al Grillo.”</blockquote>
+</section><section id="vino1"><h2>6. Vino 1 · Grillo 2025 – Saverio Faro</h2>
+<div class="wine-head">
+<div>
+<div class="wine-no">Vino 1</div>
+<div class="wine-title">Grillo 2025 · Saverio Faro</div>
+</div>
+<div class="wine-meta">Sicilia DOC · Blanco · 12,5%</div>
+</div>
+<h3>Cómo presentarlo en la copa</h3>
+<blockquote>“Empezamos en Sicilia con Grillo. Es un blanco de color pajizo con reflejos verdosos, muy mediterráneo: fruta blanca, hierbas y ese punto mineral que hace que el vino parezca más fresco y más salino de lo que uno espera de una isla tan soleada.”</blockquote>
+<blockquote>“En boca no busca ser explosivo ni dulce: es equilibrado, fresco y bastante directo. Nos sirve para abrir el paladar antes de entrar en los tintos de Puglia.”</blockquote>
+<div class="grid">
+<div class="fact"><b>Uva</b>Grillo</div>
+<div class="fact"><b>Zona</b>Sicilia, Italia</div>
+<div class="fact"><b>Servicio</b>8–10 °C</div>
+<div class="fact"><b>Perfil</b>Fruta blanca · herbal · mineral</div>
+</div>
+<h3>Un poco de bodega (Saverio Faro)</h3>
+<ul>
+<li>Saverio Faro forma parte del portfolio de Progetti Agricoli.</li>
+<li>La referencia se presenta como <strong>Grillo Sicilia DOC</strong>.</li>
+<li>La idea de estilo es conservar frescura y aromas varietales más que buscar madera.</li>
+</ul>
+<h3>Vinificación y crianza</h3>
+<ul>
+<li>Vendimia manual ligeramente anticipada para preservar frescura.</li>
+<li>Corta maceración en frío alrededor de 8–10 °C.</li>
+<li>Prensado suave y fermentación en acero inoxidable a temperatura controlada.</li>
+<li>Unos 4 meses en acero y posterior afinado en botella.</li>
+</ul>
+<div class="pairing"><strong>Maridaje de la cata · Arancini</strong><br/>Bolitas o conos de arroz sicilianos, tradicionalmente rellenos de ragú, guisantes y queso o de jamón y mozzarella. La fritura pide frescura y el Grillo ayuda a limpiar el paladar.</div>
+<h3>Curiosidad para soltar</h3>
+<blockquote>“Este maridaje tiene una lógica muy bonita porque vino y plato hablan el mismo idioma geográfico: Sicilia con Sicilia. El Grillo aporta la parte fresca y el arancino la parte crujiente, grasa y reconfortante.”</blockquote>
+</section><section id="puglia">
+<h2>7. Puglia: del gran viñedo del sur a una identidad propia</h2>
+<blockquote>“Puglia forma el tacón de la bota italiana. Es una región larga, con mucho sol, dos mares, llanuras y mesetas calcáreas. Durante muchísimo tiempo produjo grandes cantidades de vino; hoy intenta que cada vez hable más el territorio y menos el volumen.”</blockquote>
+<h3>4.1 Antigüedad: griegos, iapigios y romanos</h3>
+<p>Antes de Roma, el territorio de la actual Puglia estaba ocupado por pueblos iapigios —daunios, peucetios y mesapios— y recibió una profunda influencia griega. Tarento fue una de las ciudades más importantes de la Magna Grecia, y el vino y el aceite formaban parte de la economía mediterránea de la zona.</p>
+<p>Con Roma, la región quedó integrada en una red de caminos y puertos que facilitó el movimiento de productos agrícolas. La posición de Puglia frente al Adriático la mantuvo durante siglos conectada con Grecia, los Balcanes y Oriente.</p>
+<h3>4.2 Edad Media y agricultura mediterránea</h3>
+<p>Bizantinos, normandos, suabos, angevinos y aragoneses pasaron por el territorio. La viticultura convivió con olivo, cereal y ganadería, y el paisaje rural se fue construyendo alrededor de masserie, muros de piedra seca y pequeñas propiedades.</p>
+<h3>4.3 Siglos XIX y XX: el papel de “bodega de volumen”</h3>
+<p>El clima cálido permite una excelente maduración de la uva y, por tanto, vinos con mucho color, extracto y alcohol. Durante décadas esas características hicieron que enormes cantidades de vino de Puglia viajaran hacia el norte de Italia y otros países para reforzar vinos más ligeros.</p>
+<blockquote>“Durante mucho tiempo Puglia fue famosa por lo que podía aportar a otros vinos. La revolución moderna consiste en demostrar qué puede hacer cuando embotella su propio nombre.”</blockquote>
+<h3>4.4 La recuperación de variedades locales</h3>
+<p>En las últimas décadas muchas bodegas han reducido rendimientos, modernizado instalaciones y apostado por variedades autóctonas. Los tres grandes nombres tintos son <strong>Primitivo, Negroamaro y Nero di Troia</strong>, con estilos diferentes según subzona y elaboración.</p>
+<p>La región combina denominaciones conocidas —como Primitivo di Manduria— con vinos IGT/IGP Puglia que permiten bastante libertad de ensamblaje y elaboración.</p>
+<h3>4.5 Valle d’Itria</h3>
+<p>El Valle d’Itria ocupa una zona interior entre Bari, Brindisi y Taranto, famosa por los <strong>trulli</strong>. Sus suelos ricos en caliza, la altitud moderada y la ventilación ayudan a conservar frescura en una región cálida. Tradicionalmente ha sido también tierra de blancos como Verdeca y Minutolo, aunque Tagaro trabaja una gama amplia de variedades de toda Puglia.</p>
+<h3>4.6 Primitivo: historia, viña y estilo</h3>
+<p>El origen remoto del Primitivo no está completamente cerrado, pero su historia moderna en Puglia está muy bien documentada. A finales del siglo XVIII, <strong>Don Francesco Filippo Indellicati</strong>, en Gioia del Colle, seleccionó una cepa de maduración temprana y difundió el llamado “Primativo”. A finales del siglo XIX la variedad se expandió con fuerza hacia la provincia de Taranto.</p>
+<p>Su nombre está relacionado precisamente con esa <strong>maduración relativamente temprana</strong>. El Primitivo acumula azúcar con facilidad y puede producir vinos de graduación elevada, mucho cuerpo y fruta madura.</p>
+<p>Los estudios de ADN demostraron su identidad genética con <strong>Zinfandel</strong> y con la variedad croata conocida como <strong>Tribidrag/Crljenak Kaštelanski</strong>. Genéticamente son la misma variedad, aunque sus expresiones culturales y enológicas sean diferentes.</p>
+<ul>
+<li>Color: rubí profundo a violáceo.</li>
+<li>Aromas típicos: ciruela, mermelada de fruta, frutos rojos/negros maduros, especias, a veces tabaco.</li>
+<li>Boca: cálida, amplia, suave, con taninos que pueden resultar redondos si la madurez es buena.</li>
+<li>Riesgo: si se busca demasiada madurez puede perder frescura y resultar pesado.</li>
+<li>Virtud: cuando está equilibrado, combina potencia y una sensación muy sedosa.</li>
+</ul>
+<h3>4.7 Negroamaro: la otra gran uva de la cata</h3>
+<p>El Negroamaro lleva muchísimo tiempo cultivándose en Puglia, especialmente en <strong>Salento, Lecce y Brindisi</strong>. Su difusión puede remontarse a la colonización griega de los siglos VIII–VII a. C., aunque su origen exacto sigue siendo incierto.</p>
+<p>Existe una explicación popular según la cual “Negroamaro” significaría algo parecido a “negro y amargo”. Otra hipótesis histórica relaciona el nombre con dos palabras que significan negro —<em>nigra</em> en latín y <em>mavro</em> en griego—, subrayando su color oscuro.</p>
+<p>Es una uva adaptada a clima cálido y seco, de maduración más bien tardía, buena productividad y afinidad con suelos calcáreo-arcillosos.</p>
+<ul>
+<li>Color intenso.</li>
+<li>Perfil seco, redondo y con un característico toque ligeramente amargo.</li>
+<li>Puede dar tintos serios, pero también es fundamental en la tradición del rosado de Salento.</li>
+<li>En mezcla con Primitivo puede aportar contraste, estructura y una sensación menos dulce de fruta.</li>
+</ul>
+<div class="note"><strong>Frase útil:</strong> “Primitivo pone el sol y la fruta; Negroamaro pone el contraste, la piel y un pequeño punto amargo que hace que el vino no se vuelva empalagoso.”</div>
+</section><section id="uvas-puglia">
+<h2>8. Las uvas de Puglia: Negroamaro y Primitivo</h2>
+<blockquote>“Después del Grillo, entramos en dos grandes uvas tintas del sur: Negroamaro y Primitivo. Las dos están muy adaptadas al calor, pero cuentan historias y estilos distintos.”</blockquote>
+<h3>8.1 Negroamaro: la uva oscura de Salento</h3>
+<p>El <strong>Negroamaro</strong> es una variedad tinta originaria del sur de Italia y cultivada casi exclusivamente en <strong>Puglia</strong>, especialmente en <strong>Salento</strong>, el extremo meridional del tacón italiano. Es una de las variedades más representativas de la región.</p>
+<h4>Origen del nombre</h4>
+<p>Hay dos teorías principales. La explicación popular interpreta el nombre como <strong>“negro + amaro”</strong>: color muy oscuro y un final ligeramente amargo. Otra hipótesis lo relaciona con dos palabras que significan “negro”, una de raíz latina y otra de raíz griega, lo que reflejaría la fuerte huella greco-mediterránea de Puglia.</p>
+<h4>Una historia muy antigua</h4>
+<p>Su origen exacto sigue siendo discutido. Algunas teorías lo conectan con antiguas poblaciones y rutas del Adriático, incluso con el vino <em>merum</em> mencionado en relación con Taranto antes o durante la época romana. Escritores romanos como Horacio y Plinio describieron la fuerte tradición vitícola de la zona, y Plinio llegó a presentar Manduria como una tierra especialmente rica en viñedos.</p>
+<p>Tras la caída del Imperio romano, gran parte de la viticultura regional perdió peso, pero continuó en entornos monásticos: comunidades benedictinas en la Murgia y comunidades ortodoxas griegas en Salento ayudaron a conservar la tradición vitícola.</p>
+<h4>Cómo es la planta</h4>
+<ul>
+<li>Vid vigorosa y de producción bastante constante.</li>
+<li>Racimos de tamaño medio a grande.</li>
+<li>Bayas ovaladas de piel oscura y relativamente gruesa.</li>
+<li>Maduración media, habitualmente entre finales de septiembre y principios de octubre.</li>
+<li>Muy bien adaptada a veranos cálidos y secos.</li>
+<li>Prefiere suelos calcáreos y calcáreo-arcillosos, aunque se adapta a otros.</li>
+</ul>
+<h4>Cómo sabe y para qué se usa</h4>
+<p>Produce vinos de color profundo, generalmente secos y con una combinación de <strong>fruta negra, tierra, especias, hierbas y un final ligeramente amargo</strong>. Puede vinificarse sola, aunque históricamente también se mezcla con variedades como <strong>Malvasia Nera</strong>, Sangiovese o Montepulciano.</p>
+<p>Además del tinto, Negroamaro tiene una tradición muy importante en <strong>rosados de Salento</strong>. Su capacidad para conservar carácter en clima cálido la hace especialmente útil en Puglia.</p>
+<div class="note"><strong>En nuestro vino:</strong> en Passo del Sud, Negroamaro funciona como contrapeso del Primitivo: aporta estructura, sequedad, especia y un pequeño punto amargo frente a la fruta más madura del Primitivo.</div>
+<h3>8.2 Primitivo: una uva, tres nombres y tres territorios</h3>
+<blockquote>“El Primitivo tiene una de las historias más bonitas del mundo del vino: nace en la costa adriática oriental, se convierte en símbolo de Puglia y en California se hace mundialmente famoso con otro nombre.”</blockquote>
+<h4>Croacia: el origen genético</h4>
+<p>Los análisis de ADN demostraron que Primitivo es genéticamente la misma variedad que la antigua uva croata <strong>Crljenak Kaštelanski</strong>, vinculada también históricamente al nombre <strong>Tribidrag</strong>. El descubrimiento permitió reconstruir el origen de una variedad que durante mucho tiempo se creyó exclusivamente italiana o estadounidense.</p>
+<h4>Puglia: su segunda patria</h4>
+<p>La variedad llegó a Puglia hace siglos y encontró un clima especialmente adecuado para ella. A finales del siglo XVIII, en <strong>Gioia del Colle</strong>, el sacerdote y agrónomo <strong>Don Francesco Filippo Indellicati</strong> seleccionó una cepa que maduraba antes que otras variedades locales y la llamó <strong>Primitivo</strong>.</p>
+<p>El nombre procede de la idea de <strong>maduración temprana</strong>: “primitivo” no significa sencillo o rudimentario, sino que la uva llega pronto a madurez. Durante el siglo XIX se expandió por distintas zonas de Puglia y alcanzó especial fama en áreas como Manduria y Taranto.</p>
+<h4>California: Zinfandel</h4>
+<p>La misma variedad llegó a Estados Unidos en el siglo XIX y terminó siendo conocida como <strong>Zinfandel</strong>. En California desarrolló una identidad propia y durante décadas se consideró una uva estadounidense distinta, hasta que los estudios genéticos demostraron su relación con Primitivo y las formas croatas.</p>
+<h4>Confirmación científica</h4>
+<p>A finales del siglo XX y comienzos del XXI, los estudios de ADN demostraron que <strong>Primitivo, Zinfandel y Crljenak Kaštelanski/Tribidrag</strong> pertenecen a la misma variedad genética. El caso se convirtió en uno de los ejemplos más conocidos de cómo la ciencia puede reconstruir los viajes históricos de una uva.</p>
+<h4>Qué hace especial al Primitivo</h4>
+<ul>
+<li>Maduración relativamente temprana.</li>
+<li>Acumula azúcar con facilidad, por lo que puede alcanzar graduaciones elevadas.</li>
+<li>Fruta habitual: ciruela, mora, cereza negra, compota y mermelada.</li>
+<li>Puede mostrar especias, cacao o notas tostadas cuando pasa por madera.</li>
+<li>Tanino normalmente maduro y textura amplia.</li>
+<li>En clima muy cálido exige cuidado para conservar frescura.</li>
+</ul>
+<blockquote>“Primitivo es una sola uva con tres identidades culturales: Tribidrag en Croacia, Primitivo en Puglia y Zinfandel en California.”</blockquote>
+</section><section id="tagaro">
+<h2>9. Tagaro / Familia Lorusso</h2>
+<p><strong>Tagaro</strong> es una bodega familiar del Valle d’Itria vinculada a la familia <strong>Lorusso</strong>. La empresa habla de varias generaciones dedicadas a la viña y presenta a Michele Lorusso como una figura clave del proyecto contemporáneo.</p>
+<p>La bodega trabaja desde la zona de <strong>Fasano</strong>, en el Valle d’Itria, un paisaje de piedra caliza, trulli, olivos y viñedos. Su identidad combina tradición rural con tecnología moderna de bodega.</p>
+<p>Tagaro trabaja variedades locales como <strong>Primitivo, Negroamaro, Verdeca y Fiano Minutolo</strong>, entre otras, con estilos que van desde vinos jóvenes hasta selecciones más concentradas y con crianza.</p>
+<h3>Por qué es interesante probar tres Tagaro seguidos</h3>
+<p>En esta cata mantenemos la misma bodega durante tres vinos y cambiamos la combinación de uvas y el nivel de concentración. Eso permite comparar de una forma muy clara:</p>
+<ul>
+<li><strong>Passo del Sud:</strong> Negroamaro + Primitivo.</li>
+<li><strong>Pinataro:</strong> Primitivo más directo y frutal.</li>
+<li><strong>Cinquenoci:</strong> Primitivo más concentrado, con viñas más maduras y paso por madera.</li>
+</ul>
+<blockquote>“Misma casa, misma región, pero tres interpretaciones distintas de las uvas tintas de Puglia.”</blockquote>
+</section><section id="vino2"><h2>10. Vino 2 · Passo Del Sud – Tagaro</h2>
+<div class="wine-head">
+<div>
+<div class="wine-no">Vino 2</div>
+<div class="wine-title">Passo Del Sud Negroamaro Primitivo 2025 · Tagaro</div>
+</div>
+<div class="wine-meta">Puglia IGP · Tinto · 14%</div>
+</div>
+<h3>Cómo presentarlo en la copa</h3>
+<blockquote>“Aquí entramos de lleno en Puglia. La mezcla Negroamaro–Primitivo funciona muy bien porque una uva aporta madurez y volumen y la otra ayuda a dar estructura, especia y un punto más serio.”</blockquote>
+<blockquote>“Buscad fruta roja y negra madura, mora, arándano y especias. En boca es redondo, persistente y con tanino suave. Es un tinto solar, pero no debería sentirse agresivo.”</blockquote>
+<div class="grid">
+<div class="fact"><b>Uvas</b>Negroamaro + Primitivo</div>
+<div class="fact"><b>Zona</b>Puglia IGP</div>
+<div class="fact"><b>Servicio</b>16–18 °C</div>
+<div class="fact"><b>Perfil</b>Frutos rojos · mora · arándano · especias</div>
+</div>
+<h3>Viñedo y elaboración</h3>
+<ul>
+<li>Suelos descritos en ficha técnica como arcillosos y calcáreos de textura media.</li>
+<li>Viñedos de aproximadamente 10–15 años.</li>
+<li>Despalillado y criomaceración alrededor de 4–5 °C durante unas 24 horas.</li>
+<li>Fermentación alcohólica controlada alrededor de 24–26 °C.</li>
+<li>Fermentación maloláctica y posterior afinado antes de botella.</li>
+</ul>
+<div class="pairing"><strong>Maridaje de la cata · Burrata</strong><br/>Burrata de Puglia con mezcla de hojas verdes, nueces, tomates secos, aceite de oliva virgen extra y miel de caña. La cremosidad del queso suaviza el tanino y el tomate seco conecta con la fruta madura del vino.</div>
+<h3>Curiosidad para soltar</h3>
+<blockquote>“Este es un buen momento para explicar que un coupage no significa ‘mezclar por mezclar’. Primitivo y Negroamaro son como dos instrumentos distintos: uno da volumen y fruta; el otro aporta contraste y estructura.”</blockquote>
+</section><section id="vino3"><h2>11. Vino 3 · Pinataro Primitivo – Tagaro</h2>
+<div class="wine-head">
+<div>
+<div class="wine-no">Vino 3</div>
+<div class="wine-title">Pinataro Primitivo 2025 · Tagaro</div>
+</div>
+<div class="wine-meta">Puglia IGT · Tinto · 13%</div>
+</div>
+<h3>Cómo presentarlo en la copa</h3>
+<blockquote>“Ahora probamos Primitivo sin Negroamaro al lado. Esto nos permite ver mejor la personalidad de la uva: fruta muy evidente, tacto redondo y un carácter cálido, pero en este caso con una graduación bastante contenida para lo que puede ser un Primitivo.”</blockquote>
+<blockquote>“En nariz aparecen fresa, violeta y especias. En boca es suave y fresco, con un final largo. Comparadlo con el Passo del Sud: aquí la fruta está más en primer plano.”</blockquote>
+<div class="grid">
+<div class="fact"><b>Uva</b>Primitivo</div>
+<div class="fact"><b>Zona</b>Puglia IGT</div>
+<div class="fact"><b>Alcohol</b>13%</div>
+<div class="fact"><b>Perfil</b>Fresa · violeta · especias · fruta madura</div>
+</div>
+<h3>Sobre la uva Primitivo</h3>
+<ul>
+<li>Es una de las grandes variedades tintas del sur de Italia.</li>
+<li>Su nombre se relaciona con su maduración temprana: tiende a alcanzar madurez relativamente pronto.</li>
+<li>Suele dar vinos intensos, frutales y redondos, aunque el estilo puede variar mucho según rendimientos, zona y elaboración.</li>
+</ul>
+<h3>Vinificación y crianza</h3>
+<p>La ficha comercial consultada para la añada 2025 describe el perfil sensorial y la graduación, pero no detalla una receta completa de vinificación o crianza. Para la cata es mejor no inventar madera o tiempos concretos: céntrate en lo que sí tenemos en la copa —fruta, frescura, especia y textura—.</p>
+<div class="pairing"><strong>Maridaje de la cata · Panzerotto</strong><br/>Especialidad originaria de Tarento: masa similar a la pizza, rellena de mozzarella, tomate y aceitunas negras. El Primitivo funciona muy bien con tomate, queso fundido y masa tostada por su fruta madura y su tacto redondo.</div>
+<h3>Curiosidad para soltar</h3>
+<blockquote>“Primitivo y Zinfandel son esencialmente la misma variedad genética. Una misma uva terminó construyendo dos identidades culturales completamente distintas: Puglia por un lado y California por otro.”</blockquote>
+</section><section id="vino4"><h2>12. Vino 4 · Cinquenoci Primitivo – Tagaro</h2>
+<div class="wine-head">
+<div>
+<div class="wine-no">Vino 4</div>
+<div class="wine-title">Cinquenoci Primitivo 2024 · Tagaro</div>
+</div>
+<div class="wine-meta">Puglia · Tinto · 15%</div>
+</div>
+<h3>Cómo presentarlo en la copa</h3>
+<blockquote>“Cerramos con otro Primitivo, pero ahora subimos claramente la intensidad. Cinquenoci tiene más concentración, más grado y una crianza en madera que ayuda a redondear el conjunto.”</blockquote>
+<blockquote>“En nariz buscad ciruela madura, confitura y grosella negra. En boca es amplio, envolvente y persistente. Aquí sí aparece claramente ese concepto de ‘vino de sol’: madurez, volumen y sensación cálida.”</blockquote>
+<div class="grid">
+<div class="fact"><b>Uva</b>Primitivo</div>
+<div class="fact"><b>Viñedo</b>≈30 años</div>
+<div class="fact"><b>Alcohol</b>15%</div>
+<div class="fact"><b>Perfil</b>Ciruela · grosella negra · fruta madura · madera delicada</div>
+</div>
+<h3>Viñedo, suelo y elaboración</h3>
+<ul>
+<li>Suelos calcáreos y tierra roja.</li>
+<li>Viñas de alrededor de 30 años.</li>
+<li>Despalillado y maceración prefermentativa en frío a 4–5 °C durante unas 48 horas.</li>
+<li>Fermentación con maceración hasta el final, prensado suave y fermentación maloláctica.</li>
+<li>Aproximadamente 7–8 meses en madera y unos 3 meses en botella.</li>
+</ul>
+<div class="pairing"><strong>Maridaje de la cata · Orecchiette</strong><br/>Pasta tradicional de Puglia, en forma de pequeñas “orejitas”, con salsa de ricota, queso, mantequilla y limón. La textura cremosa acompaña el volumen del Primitivo; el limón aporta el contraste que evita que el conjunto se haga pesado.</div>
+<h3>Curiosidad para soltar</h3>
+<blockquote>“La comparación Pinataro–Cinquenoci es probablemente la más interesante de la noche: misma uva, misma región, pero dos expresiones distintas. Aquí se entiende muy bien que la variedad no lo explica todo: viñedo, madurez, grado y crianza cambian muchísimo el resultado.”</blockquote>
+</section><section id="glosario">
+<h2>13. Glosario rápido (por si sale la conversación)</h2>
+<h3>¿Qué es la criomaceración?</h3>
+<p>Contacto del mosto y/o las pieles a baja temperatura antes de la fermentación. Ayuda a extraer compuestos aromáticos y color limitando al mismo tiempo ciertas extracciones más duras.</p>
+<h3>¿Qué es la fermentación maloláctica?</h3>
+<p>Transformación del ácido málico en ácido láctico por bacterias. Suele suavizar la sensación de acidez y redondear la textura, especialmente en tintos.</p>
+<h3>¿Qué es el despalillado?</h3>
+<p>Separar las uvas del raspón antes de fermentar. Evita extraer en exceso taninos verdes y amargos procedentes de las partes leñosas del racimo.</p>
+<h3>¿Qué significa DOC / IGT / IGP?</h3>
+<ul>
+<li><strong>IGT / IGP:</strong> origen geográfico protegido con reglas generalmente más flexibles.</li>
+<li><strong>DOC:</strong> denominación de origen con normas específicas sobre territorio, variedades y elaboración.</li>
+<li><strong>DOCG:</strong> categoría italiana tradicional con controles adicionales respecto a una DOC.</li>
+</ul>
+<h3>¿Primitivo es Zinfandel?</h3>
+<p>Genéticamente comparten la misma identidad varietal con la croata Tribidrag/Crljenak Kaštelanski. Lo interesante es que cada territorio ha creado un estilo y una cultura del vino diferentes alrededor de esa misma genética.</p>
+</section><section id="cierre">
+<h2>14. Cierre de la cata</h2>
+<blockquote>“Si os fijáis, hemos hecho un recorrido bastante claro: empezamos con frescura y mineralidad en Sicilia, pasamos a un coupage de Puglia y terminamos comparando dos Primitivos. Cuatro vinos, pero sobre todo cuatro formas distintas de utilizar el clima mediterráneo.”</blockquote>
+<blockquote>“La idea con la que me gustaría que os quedéis es que una uva no sabe siempre igual. El lugar, la edad del viñedo, la fecha de vendimia y la elaboración pueden cambiar completamente la copa. Y eso es precisamente lo divertido de catar.”</blockquote>
+</section><section class="sources">
+<h2>Fuentes de apoyo</h2>
+<p>Información contrastada con las fichas y páginas de productores/organismos consultados:</p>
+<ul>
+<li><a href="https://progettiagricoli.com/portfolio/saverio-faro/" rel="noopener" target="_blank">Saverio Faro / Progetti Agricoli</a></li>
+<li><a href="https://www.saveriofaro.it/" rel="noopener" target="_blank">Saverio Faro – historia, territorio y enfoque de bodega</a></li>
+<li><a href="https://www.treccani.it/enciclopedia/vino/" rel="noopener" target="_blank">Treccani – historia general del vino y viticultura</a></li>
+<li><a href="https://siciliadoc.wine/en/the-grapes/" rel="noopener" target="_blank">Sicilia DOC – variedades sicilianas y Grillo</a></li>
+<li><a href="https://pugliawineworld.it/en/vitigni/primitivo-n-2/" rel="noopener" target="_blank">Puglia Wine World – Primitivo</a></li>
+<li><a href="https://pugliawineworld.it/en/vitigni/negro-amaro-n-2/" rel="noopener" target="_blank">Puglia Wine World – Negroamaro</a></li>
+<li><a href="https://www.tagaro.it/en/the-company/" rel="noopener" target="_blank">Tagaro – historia de la familia y la bodega</a></li>
+<li><a href="https://siciliadoc.wine/la-sicilia/" rel="noopener" target="_blank">Consorzio di Tutela Vini DOC Sicilia – Historia de Sicilia</a></li>
+<li><a href="https://www.visitsicily.info/es/sapore/vino-en-sicilia/" rel="noopener" target="_blank">Visit Sicily – El vino en Sicilia</a></li>
+<li><a href="https://www.tagaro.it/" rel="noopener" target="_blank">Tagaro – Bodega y vinos</a></li>
+<li><a href="https://www.tagaro.it/rossi/cinquenoci/" rel="noopener" target="_blank">Tagaro – Cinquenoci</a></li>
+<li><a href="https://www.vinissimus.com/es/uva/catarratto/" rel="noopener" target="_blank">Vinissimus – Catarratto</a></li><li><a href="https://www.vinello.es/zibibbo" rel="noopener" target="_blank">Vinello – Zibibbo / Moscato d’Alessandria</a></li><li><a href="https://es.wikipedia.org/wiki/Negroamaro" rel="noopener" target="_blank">Negroamaro – historia, viticultura y usos</a></li></ul>
+</section></main>
+<footer>Chuleta de apoyo · Cata Sicilia &amp; Puglia · Gorrión Wine Experience</footer>
+<script>
+    function toggleFullScreen(){
       if(!document.fullscreenElement){
         document.documentElement.requestFullscreen?.();
-      } else {
+      }else{
         document.exitFullscreen?.();
       }
     }
