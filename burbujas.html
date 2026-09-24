@@ -795,7 +795,7 @@
 
     function calcBubblePoints(score, mistakes, missed){
       // Nueva fórmula Bubble: +2 por acierto, -3 por fallo y -2 por aroma correcto escapado.
-      return (score * 2) - (mistakes * 3) - (missed * 2);
+      return (score * 2) - (mistakes * 2) - missed;
     }
 
     function buildBubblePayload(){
@@ -1085,7 +1085,7 @@
           💨 Aromas buenos que se escaparon: <b>${missed}</b><br>
           🎯 Precisión al tocar: <b>${accuracy}%</b><br><br>
           Nivel de puntería aromática:<br><b>${nivel}</b><br><br>
-          <small>Fórmula: (aciertos × 2) - (fallos × 3) - (escapadas × 2)</small><br>
+          <small>Fórmula: (aciertos × 2) - (fallos × 2) - escapadas buenas</small><br>
           <small>Cada jugador recibe 25 aromas correctos y 17 distractores por vino.</small><br>
           <small>Recuerda: solo tienes una partida por vino.</small>
         `;
