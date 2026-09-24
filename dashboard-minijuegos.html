@@ -707,13 +707,11 @@
       const totalScore = Number(r?.totalScore ?? 0);
       const totalMistakes = Number(r?.totalMistakes ?? 0);
       const totalMissed = Number(r?.totalMissed ?? 0);
-      const avgAccuracy = Number(r?.avgAccuracy ?? 0);
+      const avgAccuracy = (totalScore + totalMistakes) ? Math.round((totalScore / (totalScore + totalMistakes)) * 100) : 0;
       const winesPlayed = Number(r?.winesPlayed ?? 0);
       const ts = Number(r?.ts ?? 0);
 
-      const bubblePoints = Number(
-        r?.totalBubblePoints ?? ((totalScore * 2) - (totalMistakes * 2) - totalMissed)
-      );
+      const bubblePoints = (totalScore * 2) - (totalMistakes * 3) - (totalMissed * 2);
 
       return {
         id,
@@ -808,10 +806,10 @@
     }
 
     function getBubblePoints(r){
-      return Number(
-        r?.totalBubblePoints ??
-        (((r?.totalScore || 0) * 2) - ((r?.totalMistakes || 0) * 2) - (r?.totalMissed || 0))
-      );
+      const totalScore = Number(r?.totalScore || 0);
+      const totalMistakes = Number(r?.totalMistakes || 0);
+      const totalMissed = Number(r?.totalMissed || 0);
+      return (totalScore * 2) - (totalMistakes * 3) - (totalMissed * 2);
     }
 
     function buildGlobalRanking(bubblesResults, lineaResults, flappyResults){
@@ -988,7 +986,7 @@
       setGamePill("bubbles");
       rankingIcon.textContent = "🫧";
       rankingTitle.textContent = "Ranking · Bubble Pop de Aromas";
-      rankingSub.textContent = "Ranking provisional: Puntos Bubble = (aciertos × 2) - (fallos × 2) - escapadas. El podio final exige 4/4 vinos.";
+      rankingSub.textContent = "Ranking provisional: Puntos Bubble = (aciertos × 2) - (fallos × 3) - (escapadas × 2). El podio final exige 4/4 vinos.";
 
       tableWrap.style.display = "";
       summaryPodium.style.display = "none";
@@ -1047,7 +1045,7 @@
       statWinner.textContent = completedEntries.length ? completedEntries[0].name : "–";
       statMetricLabel.textContent = "Media Bubble";
       statMetricValue.textContent = `${avgBubblePoints} pts · ${avgAcc}%`;
-      statMetricHelp.textContent = "Promedio global de Puntos Bubble y precisión.";
+      statMetricHelp.textContent = "Promedio de Puntos Bubble y precisión global real.";
       statUpdated.textContent = localTimeString(lastTs);
       gameHint.textContent = completedEntries.length
         ? "Bubble Pop: podio final solo entre jugadores con 4/4 vinos completados."
