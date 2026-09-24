@@ -84,7 +84,7 @@ No se usan timestamps para desempatar. Si dos participantes obtienen exactamente
 ## Refuerzo de sesión, anti-recarga y sincronización
 
 - Bubble Pop consume el vino en el momento de iniciar la partida. Si la página se recarga o se abandona durante el juego, ese vino se recupera como `interrupted` y no puede repetirse.
-- En Bubble Pop, de las 25 burbujas correctas por vino, toda la que no se acierta cuenta como escapada. La fórmula se mantiene explícitamente como `(+2 × aciertos) - (2 × fallos) - escapadas`.
+- En Bubble Pop, de las 25 burbujas correctas por vino, toda la que no se acierta cuenta como escapada. La fórmula se mantiene explícitamente como `(+2 × aciertos) - (3 × fallos) - (2 × escapadas)`.
 - Línea consume el intento justo cuando, tras validar el sensor, comienzan los 15 segundos. Si se recarga durante el intento, queda consumido como `interrupted`.
 - `index.html` ya no redirige a un invitado tardío hacia un minijuego hasta que tenga nombre y `sessionVersion` válida. Además, `burbujas.html`, `linea.html` y `flappy.html` validan por sí mismos la identidad/sesión contra Firebase y devuelven a `index.html` si no es válida.
 - Bubble Pop, Línea y Flappy Wine reintentan la publicación de resultados guardados localmente al volver a abrir el juego. Así, un fallo temporal de Firebase/Wi-Fi no obliga a repetir una partida ya consumida.
@@ -96,3 +96,5 @@ No se usan timestamps para desempatar. Si dos participantes obtienen exactamente
 - Incluye indicaciones visuales, pulsación animada y botón `Saltar`.
 - La demo no consume intentos, no escribe puntuación y no modifica Firebase.
 - Tras verla, queda disponible el botón `👀 Ver demo` para repetirla antes de cualquier intento pendiente.
+
+- Precisión Bubble: se calcula globalmente como `aciertos totales / (aciertos totales + fallos totales) × 100`; no se usa una media de porcentajes por vino.
