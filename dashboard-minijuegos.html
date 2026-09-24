@@ -711,7 +711,7 @@
       const winesPlayed = Number(r?.winesPlayed ?? 0);
       const ts = Number(r?.ts ?? 0);
 
-      const bubblePoints = (totalScore * 2) - (totalMistakes * 3) - (totalMissed * 2);
+      const bubblePoints = (totalScore * 2) - (totalMistakes * 2) - totalMissed;
 
       return {
         id,
@@ -809,7 +809,7 @@
       const totalScore = Number(r?.totalScore || 0);
       const totalMistakes = Number(r?.totalMistakes || 0);
       const totalMissed = Number(r?.totalMissed || 0);
-      return (totalScore * 2) - (totalMistakes * 3) - (totalMissed * 2);
+      return (totalScore * 2) - (totalMistakes * 2) - totalMissed;
     }
 
     function buildGlobalRanking(bubblesResults, lineaResults, flappyResults){
@@ -986,7 +986,7 @@
       setGamePill("bubbles");
       rankingIcon.textContent = "🫧";
       rankingTitle.textContent = "Ranking · Bubble Pop de Aromas";
-      rankingSub.textContent = "Ranking provisional: Puntos Bubble = (aciertos × 2) - (fallos × 3) - (escapadas × 2). El podio final exige 4/4 vinos.";
+      rankingSub.textContent = "Ranking provisional: Puntos Bubble = (aciertos × 2) - (fallos × 2) - escapadas buenas. Las burbujas incorrectas que se escapan no restan. El podio final exige 4/4 vinos.";
 
       tableWrap.style.display = "";
       summaryPodium.style.display = "none";
