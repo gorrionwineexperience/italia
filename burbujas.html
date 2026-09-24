@@ -713,9 +713,18 @@
         WINE_ORDER.forEach(id => {
           const r = savedResults[id];
           if(r && typeof r === "object"){
+            const scoreValue = Number(r.score || 0);
+            const mistakesValue = Number(r.mistakes || 0);
+            const missedValue = Number(r.missed || 0);
+            // Recalcula resultados locales antiguos con la fórmula y precisión actuales.
+            r.bubblePoints = calcBubblePoints(scoreValue, mistakesValue, missedValue);
+            r.accuracy = (scoreValue + mistakesValue)
+              ? Math.round((scoreValue / (scoreValue + mistakesValue)) * 100)
+              : 0;
             wineResults[id] = r;
             wineStatus[id] = r.status || savedStatus[id] || "done";
             winePlayed[id] = true;
+            changed = true;
           }
         });
 
@@ -785,8 +794,8 @@
     }
 
     function calcBubblePoints(score, mistakes, missed){
-      // Los aromas correctos escapados restan 1 punto cada uno.
-      return (score * 2) - (mistakes * 2) - missed;
+      // Nueva fórmula Bubble: +2 por acierto, -3 por fallo y -2 por aroma correcto escapado.
+      return (score * 2) - (mistakes * 3) - (missed * 2);
     }
 
     function buildBubblePayload(){
@@ -795,7 +804,6 @@
       let totalScore = 0;
       let totalMistakes = 0;
       let totalMissed = 0;
-      let sumAccuracy = 0;
       let totalBubblePoints = 0;
 
       all.forEach(r => {
@@ -803,8 +811,7 @@
         totalScore += Number(r.score || 0);
         totalMistakes += Number(r.mistakes || 0);
         totalMissed += Number(r.missed || 0);
-        sumAccuracy += Number(r.accuracy || 0);
-        totalBubblePoints += Number(r.bubblePoints || 0);
+        totalBubblePoints += calcBubblePoints(Number(r.score || 0), Number(r.mistakes || 0), Number(r.missed || 0));
       });
 
       return {
@@ -817,7 +824,7 @@
         totalMistakes,
         totalMissed,
         totalBubblePoints,
-        avgAccuracy: winesPlayed ? Math.round(sumAccuracy / winesPlayed) : 0,
+        avgAccuracy: (totalScore + totalMistakes) ? Math.round((totalScore / (totalScore + totalMistakes)) * 100) : 0,
         perWine: wineResults
       };
     }
@@ -989,18 +996,16 @@
         let totalScore = 0;
         let totalMistakes = 0;
         let totalMissed = 0;
-        let sumAcc = 0;
         let totalBubblePoints = 0;
 
         all.forEach(r => {
           totalScore += r.score || 0;
           totalMistakes += r.mistakes || 0;
           totalMissed += r.missed || 0;
-          sumAcc += r.accuracy || 0;
-          totalBubblePoints += r.bubblePoints || 0;
+          totalBubblePoints += calcBubblePoints(Number(r.score || 0), Number(r.mistakes || 0), Number(r.missed || 0));
         });
 
-        const avgAcc = Math.round(sumAcc / all.length);
+        const globalAccuracy = (totalScore + totalMistakes) ? Math.round((totalScore / (totalScore + totalMistakes)) * 100) : 0;
 
         html += `
           <br>
@@ -1009,7 +1014,7 @@
           ✅ Aciertos totales: <b>${totalScore}</b><br>
           ❌ Fallos totales: <b>${totalMistakes}</b><br>
           💨 Burbujas buenas que se escaparon: <b>${totalMissed}</b><br>
-          🎯 Precisión media: <b>${avgAcc}%</b>
+          🎯 Precisión global: <b>${globalAccuracy}%</b>
         `;
       }
 
@@ -1038,7 +1043,7 @@
       const activeWine = getActiveWine();
 
       // Al terminar, de las 25 burbujas correctas, toda la que no fue acertada
-      // cuenta como escapada. Esto hace que los escapados resten siempre.
+      // cuenta como escapada. Cada escapada resta 2 puntos con la fórmula actual.
       missed = Math.max(0, GOOD_BUBBLES_PER_WINE - score);
       missedEl.textContent = String(missed);
       const finalBubblePoints = calcBubblePoints(score, mistakes, missed);
@@ -1080,7 +1085,7 @@
           💨 Aromas buenos que se escaparon: <b>${missed}</b><br>
           🎯 Precisión al tocar: <b>${accuracy}%</b><br><br>
           Nivel de puntería aromática:<br><b>${nivel}</b><br><br>
-          <small>Fórmula: (aciertos × 2) - (fallos × 2) - escapadas</small><br>
+          <small>Fórmula: (aciertos × 2) - (fallos × 3) - (escapadas × 2)</small><br>
           <small>Cada jugador recibe 25 aromas correctos y 17 distractores por vino.</small><br>
           <small>Recuerda: solo tienes una partida por vino.</small>
         `;
