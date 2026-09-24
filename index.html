@@ -729,7 +729,7 @@
   <div class="ovCard" style="text-align:center;">
     <div class="pill" style="justify-content:center">Podio de mini-juegos</div>
     <div class="ovBig">Top 3 invitados</div>
-    <div class="ovSub">Campeón general por media normalizada + podios de cada juego.</div>
+    <div class="ovSub">Campeón general por media absoluta sobre 100 + podios de cada juego.</div>
     <div id="miniSummaryContent" class="note" style="margin-top:12px; text-align:left;">
       Esperando resultados de los mini-juegos…
     </div>
@@ -1102,16 +1102,26 @@
       return arr.slice(0, 3);
     }
 
+    function getFlappyMetrics(r){
+      const attempts = Array.isArray(r?.attempts) ? r.attempts : [];
+      const attemptsPlayed = Number(r?.attemptsPlayed || attempts.length || 0);
+      const totalScore = attempts.length
+        ? attempts.reduce((sum,a)=>sum + Number(a?.score || 0), 0)
+        : Number(r?.totalScore || 0);
+      const totalDistance = attempts.length
+        ? attempts.reduce((sum,a)=>sum + Number(a?.distance || 0), 0)
+        : Number(r?.totalDistance || 0);
+      const divisor = attemptsPlayed || 1;
+      return {
+        avgScore: attempts.length ? totalScore / divisor : Number(r?.avgScore ?? (totalScore / divisor) ?? 0),
+        avgDistance: attempts.length ? totalDistance / divisor : Number(r?.avgDistance ?? (totalDistance / divisor) ?? 0)
+      };
+    }
+
     function compareFlappyPlayers(a,b){
-      const aBest = Number(a?.bestScore || 0);
-      const bBest = Number(b?.bestScore || 0);
-      if(bBest !== aBest) return bBest - aBest;
-      const aDist = Number(a?.bestDistance || 0);
-      const bDist = Number(b?.bestDistance || 0);
-      if(bDist !== aDist) return bDist - aDist;
-      const aTotal = Number(a?.totalScore || 0);
-      const bTotal = Number(b?.totalScore || 0);
-      if(bTotal !== aTotal) return bTotal - aTotal;
+      const am = getFlappyMetrics(a), bm = getFlappyMetrics(b);
+      if(Math.abs(bm.avgScore - am.avgScore) > 1e-9) return bm.avgScore - am.avgScore;
+      if(Math.abs(bm.avgDistance - am.avgDistance) > 1e-9) return bm.avgDistance - am.avgDistance;
       return 0;
     }
 
@@ -1133,6 +1143,10 @@
     }
 
     function buildGlobalRanking(bubblesResults, lineaResults, flappyResults){
+      const BUBBLE_MAX_POINTS = 200;
+      const LINEA_MAX_MS = 45000;
+      const FLAPPY_MAX_DOORS = 28;
+      const clamp100 = v => Math.max(0, Math.min(100, Number(v) || 0));
       const ids = new Set([
         ...Object.keys(bubblesResults || {}),
         ...Object.keys(lineaResults || {}),
@@ -1148,25 +1162,22 @@
         if(!l || !isLineaComplete(l)) return;
         if(!f || Number(f?.attemptsCompleted ?? f?.attemptsPlayed ?? 0) < 3) return;
 
+        const fm = getFlappyMetrics(f);
+        const bubbleRaw = getBubblePoints(b);
+        const lineaRaw = getLineaTotalInsideMs(l);
+        const bubbleScore = clamp100((bubbleRaw / BUBBLE_MAX_POINTS) * 100);
+        const lineaScore = clamp100((lineaRaw / LINEA_MAX_MS) * 100);
+        const flappyScore = clamp100((fm.avgScore / FLAPPY_MAX_DOORS) * 100);
+
         rows.push({
           id,
           name: (b?.name || l?.name || f?.name || id),
-          bubbleRaw: Math.max(0, getBubblePoints(b)),
-          lineaRaw: Math.max(0, getLineaTotalInsideMs(l)),
-          flappyRaw: Math.max(0, Number(f?.bestDistance || 0))
+          bubbleNorm: bubbleScore,
+          lineaNorm: lineaScore,
+          flappyNorm: flappyScore,
+          flappyAvgDoors: fm.avgScore,
+          globalScore: (bubbleScore + lineaScore + flappyScore) / 3
         });
-      });
-
-      if(!rows.length) return [];
-      const maxBubble = Math.max(...rows.map(r => r.bubbleRaw), 0);
-      const maxLinea = Math.max(...rows.map(r => r.lineaRaw), 0);
-      const maxFlappy = Math.max(...rows.map(r => r.flappyRaw), 0);
-
-      rows.forEach(r => {
-        r.bubbleNorm = maxBubble > 0 ? (r.bubbleRaw / maxBubble) * 100 : 0;
-        r.lineaNorm = maxLinea > 0 ? (r.lineaRaw / maxLinea) * 100 : 0;
-        r.flappyNorm = maxFlappy > 0 ? (r.flappyRaw / maxFlappy) * 100 : 0;
-        r.globalScore = (r.bubbleNorm + r.lineaNorm + r.flappyNorm) / 3;
       });
 
       rows.sort((a,b) => {
@@ -1206,7 +1217,7 @@
           }else if(type === "linea"){
             extra = ` · ${p?.avgPercent || 0}%`;
           }else if(type === "flappy"){
-            extra = ` · ${Number(p?.bestScore || 0)} puertas`;
+            extra = ` · ${getFlappyMetrics(p).avgScore.toFixed(1)} puertas de media`;
           }
 
           return `
@@ -1229,7 +1240,7 @@
           return `
             <div style="margin-bottom:5px;">
               <div style="font-size:1.08rem; font-weight:800;">${medal} ${pos}º · ${name} · ${p.globalScore.toFixed(1)} pts</div>
-              <div class="small">Bubble ${p.bubbleNorm.toFixed(1)} · Línea ${p.lineaNorm.toFixed(1)} · Flappy ${p.flappyNorm.toFixed(1)}</div>
+              <div class="small">Bubble ${p.bubbleNorm.toFixed(1)}/100 · Línea ${p.lineaNorm.toFixed(1)}/100 · Flappy ${p.flappyNorm.toFixed(1)}/100</div>
             </div>
           `;
         }).join("");
@@ -1237,7 +1248,7 @@
 
       box.innerHTML = `
         <div style="margin-bottom:14px; padding:10px 12px; border:1px solid rgba(255,215,128,.24); border-radius:12px; background:rgba(255,215,128,.05);">
-          <div class="small" style="color:var(--muted); margin-bottom:5px;">🏆 CLASIFICACIÓN GENERAL · 33,3 % cada juego</div>
+          <div class="small" style="color:var(--muted); margin-bottom:5px;">🏆 CLASIFICACIÓN GENERAL · media absoluta /100</div>
           ${renderGlobal(topG)}
         </div>
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:16px; align-items:flex-start;">
