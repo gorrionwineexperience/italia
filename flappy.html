@@ -93,7 +93,7 @@
 
       <div class="stats">
         <div class="stat"><div class="stat-label">PUERTAS</div><div class="stat-value" id="scoreEl">0</div></div>
-        <div class="stat"><div class="stat-label">MEJOR</div><div class="stat-value" id="bestEl">0</div></div>
+        <div class="stat"><div class="stat-label">MEDIA</div><div class="stat-value" id="bestEl">0</div></div>
         <div class="stat"><div class="stat-label">TIEMPO</div><div class="stat-value" id="timeEl">0.0s</div></div>
       </div>
 
@@ -102,7 +102,7 @@
         <div class="game-overlay" id="startOverlay">
           <div class="overlay-card">
             <div class="overlay-big" id="overlayTitle">Flappy Wine</div>
-            <div class="overlay-text" id="overlayText">Toca la pantalla para impulsar la copa. Evita las barricas y atraviesa el hueco. Tienes 3 intentos; cuenta tu mejor carrera.</div>
+            <div class="overlay-text" id="overlayText">Toca la pantalla para impulsar la copa. Evita las barricas y atraviesa el hueco. Tienes 3 intentos; el resultado final es la media de las 3 carreras.</div>
             <div class="buttons">
               <button class="primary" id="startBtn">▶ Empezar intento</button>
               <button id="demoBtn" type="button">👀 Ver demo</button>
@@ -294,8 +294,12 @@
     const bestDistance = attempts
       .filter(a=>Number(a.score||0)===bestScore)
       .reduce((m,a)=>Math.max(m,Number(a.distance||0)),0);
-    const totalScore = attempts.reduce((s,a)=>s+Number(a.score||0),0);
-    return {attempts,bestScore,bestDistance,totalScore};
+    const totalScore = attempts.reduce((sum,a)=>sum+Number(a.score||0),0);
+    const totalDistance = attempts.reduce((sum,a)=>sum+Number(a.distance||0),0);
+    const divisor = attempts.length || 1;
+    const avgScore = totalScore / divisor;
+    const avgDistance = totalDistance / divisor;
+    return {attempts,bestScore,bestDistance,totalScore,totalDistance,avgScore,avgDistance};
   }
 
   async function publishResult(){
@@ -311,7 +315,10 @@
       attempts: sum.attempts.map(a=>({index:a.index,score:a.score,distance:Math.round(a.distance),duration:Number(a.duration.toFixed ? a.duration.toFixed(2) : a.duration),status:a.status})),
       bestScore: sum.bestScore,
       bestDistance: Math.round(sum.bestDistance),
-      totalScore: sum.totalScore
+      totalScore: sum.totalScore,
+      totalDistance: Math.round(sum.totalDistance),
+      avgScore: Number(sum.avgScore.toFixed(2)),
+      avgDistance: Math.round(sum.avgDistance)
     };
     try{
       await set(ref(db,`miniGames/flappy/results/${deviceId}`),payload);
@@ -325,7 +332,7 @@
   function renderProgress(){
     const sum=calcSummary();
     attemptsPill.textContent=`${sum.attempts.length}/${MAX_ATTEMPTS}`;
-    bestEl.textContent=String(sum.bestScore);
+    bestEl.textContent=sum.attempts.length ? sum.avgScore.toFixed(1) : "0";
     attemptList.innerHTML=Array.from({length:MAX_ATTEMPTS},(_,i)=>{
       const a=sum.attempts[i];
       if(!a) return `<div class="attempt">Intento ${i+1}<strong>—</strong>pendiente</div>`;
@@ -338,11 +345,11 @@
 
     if(sum.attempts.length >= MAX_ATTEMPTS && !running){
       overlayTitle.textContent="Partida completada";
-      overlayText.textContent=`Mejor carrera: ${sum.bestScore} puertas. Ya has usado tus 3 intentos en esta sesión.`;
+      overlayText.textContent=`Media final: ${sum.avgScore.toFixed(1)} puertas en 3 intentos. Ya has usado tus 3 intentos en esta sesión.`;
       startBtn.disabled=true;
       startBtn.textContent="✓ 3/3 intentos usados";
       startOverlay.classList.remove("hidden");
-      statusEl.innerHTML=`<strong>Resultado enviado.</strong> Mejor: ${sum.bestScore} puertas · total: ${sum.totalScore}.`;
+      statusEl.innerHTML=`<strong>Resultado enviado.</strong> Media: ${sum.avgScore.toFixed(1)} puertas · total: ${sum.totalScore}.`;
     }else if(!running){
       startBtn.disabled=false;
       startBtn.textContent=`▶ Empezar intento ${sum.attempts.length+1}`;
@@ -570,7 +577,7 @@
 
     const done=progress.attempts.length>=MAX_ATTEMPTS;
     overlayTitle.textContent = done ? "3 intentos completados" : (reason==="finish" ? "¡Bodega completada!" : "¡Cuidado con las barricas!");
-    overlayText.textContent = `Intento ${current.index}: ${current.score} puertas · recorrido ${Math.round(current.distance)}. ${done ? `Mejor carrera: ${calcSummary().bestScore} puertas.` : "Puedes probar otra vez."}`;
+    overlayText.textContent = `Intento ${current.index}: ${current.score} puertas · recorrido ${Math.round(current.distance)}. ${done ? `Media final: ${calcSummary().avgScore.toFixed(1)} puertas.` : "Puedes probar otra vez."}`;
     startOverlay.classList.remove("hidden");
     if(!done){startBtn.disabled=false;startBtn.textContent=`▶ Intento ${progress.attempts.length+1}`;}
     statusEl.innerHTML=`<strong>Intento guardado.</strong> ${current.score} puertas superadas.`;
