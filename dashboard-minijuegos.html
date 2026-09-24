@@ -774,22 +774,36 @@
     }
 
     function normalizeFlappyEntry(id, r){
+      const attempts = Array.isArray(r?.attempts) ? r.attempts : [];
+      const attemptsPlayed = Number(r?.attemptsPlayed || attempts.length || 0);
+      const attemptsCompleted = Number(r?.attemptsCompleted ?? attemptsPlayed ?? 0);
+      const totalScore = attempts.length
+        ? attempts.reduce((sum,a)=>sum + Number(a?.score || 0), 0)
+        : Number(r?.totalScore || 0);
+      const totalDistance = attempts.length
+        ? attempts.reduce((sum,a)=>sum + Number(a?.distance || 0), 0)
+        : Number(r?.totalDistance || 0);
+      const divisor = attemptsPlayed || 1;
+      const avgScore = attempts.length ? totalScore / divisor : Number(r?.avgScore ?? (totalScore / divisor) ?? 0);
+      const avgDistance = attempts.length ? totalDistance / divisor : Number(r?.avgDistance ?? (totalDistance / divisor) ?? 0);
       return {
         id,
         name: (r && r.name) || id,
-        attemptsPlayed: Number(r?.attemptsPlayed || 0),
-        attemptsCompleted: Number(r?.attemptsCompleted ?? r?.attemptsPlayed ?? 0),
+        attemptsPlayed,
+        attemptsCompleted,
         bestScore: Number(r?.bestScore || 0),
         bestDistance: Number(r?.bestDistance || 0),
-        totalScore: Number(r?.totalScore || 0),
+        totalScore,
+        totalDistance,
+        avgScore,
+        avgDistance,
         ts: Number(r?.ts || 0)
       };
     }
 
     function compareFlappyPlayers(a,b){
-      if(b.bestScore !== a.bestScore) return b.bestScore - a.bestScore;
-      if(b.bestDistance !== a.bestDistance) return b.bestDistance - a.bestDistance;
-      if(b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+      if(Math.abs(b.avgScore - a.avgScore) > 1e-9) return b.avgScore - a.avgScore;
+      if(Math.abs(b.avgDistance - a.avgDistance) > 1e-9) return b.avgDistance - a.avgDistance;
       return 0;
     }
 
@@ -813,6 +827,11 @@
     }
 
     function buildGlobalRanking(bubblesResults, lineaResults, flappyResults){
+      const BUBBLE_MAX_POINTS = 200;   // 100 aromas correctos × 2 puntos
+      const LINEA_MAX_MS = 45000;      // 3 intentos × 15 segundos
+      const FLAPPY_MAX_DOORS = 28;     // máximo alcanzable en 45 s con el recorrido actual
+      const clamp100 = v => Math.max(0, Math.min(100, Number(v) || 0));
+
       const ids = new Set([
         ...Object.keys(bubblesResults || {}),
         ...Object.keys(lineaResults || {}),
@@ -823,31 +842,31 @@
       ids.forEach(id => {
         const b = bubblesResults?.[id];
         const l = lineaResults?.[id];
-        const f = flappyResults?.[id];
+        const fRaw = flappyResults?.[id];
         if(!b || Number(b?.winesPlayed || 0) < 4) return;
         if(!l || !isLineaComplete(l)) return;
-        if(!f || Number(f?.attemptsCompleted ?? f?.attemptsPlayed ?? 0) < 3) return;
+        if(!fRaw || Number(fRaw?.attemptsCompleted ?? fRaw?.attemptsPlayed ?? 0) < 3) return;
+
+        const f = normalizeFlappyEntry(id, fRaw);
+        const bubbleRaw = getBubblePoints(b);
+        const lineaRaw = getLineaTotalInsideMs(l);
+        const flappyAvgDoors = f.avgScore;
+
+        const bubbleScore = clamp100((bubbleRaw / BUBBLE_MAX_POINTS) * 100);
+        const lineaScore = clamp100((lineaRaw / LINEA_MAX_MS) * 100);
+        const flappyScore = clamp100((flappyAvgDoors / FLAPPY_MAX_DOORS) * 100);
 
         rows.push({
           id,
-          name: (b?.name || l?.name || f?.name || id),
-          bubbleRaw: Math.max(0, getBubblePoints(b)),
-          lineaRaw: Math.max(0, getLineaTotalInsideMs(l)),
-          flappyRaw: Math.max(0, Number(f?.bestDistance || 0))
+          name: (b?.name || l?.name || fRaw?.name || id),
+          bubbleRaw,
+          lineaRaw,
+          flappyAvgDoors,
+          bubbleNorm: bubbleScore,
+          lineaNorm: lineaScore,
+          flappyNorm: flappyScore,
+          globalScore: (bubbleScore + lineaScore + flappyScore) / 3
         });
-      });
-
-      if(!rows.length) return [];
-
-      const maxBubble = Math.max(...rows.map(r => r.bubbleRaw), 0);
-      const maxLinea = Math.max(...rows.map(r => r.lineaRaw), 0);
-      const maxFlappy = Math.max(...rows.map(r => r.flappyRaw), 0);
-
-      rows.forEach(r => {
-        r.bubbleNorm = maxBubble > 0 ? (r.bubbleRaw / maxBubble) * 100 : 0;
-        r.lineaNorm = maxLinea > 0 ? (r.lineaRaw / maxLinea) * 100 : 0;
-        r.flappyNorm = maxFlappy > 0 ? (r.flappyRaw / maxFlappy) * 100 : 0;
-        r.globalScore = (r.bubbleNorm + r.lineaNorm + r.flappyNorm) / 3;
       });
 
       rows.sort((a,b) => {
@@ -890,7 +909,7 @@
             ? ` · ${p.bubblePoints} pts`
             : (type === "linea"
               ? ` · ${p.avgPercent || 0}%`
-              : ` · ${p.bestScore || 0} puertas`);
+              : ` · ${Number(p.avgScore || 0).toFixed(1)} puertas de media`);
           return `
             <div class="podio-line">
               <div class="podio-rank">${medal} ${pos}º</div>
@@ -913,7 +932,7 @@
               <div class="podio-rank">${medal} ${pos}º</div>
               <div>
                 <div class="podio-name">${name} · ${p.globalScore.toFixed(1)} pts</div>
-                <div class="podio-detail">Bubble ${p.bubbleNorm.toFixed(1)} · Línea ${p.lineaNorm.toFixed(1)} · Flappy ${p.flappyNorm.toFixed(1)}</div>
+                <div class="podio-detail">Bubble ${p.bubbleNorm.toFixed(1)}/100 · Línea ${p.lineaNorm.toFixed(1)}/100 · Flappy ${p.flappyNorm.toFixed(1)}/100</div>
               </div>
             </div>
           `;
@@ -923,7 +942,7 @@
       summaryPodium.innerHTML = `
         <div class="podio-grid">
           <div class="podio-global">
-            <div class="podio-block-title">🏆 CLASIFICACIÓN GENERAL · 33,3 % cada juego</div>
+            <div class="podio-block-title">🏆 CLASIFICACIÓN GENERAL · media absoluta /100</div>
             ${renderGlobal(topG)}
           </div>
           <div>
@@ -948,7 +967,7 @@
 
       statMetricLabel.textContent = "Media global";
       statMetricValue.textContent = topG[0] ? `${topG[0].globalScore.toFixed(1)} / 100` : "–";
-      statMetricHelp.textContent = "Solo jugadores con los 3 juegos completos · 33,3 % por juego.";
+      statMetricHelp.textContent = "Cada juego aporta 0–100 puntos reales · 33,3 % del total.";
 
       let lastTs = 0;
       Object.values(bubblesResultsCache || {}).forEach(r => { lastTs = Math.max(lastTs, r?.ts || 0); });
@@ -1135,12 +1154,12 @@
       setGamePill("flappy");
       rankingIcon.textContent = "🍷";
       rankingTitle.textContent = "Ranking · Flappy Wine";
-      rankingSub.textContent = "3 intentos por jugador · gana la mejor carrera por puertas superadas; distancia exacta desempata.";
+      rankingSub.textContent = "3 intentos por jugador · gana la mayor media de puertas; la distancia media desempata.";
 
       tableWrap.style.display = "";
       summaryPodium.style.display = "none";
-      mainMetricHead.textContent = "Mejor carrera";
-      secondaryMetricHead.textContent = "Intentos / total";
+      mainMetricHead.textContent = "Media de puertas";
+      secondaryMetricHead.textContent = "Intentos / recorrido medio";
 
       let entries = Object.entries(results || {}).map(([id,r]) => normalizeFlappyEntry(id,r));
       entries.sort(compareFlappyPlayers);
@@ -1152,7 +1171,7 @@
         emptyMsg.textContent = "Todavía no hay resultados guardados de Flappy Wine.";
         statPlayers.textContent = "0";
         statWinner.textContent = "–";
-        statMetricLabel.textContent = "Mejor carrera media";
+        statMetricLabel.textContent = "Media de puertas";
         statMetricValue.textContent = "–";
         statMetricHelp.textContent = "Se actualizará cuando haya resultados.";
         statUpdated.textContent = "–";
@@ -1167,20 +1186,20 @@
         tr.innerHTML = `
           <td class="td-rank">${idx===0 ? '<span class="trophy">🏆</span>' : idx+1}</td>
           <td class="td-name">${p.name}</td>
-          <td><strong>${p.bestScore}</strong> puertas</td>
-          <td class="td-secondary">${p.attemptsCompleted >= 3 ? "✅ 3/3" : `⏳ ${p.attemptsCompleted}/3`} · recorrido ${Math.round(p.bestDistance)} · total ${p.totalScore}</td>
+          <td><strong>${p.avgScore.toFixed(1)}</strong> puertas</td>
+          <td class="td-secondary">${p.attemptsCompleted >= 3 ? "✅ 3/3" : `⏳ ${p.attemptsCompleted}/3`} · recorrido medio ${Math.round(p.avgDistance)} · total ${p.totalScore}</td>
         `;
         rankingBody.appendChild(tr);
         lastTs=Math.max(lastTs,p.ts||0);
-        sumBest += p.bestScore || 0;
+        sumBest += p.avgScore || 0;
       });
 
       const completed = entries.filter(p => p.attemptsCompleted >= 3);
       statPlayers.textContent=String(entries.length);
       statWinner.textContent=completed.length ? completed[0].name : "–";
-      statMetricLabel.textContent="Mejor carrera media";
+      statMetricLabel.textContent="Media de puertas";
       statMetricValue.textContent=`${(sumBest/entries.length).toFixed(1)} puertas`;
-      statMetricHelp.textContent="Promedio de la mejor carrera de cada participante.";
+      statMetricHelp.textContent="Promedio de las medias de 3 intentos de cada participante.";
       statUpdated.textContent=localTimeString(lastTs);
       gameHint.textContent=completed.length
         ? "Flappy Wine: podio final entre jugadores con 3/3 intentos."
@@ -1211,7 +1230,7 @@
         setGamePill("summary");
         rankingIcon.textContent = "🏁";
         rankingTitle.textContent = "Podio final mini-juegos";
-        rankingSub.textContent = "Clasificación general normalizada (33,3 % cada juego) y Top 3 individual de cada mini-juego.";
+        rankingSub.textContent = "Clasificación general absoluta sobre 100 (33,3 % cada juego) y Top 3 individual de cada mini-juego.";
         attachSummaryListenersOnce();
         renderSummaryPodium();
         if(subtitleMain) subtitleMain.textContent = "Podio final de los mini-juegos.";
