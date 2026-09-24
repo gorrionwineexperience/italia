@@ -1042,20 +1042,20 @@
         .filter(r => r && typeof r === "object" && Number(r?.winesPlayed || 0) >= 4);
 
       arr.sort((a,b)=>{
-        const aPoints = Number(
-          a?.totalBubblePoints ??
-          (((a?.totalScore || 0) * 2) - ((a?.totalMistakes || 0) * 2) - (a?.totalMissed || 0))
-        );
+        const aScoreRaw = Number(a?.totalScore || 0);
+        const aMistakesRaw = Number(a?.totalMistakes || 0);
+        const aMissedRaw = Number(a?.totalMissed || 0);
+        const aPoints = (aScoreRaw * 2) - (aMistakesRaw * 3) - (aMissedRaw * 2);
 
-        const bPoints = Number(
-          b?.totalBubblePoints ??
-          (((b?.totalScore || 0) * 2) - ((b?.totalMistakes || 0) * 2) - (b?.totalMissed || 0))
-        );
+        const bScoreRaw = Number(b?.totalScore || 0);
+        const bMistakesRaw = Number(b?.totalMistakes || 0);
+        const bMissedRaw = Number(b?.totalMissed || 0);
+        const bPoints = (bScoreRaw * 2) - (bMistakesRaw * 3) - (bMissedRaw * 2);
 
         if(bPoints !== aPoints) return bPoints - aPoints;
 
-        const aAcc = a?.avgAccuracy || 0;
-        const bAcc = b?.avgAccuracy || 0;
+        const aAcc = (aScoreRaw + aMistakesRaw) ? Math.round((aScoreRaw / (aScoreRaw + aMistakesRaw)) * 100) : 0;
+        const bAcc = (bScoreRaw + bMistakesRaw) ? Math.round((bScoreRaw / (bScoreRaw + bMistakesRaw)) * 100) : 0;
         if(bAcc !== aAcc) return bAcc - aAcc;
 
         const aScore = a?.totalScore || 0;
@@ -1122,10 +1122,10 @@
     }
 
     function getBubblePoints(r){
-      return Number(
-        r?.totalBubblePoints ??
-        (((r?.totalScore || 0) * 2) - ((r?.totalMistakes || 0) * 2) - (r?.totalMissed || 0))
-      );
+      const totalScore = Number(r?.totalScore || 0);
+      const totalMistakes = Number(r?.totalMistakes || 0);
+      const totalMissed = Number(r?.totalMissed || 0);
+      return (totalScore * 2) - (totalMistakes * 2) - totalMissed;
     }
 
     function isLineaComplete(r){
@@ -1201,10 +1201,7 @@
 
           let extra = "";
           if(type === "bubbles"){
-            const bubblePoints = Number(
-              p?.totalBubblePoints ??
-              (((p?.totalScore || 0) * 2) - ((p?.totalMistakes || 0) * 2) - (p?.totalMissed || 0))
-            );
+            const bubblePoints = getBubblePoints(p);
             extra = ` · ${bubblePoints} pts`;
           }else if(type === "linea"){
             extra = ` · ${p?.avgPercent || 0}%`;
