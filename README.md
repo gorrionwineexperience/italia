@@ -98,3 +98,18 @@ No se usan timestamps para desempatar. Si dos participantes obtienen exactamente
 - Tras verla, queda disponible el botón `👀 Ver demo` para repetirla antes de cualquier intento pendiente.
 
 - Precisión Bubble: se calcula globalmente como `aciertos totales / (aciertos totales + fallos totales) × 100`; no se usa una media de porcentajes por vino.
+
+## Fórmula definitiva Bubble Pop
+
+- Acierto: +2 puntos.
+- Fallo (tocar una burbuja incorrecta): -2 puntos.
+- Aroma correcto que se escapa: -1 punto.
+- Burbuja incorrecta que se escapa: 0 puntos.
+- Fórmula: `(aciertos × 2) - (fallos × 2) - escapadas buenas`.
+- Precisión: `aciertos / (aciertos + fallos) × 100`.
+
+
+## Podios y clasificación general
+- Flappy Wine: el resultado final es la media de puertas de los 3 intentos; la distancia media desempata.
+- Clasificación general absoluta 0–100: Bubble = puntos/200, Línea = tiempo dentro/45 s, Flappy = media de puertas/28.
+- Cada mini-juego pesa 33,3 % y un 100/100 representa un rendimiento máximo real, no ser el mejor de la sesión.
